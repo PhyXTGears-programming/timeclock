@@ -121,7 +121,7 @@ def animate(name,io,today=None,total=None):
 
 # These lines initiate two global variables: "usernamelist","allList"
 ########################################################################
-with open('usernameFile.py','r') as nameFile:
+with open('usernameFile.txt','r') as nameFile:
     usernamelist=nameFile.readlines()
     for i in range(len(usernamelist)):
         usernamelist[i]=usernamelist[i].strip("\n").split("|")
