@@ -1,4 +1,3 @@
-
 __pycache__/
-
-usernameFile\.py
+Test/
+!Test/.gitkeep
