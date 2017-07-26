@@ -23,7 +23,9 @@ from settingsFile import Settings
 from myFunctions import myInput
 from myFunctions import myRound
 
-open('usernameFile.txt','a').close()
+userFile = "usernameFile.tx"
+
+open(userFile,'a').close()
 
 # To check if a name is in a valid format e.g. "John Smith"
 ########################################################################
@@ -62,7 +64,7 @@ def newName(allList):
             username=input("Must be three or more characters => ")
             if not len(username)>=3:
                 print("Error: Name is too short")
-            elif username not in allList:
+            elif username in allList:
                 print("Error: Name already exists")
             else:
                 break
@@ -70,7 +72,7 @@ def newName(allList):
         choice=myInput("Enter s or m => ","Invalid input!",strs=["s","m"])
 
         #Code for writing info to usernameFile:
-        with open('usernameFile.txt','a') as nameFile:
+        with open(userFile,'a') as nameFile:
             if choice=="s":
                 nameFile.write(name+"|"+username+"|Student\n")
             else:
@@ -121,7 +123,7 @@ def animate(name,io,today=None,total=None):
 
 # These lines initiate two global variables: "usernamelist","allList"
 ########################################################################
-with open('usernameFile.txt','r') as nameFile:
+with open(userFile,'r') as nameFile:
     usernamelist=nameFile.readlines()
     for i in range(len(usernamelist)):
         usernamelist[i]=usernamelist[i].strip("\n").split("|")
@@ -179,7 +181,7 @@ def recordData(name,io):
     for i in range(1,len(l)):
         l[i]=" "+l[i]
     readtime=l[0]+l[1]+l[2].rjust(11)+l[3].rjust(10)+l[4]+l[5]
-    
+
     if io == "IN": #Signing in
         with open(Settings['path']+name+'.txt','a') as oldFile:
             oldFile.write('Signed in  | '+systemtime+' | '+readtime+'\n')
@@ -192,7 +194,7 @@ def recordData(name,io):
         except:
             inList=['out']
 
-        
+
         if inList[0]=='out':
             print("Didn't sign in!")
             hoursToday = 0
@@ -204,7 +206,7 @@ def recordData(name,io):
                 currentMinutes=1440-int(inList[1])+int(getMinutes())
                 for i in range(day-int(inList[2])-1): currentMinutes+=1440
             hoursToday = myRound(currentMinutes/60,2)
-            
+
         with open(Settings['path']+name+'.txt','a') as file:
             file.write('Signed out | '+systemtime+' | '+readtime+'\n')
 
@@ -249,17 +251,21 @@ def getName():
     return name
 
 def main():
-    name=getName()
     while name!="quit":
-        io=getIO()
+        io = "none"
+        name=getName()
+        if io == "none":
+            io=getIO()
+            # ---
         if io in ["IN","OUT"]:
             today,total=recordData(name,io)
 ##            animate(name,io,today,total)
         elif io=="Options":
             otherOptions()
-        else: # name="cancel"
+        elif io == "cancel": # name="cancel"
             pass
-        name=getName()
+        else:
+            print("===== error with IO function =====")
 
 if __name__=="__main__":
     main()
