@@ -1,4 +1,4 @@
-Settings={
+opts={
 	'short': False,
 	'hours': True,
 	'year': True,
@@ -8,5 +8,7 @@ Settings={
 	'onScreenKeyBoard': True,
 	'path': './Test/',
 	'newUpdate': False, 
-	'updateTime': 'Tuesday 19:51:00'
+	'updateTime': 'Tuesday 19:51:00',
+	'name.txt': 'usernameFile.txt',
+	'adminPass': '17234820'
 	}

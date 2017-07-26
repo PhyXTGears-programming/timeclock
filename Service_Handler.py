@@ -2,7 +2,7 @@ from importlib import reload
 from threading import Thread
 from time import sleep
 
-import settingsFile
+import optsFile
 import Slack_Notification_Service
 import Time_Clock_Service
 
@@ -20,8 +20,8 @@ def main():
 	newUpdate = False
 	while not newUpdate:
 		sleep(60)
-		reload(settingsFile)
-		newUpdate = settingsFile.Settings['newUpdate']
+		reload(optsFile)
+		newUpdate = optsFile.opts['newUpdate']
 
 
 if __name__ == "__main__": main()

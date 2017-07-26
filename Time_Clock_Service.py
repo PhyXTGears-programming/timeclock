@@ -16,12 +16,12 @@ from importlib import reload
 import Calculations_Service
 import graphics
 from myFunctions import myInput, myRound
-from settingsFile import Settings
+from optsFile import opts
 
 reload(graphics)
 
 
-userFile = "usernameFile.txt"
+userFile = opts['name.txt']
 
 open(userFile, 'a').close()
 
@@ -31,7 +31,7 @@ open(userFile, 'a').close()
 def checkName(firstLastName):
 	error = False
 	firstLastNameList = firstLastName.split()
-	if len(firstLastNameList) != 2:
+	if len(firstLastNameList) < 2:
 		error = True
 	else:
 		for item in firstLastNameList:
@@ -50,8 +50,7 @@ def newName(allList):
 		name = input("Enter your full name. Ex: 'Bob Smith' => ")
 	if name != "c":
 		print()
-		print(
-			"Now enter a username, which you can use to sign in instead of your full name.")
+		print("Now enter a username, which you can use to sign in instead of your full name.")
 		while True:
 			username = input("Must be three or more characters => ")
 			if not len(username) >= 3:
@@ -137,7 +136,7 @@ sizes2 = {"IN": {2: [250, 400, 85],
 				  1: [550, 350, 400, 500]},
 		  "CANCEL": {2: [500, 45, 35],
 					 1: [200, 65, 600, 125]}}
-if Settings['onScreenKeyBoard']:
+if opts['onScreenKeyBoard']:
 	sizes = sizes2
 else:
 	sizes = sizes3
@@ -147,7 +146,7 @@ def getIO():
 	screen = {'width': 0.5, 'height': 0.5, 'startX': 0.5, 'startY': 0}
 	ioPadding = 50
 	otherPadding = 13
-	if not Settings['onScreenKeyBoard']:
+	if not opts['onScreenKeyBoard']:
 		screen['height'] = 1
 		ioPadding = 135
 		otherPadding = 35
@@ -171,14 +170,14 @@ def recordData(name, io):
 	readtime = l[0] + l[1] + l[2].rjust(11) + l[3].rjust(10) + l[4] + l[5]
 
 	if io == "IN":  # Signing in
-		if not os.path.isdir(Settings["path"]):
-			os.mkdir(Settings["path"])
-		#if not os.path.exists(Settings["path"]+name+".txt"): pass
-		with open(Settings['path'] + name + '.txt', 'a') as oldFile: oldFile.write('Signed in  | '+systemtime+' | '+readtime+'\n')
+		if not os.path.isdir(opts["path"]):
+			os.mkdir(opts["path"])
+		#if not os.path.exists(opts["path"]+name+".txt"): pass
+		with open(opts['path'] + name + '.txt', 'a') as oldFile: oldFile.write('Signed in  | '+systemtime+' | '+readtime+'\n')
 		return None,None
 	elif io == "OUT":  # Signing out
 		try:  # Try because the file might be empty
-			with open(Settings['path'] + name + '.txt', 'r') as oldFile:
+			with open(opts['path'] + name + '.txt', 'r') as oldFile:
 				l = oldFile.readlines()[-1].split()
 				inList = [l[1], l[3], l[7]]
 		except:
@@ -197,7 +196,7 @@ def recordData(name, io):
 					currentMinutes += 1440
 			hoursToday = myRound(currentMinutes / 60, 2)
 
-		with open(Settings['path'] + name + '.txt', 'a') as file:
+		with open(opts['path'] + name + '.txt', 'a') as file:
 			file.write('Signed out | ' + systemtime + ' | ' + readtime + '\n')
 
 		reload(Calculations_Service)
@@ -218,7 +217,7 @@ def getName():
 		name = input("Enter a name => ")
 		if name == "":
 			print("Error: Name is empty!")
-		elif not name in allList + ["quit", "admin", "new", "m", "k"]:
+		elif not name in allList + ["quit", "admin", "new" ''', "m", "k"''' ]:
 			print("Error: Name not found! Try again.")
 		else:
 			break
@@ -227,10 +226,11 @@ def getName():
 	if name == "quit" or name == None:
 		pass
 	elif name == "admin":
-		# if input("Password: ")=="6261416":
-		reload(Calculations_Service)
-		Calculations_Service.main()
-		name = None
+		if input("Password: ")==opts["adminPass"]:
+			reload(Calculations_Service)
+			Calculations_Service.main()
+			name = None
+	'''
 	else:  # Real name
 		aDict = {"m": ["Mike Koch", "IN"], "k": ["Mike Koch", "OUT"]}
 		if name in aDict:
@@ -241,6 +241,7 @@ def getName():
 			if index % 2 == 1:
 				# If the name was the username, make it full
 				name = allList[index - 1]
+	'''
 	return name
 
 

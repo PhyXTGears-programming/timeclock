@@ -9,7 +9,7 @@ the past week every Sunday evening.
 import smtplib
 import time
 
-from settingsFile import Settings
+from optsFile import opts
 
 # Sign-in and recipient credentials:
 emailFrom = "1720time@gmail.com"					  # Gmail address
@@ -65,12 +65,12 @@ def withinOneWeek(date):
 # Anyone with no time is not listed, people sorted alphabetically by first name
 def calculatePastWeek():
 
-	# Import Calculations_Service and change settings temporarily:
+	# Import Calculations_Service and change opts temporarily:
 	import Calculations_Service
-	Calculations_Service.Settings['short'] = True
-	Calculations_Service.Settings['hours'] = True
-	Calculations_Service.Settings['year'] = True
-	Calculations_Service.Settings['minutesFile'] = False
+	Calculations_Service.opts['short'] = True
+	Calculations_Service.opts['hours'] = True
+	Calculations_Service.opts['year'] = True
+	Calculations_Service.opts['minutesFile'] = False
 
 	# Call the Calculations_Service function calculate, which processes everything:
 	Calculations_Service.calculate(False)  # Passing False so it doesn't print anything
@@ -101,16 +101,6 @@ def calculatePastWeek():
 	return result
 
 
-def daysFromNow(now, then):
-	dayList = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-	index1 = dayList.index(now)
-	index2 = dayList.index(then)
-	if index1 <= index2:
-		return index2 - index1
-	else:
-		return index2 + 7 - index1
-
-
 def timeFromNow(now, thn):
 	dayList = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 	now = now.split()
@@ -139,7 +129,7 @@ def timeFromNow(now, thn):
 def main():
 	while True:
 		day, hour, minute, sec = getTime()
-		time.sleep(abs(timeFromNow(str(day) + " " + str(hour) + ":" + str(minute) + ":" + str(sec), Settings["updateTime"])))
+		time.sleep(abs(timeFromNow(str(day) + " " + str(hour) + ":" + str(minute) + ":" + str(sec), opts["updateTime"])))
 		data = calculatePastWeek()
 		if data == "":
 			data = "No one signed in last week"

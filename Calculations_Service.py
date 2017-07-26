@@ -9,10 +9,10 @@ either a simple list or spreadsheet.
 import imp
 import os
 
-import settingsFile
+import optsFile
 from myFunctions import myInput, myRound
 
-Settings = settingsFile.Settings
+opts = optsFile.opts
 
 # CHANGELOG - PATH TO FOLDER:
 ##functions.py##
@@ -62,7 +62,7 @@ def calcNumDict():
 
 
 def getTimeFormat():
-	if Settings['hours'] == True:
+	if opts['hours'] == True:
 		return "hours"
 	else:
 		return "minutes"
@@ -83,7 +83,7 @@ def calculateSingle(name):
 
 	try:
 		# CHANGELOG - PATH TO FOLDER:
-		with open(Settings['path'] + name + '.txt', 'r') as dataFile:
+		with open(opts['path'] + name + '.txt', 'r') as dataFile:
 			datalist = dataFile.readlines()  # Open their old records file, and create datalist
 		for linenum in range(len(datalist)):  # Iterate through each line in this student's file, by index
 			if linenum + 1 < len(datalist):  # If this is not the last line in the file:
@@ -117,7 +117,7 @@ def calculate(pt=False):
 	timeDict.clear()
 	missDict.clear()
 
-	with open("usernameFile.txt", 'r') as nameFile:  # Open the file that contains all student names (file name specified in Settings)
+	with open(opts['name.txt'], 'r') as nameFile:  # Open the file that contains all student names (file name specified in opts)
 		tempList = nameFile.readlines()  # Make a list of all the names
 		for i in range(len(tempList)):
 			if tempList[i][0] != "#":
@@ -137,7 +137,7 @@ def calculate(pt=False):
 			timeDict[name] = 0  # Set total hours for this student to 0
 			missDict[name] = 0  # Set forget times for this student to 0
 # CHANGELOG - PATH TO FOLDER:
-			with open(Settings['path'] + name + '.txt', 'r') as dataFile:
+			with open(opts['path'] + name + '.txt', 'r') as dataFile:
 				datalist = dataFile.readlines()  # Open their old records file, and create datalist
 			for linenum in range(len(datalist)):  # Iterate through each line in this student's file, by index
 				if linenum + 1 < len(datalist):  # If this is not the last line in the file:
@@ -145,7 +145,7 @@ def calculate(pt=False):
 					signOut = datalist[linenum + 1].split()  # Create signOut, the information from the "out" line
 
 					# Calculate date:
-					if Settings['short']:
+					if opts['short']:
 						date = str(signIn[7])  # Get the date in ddd form
 						for i in range(3 - len(date)):
 							date = "0" + date  # Add leading zeros
@@ -157,7 +157,7 @@ def calculate(pt=False):
 						for i in range(2 - len(day)):
 							day = "0" + day  # Add leading zeros
 						date = month + "/" + day
-					if Settings['year']:
+					if opts['year']:
 						date += "/" + str(signIn[14][1:-1])  # Add the year
 					if date not in dateList:
 						dateList.append(date)  # Add the date to dateList. After this has been done for all students, we will have a complete list of all dates
@@ -170,7 +170,7 @@ def calculate(pt=False):
 							time = 1440 - int(signIn[3]) + int(signOut[3])  # (1440 minutes = 24 hours) (1440-in time)=minutes from first day + out time = minutes from both days
 							for i in range(int(signOut[7]) - int(signIn[7]) - 1):
 								time += 1440  # For each extra day (double all-nighter), add 1440 minutes
-						if Settings['hours']:
+						if opts['hours']:
 							time = myRound(time / 60, 2)  # convert minutes to hours and round to 2 decimal places
 						if date not in dateDict[name]:
 							dateDict[name][date] = time  # In dateDict, under this student, create a date and the minutes/hours
@@ -191,23 +191,23 @@ def calculate(pt=False):
 	calcNumDict()
 
 
-def changeSettings():
+def changeopts():
 	while True:
-		if Settings['short'] == False and Settings['year'] == True:
+		if opts['short'] == False and opts['year'] == True:
 			dateFormat = "mm/dd/yyyy"
-		elif Settings['short'] == False and Settings['year'] == False:
+		elif opts['short'] == False and opts['year'] == False:
 			dateFormat = "mm/dd"
-		elif Settings['short'] == True and Settings['year'] == True:
+		elif opts['short'] == True and opts['year'] == True:
 			dateFormat = "ddd/yyyy"
-		elif Settings['short'] == True and Settings['year'] == False:
+		elif opts['short'] == True and opts['year'] == False:
 			dateFormat = "ddd"
-		if Settings['hours']:
+		if opts['hours']:
 			timeFormat = "hours"
 		else:
 			timeFormat = "minutes"
-		keyboardStatus = Settings['onScreenKeyBoard']
+		keyboardStatus = opts['onScreenKeyBoard']
 		print()
-		print("0) Exit settings")
+		print("0) Exit opts")
 		print("1) Change date format. Current:", dateFormat)
 		print("2) Change between hours/minutes. Current:", timeFormat)
 		print("3) Turn on-screen keyboard on or off. Current:", keyboardStatus)
@@ -217,31 +217,31 @@ def changeSettings():
 			print("Date formats:\n	 1) mm/dd/yyyy\n	 2) mm/dd\n	 3) ddd/yyyy\n	 4) ddd")
 			choice = myInput("Please enter a value in the range 1-4: ", "Invalid menu choice.", ints=[1, 4])
 			if choice == 1:
-				Settings['short'] = False
-				Settings['year'] = True
+				opts['short'] = False
+				opts['year'] = True
 			elif choice == 2:
-				Settings['short'] = False
-				Settings['year'] = False
+				opts['short'] = False
+				opts['year'] = False
 			elif choice == 3:
-				Settings['short'] = True
-				Settings['year'] = True
+				opts['short'] = True
+				opts['year'] = True
 			else:
-				Settings['short'] = True
-				Settings['year'] = False
+				opts['short'] = True
+				opts['year'] = False
 		elif answer == 2:
 			print("Time formats:\n	 1) hours\n	 2) minutes")
 			choice = myInput("Please enter a value in the range 1-2: ", "Invalid option.", ints=[1, 2])
-			Settings['hours'] = choice == 1
+			opts['hours'] = choice == 1
 		elif answer == 3:
 			print("Keyboard Status:\n	 1) On\n	 2) Off")
 			choice = myInput("Please enter a value in the range 1-2: ", "Invalid option.", ints=[1, 2])
-			Settings['onScreenKeyBoard'] = choice == 1
+			opts['onScreenKeyBoard'] = choice == 1
 		else:
 			break
 		for i in range(50):
 			print()
-	with open("settingsFile.py", "w") as file:
-		file.write("Settings=" + str(Settings))
+	with open("optsFile.py", "w") as file:
+		file.write("opts=" + str(opts))
 	calculate()
 
 
@@ -357,12 +357,12 @@ def checkNameFile():
 			print("Converting", oldName, "to", newName)
 			nameList[i] = newName
 			try:
-				os.rename(Settings['path'] + oldName + ".txt", Settings['path'] + newName + ".txt")
+				os.rename(opts['path'] + oldName + ".txt", opts['path'] + newName + ".txt")
 			except:
 				pass
-			with open('usernameFile.txt', 'r') as nameFile:
+			with open(opts['name.txt'], 'r') as nameFile:
 				fileList = nameFile.readlines()
-			with open('usernameFile.txt', 'w') as nameFile:
+			with open(opts['name.txt'], 'w') as nameFile:
 				for line in fileList:
 					lineList = line.strip("\n").split("|")
 					if lineList[0] == oldName:
@@ -377,7 +377,7 @@ def checkNameFile():
 def main():
 	calculate()
 	optionList = [['Exit Admin'],
-				  ['Change settings', changeSettings],
+				  ['Change opts', changeopts],
 				  ['Print all the students and mentors with their times', printTime],
 				  ['Write times to a spreadsheet', writeCSV],
 				  ['Print raw data', printRaw],
