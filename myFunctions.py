@@ -8,32 +8,30 @@ Functions:
 """
 
 
-
 # A universal input function I use for many things
 ########################################################################
-def myInput(message,errorMessage=None,strs=[],ints=[]):
+def myInput(message, errorMessage=None, strs=[], ints=[]):
     while True:
-        I=input(message)
-        if strs!=[] and I in strs:
+        I = input(message)
+        if strs != [] and I in strs:
             return I
-        elif len(ints)==2 and I.isnumeric() and int(I)>=ints[0] and int(I)<=ints[1]:
+        elif len(ints) == 2 and I.isnumeric() and int(I) >= ints[0] and int(I) <= ints[1]:
             return int(I)
-        elif strs==[] and ints==[]:
+        elif strs == [] and ints == []:
             return I
-        if errorMessage!=None:
+        if errorMessage != None:
             print(errorMessage)
 ########################################################################
 
 
-
 # A rounding function that actually works
 ########################################################################
-def myRound(number,numDecimalPlaces):
-    s=str(number)
+def myRound(number, numDecimalPlaces):
+    s = str(number)
     if "." in s:
-        i=s.index(".")
+        i = s.index(".")
         if len(s[i:]) > numDecimalPlaces:
-            s=s[:i+numDecimalPlaces+1]
-    n=float(s)
+            s = s[:i + numDecimalPlaces + 1]
+    n = float(s)
     return n
 ########################################################################
