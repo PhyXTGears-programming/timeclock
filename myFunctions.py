@@ -9,7 +9,6 @@ Functions:
 
 
 # A universal input function I use for many things
-########################################################################
 def myInput(message, errorMessage=None, strs=[], ints=[]):
     while True:
         I = input(message)
@@ -21,11 +20,9 @@ def myInput(message, errorMessage=None, strs=[], ints=[]):
             return I
         if errorMessage != None:
             print(errorMessage)
-########################################################################
 
 
 # A rounding function that actually works
-########################################################################
 def myRound(number, numDecimalPlaces):
     s = str(number)
     if "." in s:
@@ -34,4 +31,3 @@ def myRound(number, numDecimalPlaces):
             s = s[:i + numDecimalPlaces + 1]
     n = float(s)
     return n
-########################################################################
