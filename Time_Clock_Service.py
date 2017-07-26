@@ -60,9 +60,12 @@ def newName(allList):
         print("Now enter a username, which you can use to sign in instead of your full name.")
         while True:
             username=input("Must be three or more characters => ")
-            if len(username)>=3 and username not in allList:
+            if !len(username)>=3:
+                print("Error: Name is too short")
+            elif username not in allList:
+                print("Error: Name already exists")
+            else:
                 break
-            print("Error: Name is too short, or it already exists!")
         print("Student or mentor?")
         choice=myInput("Enter s or m => ","Invalid input!",strs=["s","m"])
 
@@ -123,7 +126,7 @@ with open('usernameFile.py','r') as nameFile:
     for i in range(len(usernamelist)):
         usernamelist[i]=usernamelist[i].strip("\n").split("|")
 
-allList=[]
+allList=["new"]
 for name in usernamelist:
     allList.append(name[0])
     allList.append(name[1])
