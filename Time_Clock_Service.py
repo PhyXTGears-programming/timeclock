@@ -251,7 +251,8 @@ def getName():
     return name
 
 def main():
-    while name!="quit":
+    name = ""
+    while name != "quit":
         io = "none"
         name=getName()
         if io == "none":
