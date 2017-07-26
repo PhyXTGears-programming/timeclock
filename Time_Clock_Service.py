@@ -70,7 +70,7 @@ def newName(allList):
         choice=myInput("Enter s or m => ","Invalid input!",strs=["s","m"])
 
         #Code for writing info to usernameFile:
-        with open('usernameFile.py','a') as nameFile:
+        with open('usernameFile.txt','a') as nameFile:
             if choice=="s":
                 nameFile.write(name+"|"+username+"|Student\n")
             else:
@@ -121,7 +121,7 @@ def animate(name,io,today=None,total=None):
 
 # These lines initiate two global variables: "usernamelist","allList"
 ########################################################################
-with open('usernameFile.py','r') as nameFile:
+with open('usernameFile.txt','r') as nameFile:
     usernamelist=nameFile.readlines()
     for i in range(len(usernamelist)):
         usernamelist[i]=usernamelist[i].strip("\n").split("|")
@@ -220,11 +220,14 @@ def otherOptions():
 def getName():
     print("\n###############################\n")
     print("To add a new person, type 'new'")
-    name=input("Enter a name => ")
-    while name=="" or name not in allList+["quit","admin","new","m","k"]:
-# CHANGELOG - CHECK FOR EXPIRED NAME:
-        print("Error: Name not found! Try again.")
+    while True:
         name=input("Enter a name => ")
+        if name=="":
+            print("Error: Name is empty!")
+        elif !(name in allList+["quit","admin","new","m","k"]):
+            print("Error: Name not found! Try again.")
+        else:
+            break
     if name=="new":
         name=newName(allList)
     if name=="quit" or name==None:
