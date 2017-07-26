@@ -23,7 +23,7 @@ from settingsFile import Settings
 from myFunctions import myInput
 from myFunctions import myRound
 
-
+open('usernameFile.txt','a').close()
 
 # To check if a name is in a valid format e.g. "John Smith"
 ########################################################################
@@ -60,7 +60,7 @@ def newName(allList):
         print("Now enter a username, which you can use to sign in instead of your full name.")
         while True:
             username=input("Must be three or more characters => ")
-            if !len(username)>=3:
+            if not len(username)>=3:
                 print("Error: Name is too short")
             elif username not in allList:
                 print("Error: Name already exists")
@@ -224,7 +224,7 @@ def getName():
         name=input("Enter a name => ")
         if name=="":
             print("Error: Name is empty!")
-        elif !(name in allList+["quit","admin","new","m","k"]):
+        elif not name in allList+["quit","admin","new","m","k"]:
             print("Error: Name not found! Try again.")
         else:
             break
