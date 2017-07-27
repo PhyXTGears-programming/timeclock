@@ -55,27 +55,18 @@ missDict = {}  # Dictionary for number of times each person forgot to sign out {
 numDict = {"Student": 0, "Mentor": 0}
 
 
-def calcNumDict():
-	for name in rankDict:
-		if timeDict[name] != 0:
-			numDict[rankDict[name]] += 1
+def calcNumDict(): for name in rankDict: if timeDict[name]!=0: numDict[rankDict[name]] += 1
 
 
 def getTimeFormat():
-	if opts['hours'] == True:
-		return "hours"
-	else:
-		return "minutes"
+	if opts['hours']==True: return "hours"
+	else: return "minutes"
 
 
 def findMaxLength(alist):
 	maxLength = 0
-	for item in alist:
-		if len(item) > maxLength:
-			maxLength = len(item)
+	for item in alist: if len(item)>maxLength: maxLength = len(item)
 	return maxLength
-
-##############################################################
 
 
 def calculateSingle(name):
@@ -83,30 +74,26 @@ def calculateSingle(name):
 
 	try:
 		# CHANGELOG - PATH TO FOLDER:
-		with open(opts['path'] + name + '.txt', 'r') as dataFile:
-			datalist = dataFile.readlines()  # Open their old records file, and create datalist
+		with open(opts['path']+name+'.txt','r') as dataFile: datalist = dataFile.readlines()  # Open their old records file, and create datalist
 		for linenum in range(len(datalist)):  # Iterate through each line in this student's file, by index
 			if linenum + 1 < len(datalist):  # If this is not the last line in the file:
 				signIn = datalist[linenum].split()  # Create signIn, the information from the "in" line
 				signOut = datalist[linenum + 1].split()  # Create signOut, the information from the "out" line
 
-				if datalist[linenum].split()[1] == "in" and datalist[linenum + 1].split()[1] == "out":  # If this line and the next are a valid in-out sequence
+				if signIn[0] == "IN" and signOut[0] == "OUT":  # If this line and the next are a valid in-out sequence
 					# Calculate time:
-					if signIn[7] == signOut[7]:  # If same day, subtract the in time from the out time to get the minutes in between
-						time = int(signOut[3]) - int(signIn[3])
+					if signIn[6] == signOut[6]:
+						time = int(signOut[2]) - int(signIn[2]) # If same day, subtract the in time from the out time to get the minutes in between
 					else:  # Different Day (past midnight)
-						time = 1440 - int(signIn[3]) + int(signOut[3])  # (1440 minutes = 24 hours) (1440-in time)=minutes from first day + out time = minutes from both days
-						for i in range(int(signOut[7]) - int(signIn[7]) - 1):
-							time += 1440  # For each extra day (double all-nighter), add 1440 minutes
+						time = 1440 - int(signIn[2]) + int(signOut[2])  # (1440 minutes = 24 hours) (1440-in time)=minutes from first day + out time = minutes from both days
+						for i in range(int(signOut[6]) - int(signIn[6]) - 1): time += 1440  # For each extra day (double all-nighter), add 1440 minutes
 					time = myRound(time / 60, 2)  # convert minutes to hours and round to 2 decimal places
-# i=str(time).index(".")
-# time=int(str(time)[:i+2])
+					# i=str(time).index(".")
+					# time=int(str(time)[:i+2])
 					totalTime += time  # add the time to the total for this student
 	except:
 		pass
 	return totalTime
-
-##########################################################################
 
 
 def calculate(pt=False):
@@ -329,21 +316,14 @@ def writeCSV():
 
 
 def printRaw():
-	print("Times in " + getTimeFormat() + ":")
-	print()
-	print("nameList:", nameList)
-	print()
-	print("rankDict:", rankDict)
-	print()
-	print("numDict:", numDict)
-	print()
-	print("dateList:", dateList)
-	print()
-	print("dateDict:", dateDict)
-	print()
-	print("timeDict:", timeDict)
-	print()
-	print("missDict:", missDict)
+	print("Times in " + getTimeFormat() + ":","\n")
+	print("nameList:", nameList,"\n")
+	print("rankDict:", rankDict,"\n")
+	print("numDict:", numDict,"\n")
+	print("dateList:", dateList,"\n")
+	print("dateDict:", dateDict,"\n")
+	print("timeDict:", timeDict,"\n")
+	print("missDict:", missDict,"\n")
 
 
 def checkNameFile():
@@ -356,19 +336,14 @@ def checkNameFile():
 				newName = input("Error! Enter a different fixed name: ")
 			print("Converting", oldName, "to", newName)
 			nameList[i] = newName
-			try:
-				os.rename(opts['path'] + oldName + ".txt", opts['path'] + newName + ".txt")
-			except:
-				pass
-			with open(opts['name.txt'], 'r') as nameFile:
-				fileList = nameFile.readlines()
+			try: os.rename(opts['path']+oldName+".txt", opts['path']+newName+".txt")
+			except: pass
+			with open(opts['name.txt'], 'r') as nameFile: fileList = nameFile.readlines()
 			with open(opts['name.txt'], 'w') as nameFile:
 				for line in fileList:
 					lineList = line.strip("\n").split("|")
-					if lineList[0] == oldName:
-						nameFile.write(newName + "|" + lineList[1] + "|" + lineList[2] + "\n")
-					else:
-						nameFile.write(line.strip("\n") + "\n")
+					if lineList[0] == oldName: nameFile.write(newName+"|"+lineList[1]+"|"+lineList[2]+"\n")
+					else: nameFile.write(line.strip("\n") + "\n")
 			print()
 
 	print("Done checking names.")
@@ -384,20 +359,14 @@ def main():
 				  ['Recalculate times', calculate],
 				  ['Check nameFile for errors', checkNameFile]]
 	while True:
-		for i in range(50):
-			print()
-		for i in range(len(optionList)):
-			print(str(i) + ": " + optionList[i][0])
+		print("\n"*50)
+		for i in range(len(optionList)): print(str(i)+": "+optionList[i][0])
 		print()
 		choice = myInput("Enter your menu choice: ", "Invalid menu choice.", ints=[0, len(optionList) - 1])
-		for i in range(50):
-			print()
-		if choice == 0:
-			return
+		print("\n"*50)
+		if choice == 0: return
 		optionList[choice][1]()
-		if optionList[choice][1] in [printTime, printRaw, checkNameFile]:
-			input("\nHit enter to continue...")
+		if optionList[choice][1] in [printTime,printRaw,checkNameFile]: input("\nHit enter to continue...")
 
 
-if __name__ == "__main__":
-	main()
+if __name__ == "__main__": main()

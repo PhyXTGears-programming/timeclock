@@ -189,12 +189,13 @@ def recordData(name, io):
 			else:  # Different Day
 				currentMinutes = 1440 - int(inList[1]) + int(getMinutes())
 				for i in range(day - int(inList[2]) - 1): currentMinutes += 1440
-			hoursToday = myRound(currentMinutes / 60, 2)
+			hoursToday = round(currentMinutes / 60,2) # myRound(currentMinutes / 60, 2)
 
 		with open(opts['path']+name+'.txt','a') as file: file.write('OUT | '+systemtime+' | '+readtime+'\n')
 
 		reload(Calculations_Service)
 		hoursTotal = myRound(Calculations_Service.calculateSingle(name), 2)
+		print("singlecalc", Calculations_Service.calculateSingle(name))
 		print("Today's Hours:", hoursToday)
 		print("Total Hours:", hoursTotal)
 		return hoursToday, hoursTotal
