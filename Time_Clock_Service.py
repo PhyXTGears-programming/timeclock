@@ -20,10 +20,7 @@ from optsFile import opts
 
 reload(graphics)
 
-
-userFile = opts['name.txt']
-
-open(userFile, 'a').close()
+open(opts['name.txt'], 'a').close()
 
 # To check if a name is in a valid format e.g. "John Smith"
 
@@ -63,7 +60,7 @@ def newName(allList):
 		choice = myInput("Enter s or m => ", "Invalid input!", strs=["s", "m"])
 
 		# Code for writing info to usernameFile:
-		with open(userFile, 'a') as nameFile:
+		with open(opts['name.txt'], 'a') as nameFile:
 			if choice == "s":
 				nameFile.write(name + "|" + username + "|Student\n")
 			else:
@@ -112,7 +109,7 @@ def animate(name, io, today=None, total=None):
 
 
 # These lines initiate two global variables: "usernamelist","allList"
-with open(userFile, 'r') as nameFile:
+with open(opts['name.txt'], 'r') as nameFile:
 	usernamelist = nameFile.readlines()
 	for i in range(len(usernamelist)):
 		usernamelist[i] = usernamelist[i].strip("\n").split("|")
@@ -155,12 +152,12 @@ def getIO():
 	w.addButton(550, 150, 360, 450, "white", "OUT", "red", ioPadding)
 	w.addButton(90, 750, 360, 150, "white", "Cancel", "blue", otherPadding)
 	w.addButton(550, 750, 360, 150, "white", "Options", "blue", otherPadding)
-	return w.getClick()
+	return w.getClick() or "none"
 
 
 def recordData(name, io):
-	systemtime = getMinutes().rjust(4) + ' minutes into day ' + time.strftime('%j')
-	readtime = time.strftime('%I:%M %p, %A, %B %d (%Y)')
+	systemtime = getMinutes().rjust(4) + ' of day ' + time.strftime('%j')
+	readtime = time.strftime('%I:%M:%S %p, %A, %B %d %Y')
 	timeHours = time.strftime('%I:%M %p')
 	timeRest = time.strftime('%A, %B %d')
 	print("\n" + name + " " + io + " " + timeHours)
@@ -168,22 +165,21 @@ def recordData(name, io):
 	l = readtime.split()
 	for i in range(1, len(l)): l[i] = " " + l[i]
 	readtime = l[0] + l[1] + l[2].rjust(11) + l[3].rjust(10) + l[4] + l[5]
+	
+	if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 
 	if io == "IN":  # Signing in
-		if not os.path.isdir(opts["path"]):
-			os.mkdir(opts["path"])
-		#if not os.path.exists(opts["path"]+name+".txt"): pass
-		with open(opts['path'] + name + '.txt', 'a') as oldFile: oldFile.write('Signed in  | '+systemtime+' | '+readtime+'\n')
+		with open(opts['path']+name+'.txt','a') as oldFile: oldFile.write('IN  | '+systemtime+' | '+readtime+'\n')
 		return None,None
 	elif io == "OUT":  # Signing out
 		try:  # Try because the file might be empty
-			with open(opts['path'] + name + '.txt', 'r') as oldFile:
+			with open(opts['path']+name+'.txt', 'r') as oldFile:
 				l = oldFile.readlines()[-1].split()
-				inList = [l[1], l[3], l[7]]
+				inList = [l[0], l[2], l[5]]
 		except:
 			inList = ['out']
 
-		if inList[0] == 'out':
+		if inList[0] == 'OUT':
 			print("Didn't sign in!")
 			hoursToday = 0
 		else:
@@ -192,12 +188,10 @@ def recordData(name, io):
 				currentMinutes = int(getMinutes()) - int(inList[1])
 			else:  # Different Day
 				currentMinutes = 1440 - int(inList[1]) + int(getMinutes())
-				for i in range(day - int(inList[2]) - 1):
-					currentMinutes += 1440
+				for i in range(day - int(inList[2]) - 1): currentMinutes += 1440
 			hoursToday = myRound(currentMinutes / 60, 2)
 
-		with open(opts['path'] + name + '.txt', 'a') as file:
-			file.write('Signed out | ' + systemtime + ' | ' + readtime + '\n')
+		with open(opts['path']+name+'.txt','a') as file: file.write('OUT | '+systemtime+' | '+readtime+'\n')
 
 		reload(Calculations_Service)
 		hoursTotal = myRound(Calculations_Service.calculateSingle(name), 2)
@@ -206,31 +200,39 @@ def recordData(name, io):
 		return hoursToday, hoursTotal
 
 
-def otherOptions():
-	print("In otherOptions, processing")
+def otherOptions(): print("THIS DOES NOTHING YET!")#print("In otherOptions, processing")
+
+def getProperName(name):
+	spln = ""
+	for line in open(opts["name.txt"]):
+		if name in line: spln = line
+	spln = spln.split("|")
+	return spln[0]
 
 
 def getName():
-	print("\n###############################\n")
+	global allList
+	print("\n##############################################################\n")
 	print("To add a new person, type 'new'")
 	while True:
 		name = input("Enter a name => ")
-		if name == "":
-			print("Error: Name is empty!")
-		elif not name in allList + ["quit", "admin", "new" ''', "m", "k"''' ]:
-			print("Error: Name not found! Try again.")
-		else:
-			break
+		if name == "": print("Error: Name is empty!")
+		elif not name in allList + ["quit", "admin", "new"]: print("Error: Name not found! Try again.")
+		else: break
 	if name == "new":
 		name = newName(allList)
-	if name == "quit" or name == None:
+	elif name == "quit":
 		pass
 	elif name == "admin":
 		if input("Password: ")==opts["adminPass"]:
 			reload(Calculations_Service)
 			Calculations_Service.main()
 			name = None
-	'''
+	else:
+		name=getProperName(name)
+		
+	
+	''' #, "m", "k"
 	else:  # Real name
 		aDict = {"m": ["Mike Koch", "IN"], "k": ["Mike Koch", "OUT"]}
 		if name in aDict:
@@ -247,21 +249,12 @@ def getName():
 
 def main():
 	name = ""
-	while name != "quit":
-		io = "none"
-		name = getName()
-		if io == "none":
-			io = getIO()
-			# ---
-		if io in ["IN", "OUT"]:
-			today, total = recordData(name, io)
-			# animate(name,io,today,total)
-		elif io == "Options":
-			otherOptions()
-		elif io == "cancel":  # name="cancel"
-			pass
-		else:
-			print("===== error with IO function =====")
+	while not name in ["quit","admin"]:
+		name,io = getName(),getIO()
+		if io in ["IN", "OUT"]: today, total = recordData(name, io) # animate(name,io,today,total)
+		elif io == "Options": otherOptions()
+		elif io == "Cancel": pass # name="cancel"
+		else: print("===== error with IO function =====")
 
 
 if __name__ == "__main__": main()
