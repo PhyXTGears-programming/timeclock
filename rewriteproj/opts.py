@@ -6,5 +6,13 @@ opts={
 	'emailTime': 'Tue 19:51:00',
 	'autoClockOut': '00:00:00',
 	'name.txt': 'usernameFile.txt',
-	'adminPass': '17234820'
+	'adminPass': '17234820',
+	'roles':{
+			'S':'student',
+			'M':'mentor',
+			'A':'adult',
+			'p':'programmer',
+			'm':'media',
+			'w':'welder',
+			}
 	}

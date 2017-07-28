@@ -2,43 +2,50 @@ import os
 import sys
 import time
 from datetime import datetime
+from importlib import reload
 
 from opts import opts
 
 if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
+open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
 
 def ioMain(n):
 	complete = False
 	if n=='new':
-		name,user,jobo = '','',''
+		name,user,jobo,an = '','','',' '
+		print("\nEnter your full name. Ex: 'Bob Smith'.")
 		while True: # Full name check
-			print("\nEnter your full name. Ex: 'Bob Smith'.")
 			name = input(':::> ')
+			sp = name.split()
 			if checkName(name): print('Err: Name already in database.')
-			elif len(name.split()[0])<2: print('Err: First name too short.')
-			elif len(name.split()[1])<2: print('Err: Last name too short.')
-			elif name.find(' ')==-1: print('Err: No last name (no space).')
-			# elif not name.isalpha(): print('Err: Only use letters.\n')  # allow certain characters like spaces and hyphens
+			if len(sp[0])<2: print('Err: First name too short.')
+			if not sp[0][0].isupper(): print('Err: First name needs to be capatalized.')
+			if len(sp)<2: print('Err: Full name required.')
+			elif len(sp[1])<2: print('Err: Last name too short.')
+			elif not sp[1][0].isupper(): print('Err: Last name needs to be capatalized.')
 			else: break
+		
+		print("\nEnter your desired username. Ex: 'boboE512'.")
 		while True: # Username check
-			print("\nEnter your desired username. Ex: 'LogoE512'.")
 			user = input(':::> ')
-			if checkName(user): print('Err: Name already in database.')
+			if checkName(user): print('Err: Username already in database.')
 			elif len(user)<4: print('Err: Username must be longer than 3 characters.')
-			elif user.find(' ')!=-1: print('Err: Cannot use spaces in username.')
+			elif not (user.isalnum() or user.isalpha()): print('Err: Use letters and numbers only for username.')
 			elif user.lower() in ['i','o','c','quit','admin','new']: print('Err: Username cannot be command.')
 			else: break
+		
+		print('\nEnter a role.')
+		for i,v in opts['roles'].items(): print(i+'. '+v)
 		while True:
-			print('\nEnter a role. Ex: "s":student, "m":mentor, "a":adult.')
 			jobo = input(':::> ')
-			jobOpt = {'s':'student', 'm':'mentor', 'a':'adult'}
-			if jobOpt[jobo.lower()[0]]:
-				jobo = jobOpt[jobo.lower()[0]]
+			try:
+				jobo = opts['roles'][jobo[0]]
 				break
-			else:
+			except KeyError:
 				print('Err: Invalid input.')
 		with open(opts['name.txt'],'a') as f: f.write(name+'|'+user+'|'+jobo+'\n')
-		print('Succesfully registered '+name+' as a '+jobo+' under '+user+'.')
+		if jobo[0] in 'aeiou': an='n '
+		print('Succesfully registered '+name+' as a'+an+jobo+' under '+user+'.')
 		complete = True
 	elif checkName(n):
 		complete = True
@@ -62,30 +69,32 @@ def getIO():
 	while True:
 		print('\nAre you signing IN or OUT?')
 		io = input(':::> ').lower()[0]
-		if io in ['i','o','c']: break
+		if io in 'ioc': break
 		else: print('Err: Invalid input.\n')
 	return io
 
 def recordIO(n,io):
 	timeIO = time.strftime(opts['ioForm'])
+	writ = io+' | '+timeIO+'\n'
+	# print(open(opts['path']+n+'.txt').readlines()[-1])
+	
 	if io=='c':
 		return
 	elif io=='i':
 		pass
 	elif io=='o':
-		pass
-	writ = io.upper()+' | '+timeIO+'\n'
+		print('toht hours: '+str(calcTime(n)/3600))
+		
 	with open(opts['path']+n+'.txt','a') as f: f.write(writ)
-	print('toht hours: '+str(calcTime(n)/3600))
 
 def calcTime(n): #returns total time in seconds
 	total = 0
 	iLin,oLin,tio = '','',0
 	lastline = 'n'
 	for line in open(opts['path']+n+'.txt'):
-		if line[0]=='I' and lastline[0]!='I':
+		if line[0].lower()=='i' and lastline[0]!='I':
 			iLin = line[4:-1]
-		elif line[0]=='O' and lastline[0]!='O':
+		elif line[0].lower()=='o' and lastline[0]!='O':
 			oLin = line[4:-1]
 			total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
 		lastline = line
@@ -98,7 +107,7 @@ def adminMain():
 	while True:
 		inpt = input('Passkey: ')
 		if inpt==opts['adminPass']: admnpass=True
-		elif inpt in ['cancel','quit','Cancel','Quit']: break
+		elif inpt.lower() in ['cancel','quit']: break
 		else: print('Invalid input.')
 	while admnpass:
 		print('\n'*50)
@@ -121,4 +130,3 @@ def main():
 
 if __name__=='__main__':
 	main()
-	sys.exit(0)
