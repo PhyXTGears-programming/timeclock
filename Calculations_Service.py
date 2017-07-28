@@ -55,7 +55,9 @@ missDict = {}  # Dictionary for number of times each person forgot to sign out {
 numDict = {"Student": 0, "Mentor": 0}
 
 
-def calcNumDict(): for name in rankDict: if timeDict[name]!=0: numDict[rankDict[name]] += 1
+def calcNumDict():
+	for name in rankDict:
+		if timeDict[name]!=0: numDict[rankDict[name]] += 1
 
 
 def getTimeFormat():
@@ -65,7 +67,8 @@ def getTimeFormat():
 
 def findMaxLength(alist):
 	maxLength = 0
-	for item in alist: if len(item)>maxLength: maxLength = len(item)
+	for item in alist:
+		if len(item)>maxLength: maxLength = len(item)
 	return maxLength
 
 
@@ -80,13 +83,13 @@ def calculateSingle(name):
 				signIn = datalist[linenum].split()  # Create signIn, the information from the "in" line
 				signOut = datalist[linenum + 1].split()  # Create signOut, the information from the "out" line
 
-				if signIn[0] == "IN" and signOut[0] == "OUT":  # If this line and the next are a valid in-out sequence
+				if signIn[0] == "I" and signOut[0] == "O":  # If this line and the next are a valid in-out sequence
 					# Calculate time:
-					if signIn[6] == signOut[6]:
+					if signIn[5] == signOut[5]:
 						time = int(signOut[2]) - int(signIn[2]) # If same day, subtract the in time from the out time to get the minutes in between
 					else:  # Different Day (past midnight)
 						time = 1440 - int(signIn[2]) + int(signOut[2])  # (1440 minutes = 24 hours) (1440-in time)=minutes from first day + out time = minutes from both days
-						for i in range(int(signOut[6]) - int(signIn[6]) - 1): time += 1440  # For each extra day (double all-nighter), add 1440 minutes
+						time += 1440*(int(signOut[5]) - int(signIn[5]) - 1)  # For each extra day (double all-nighter), add 1440 minutes
 					time = myRound(time / 60, 2)  # convert minutes to hours and round to 2 decimal places
 					# i=str(time).index(".")
 					# time=int(str(time)[:i+2])

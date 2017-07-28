@@ -5,6 +5,7 @@ from time import sleep
 import optsFile
 import Slack_Notification_Service
 import Time_Clock_Service
+import autoClockout
 
 
 def main():
@@ -16,6 +17,8 @@ def main():
 	tc.start()
 	sn = Thread(target=Slack_Notification_Service.main)
 	sn.start()
+	ac = Thread(target=autoClockout.clockOutCheck)
+	ac.start()
 
 	newUpdate = False
 	while not newUpdate:

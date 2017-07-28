@@ -61,7 +61,7 @@ def newName(allList):
 
 		# Code for writing info to usernameFile:
 		with open(opts['name.txt'], 'a') as nameFile:
-			jobOpt = ['s':'Student', 'm':'Mentor', 'a':'Adult'] # , 'p':'Programmer', 
+			jobOpt = {'s':'Student', 'm':'Mentor', 'a':'Adult'} # , 'p':'Programmer', 
 			if jobOpt[choice] != None: nameFile.write(name + "|" + username + "|"+jobOpt[choice]+"\n")
 			else: nameFile.write(name + "|" + username + "|None\n")
 		allList += [name, username]
@@ -168,7 +168,7 @@ def recordData(name, io):
 	if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 
 	if io == "IN":  # Signing in
-		with open(opts['path']+name+'.txt','a') as oldFile: oldFile.write('IN  | '+systemtime+' | '+readtime+'\n')
+		with open(opts['path']+name+'.txt','a') as oldFile: oldFile.write('I | '+systemtime+' | '+readtime+'\n')
 		return None,None
 	elif io == "OUT":  # Signing out
 		try:  # Try because the file might be empty
@@ -176,12 +176,27 @@ def recordData(name, io):
 				l = oldFile.readlines()[-1].split()
 				inList = [l[0], l[2], l[5]]
 		except:
-			inList = ['out']
-
-		if inList[0] == 'OUT':
-			print("Didn't sign in!")
-			hoursToday = 0
-		else:
+			inList = ['O']
+		
+		doCalc = True
+		if inList[0] == 'O':
+			cur,bck = '',''
+			with open(opts['path']+name+'.txt', 'r') as oldFile:
+				rl = oldFile.readlines()
+				cur = rl[-1].split()
+				bck = rl[-2].split()
+			if cur[2]==bck[2] and cur[5]==bck[5]: 
+				with open(opts['path']+name+'.txt', 'r') as oldFile:
+					rl = oldFile.readlines()
+					del rl[-1]
+					rl = '\n'.join(rl)
+				with open(opts['path']+name+'.txt', 'w') as oldFile:
+					oldFile.write(rl)
+			else:
+				print("Didn't sign in!")
+				hoursToday = 0
+				doCalc = False
+		if doCalc==True:
 			day = int(time.strftime('%j'))
 			if day == int(inList[2]):
 				currentMinutes = int(getMinutes()) - int(inList[1])
@@ -190,11 +205,10 @@ def recordData(name, io):
 				for i in range(day - int(inList[2]) - 1): currentMinutes += 1440
 			hoursToday = round(currentMinutes / 60,2) # myRound(currentMinutes / 60, 2)
 
-		with open(opts['path']+name+'.txt','a') as file: file.write('OUT | '+systemtime+' | '+readtime+'\n')
+		with open(opts['path']+name+'.txt','a') as file: file.write('O | '+systemtime+' | '+readtime+'\n')
 
 		reload(Calculations_Service)
-		hoursTotal = myRound(Calculations_Service.calculateSingle(name), 2)
-		print("singlecalc", Calculations_Service.calculateSingle(name))
+		hoursTotal = round(Calculations_Service.calculateSingle(name), 2)
 		print("Today's Hours:", hoursToday)
 		print("Total Hours:", hoursTotal)
 		return hoursToday, hoursTotal
@@ -231,6 +245,7 @@ def getName():
 	else:
 		name=getProperName(name)
 	return name
+	
 
 
 def main():
@@ -241,6 +256,7 @@ def main():
 		elif io == "Options": otherOptions()
 		elif io == "Cancel": pass # name="cancel"
 		else: print("===== error with IO function =====")
+		
 
 
 if __name__ == "__main__": main()

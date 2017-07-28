@@ -9,6 +9,7 @@ opts={
 	'path': './Test/',
 	'newUpdate': False, 
 	'updateTime': 'Tuesday 19:51:00',
+	'autoClockOut': '22:22:00',
 	'name.txt': 'usernameFile.txt',
 	'adminPass': '17234820'
 	}
