@@ -2,7 +2,9 @@ from importlib import reload
 from threading import Thread
 from time import sleep
 
-tc = Thread(target=timeClockService.main)
+import ioService
+
+tc = Thread(target=ioService.main)
 tc.start()
 
 # slack service, just copy the old file
