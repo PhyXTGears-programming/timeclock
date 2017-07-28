@@ -8,13 +8,35 @@ if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 
 def ioMain(n):
 	if n=='new':
-		name = input('')
+		name,user = '',''
+		while True: # Full name check
+			print("Enter your full name. Ex: 'Bob Smith'.")
+			name = input(':::> ')
+			if checkName(name): print('Err: Name already in database.\n')
+			elif len(name.split()[0])<2: print('Err: First name too short.\n')
+			elif len(name.split()[1])<2: print('Err: Last name too short.\n')
+			elif name.find(' ')==-1: print('Err: No last name (no space).\n')
+			elif not name.isalpha(): print('Err: Only use letters.\n')
+			else: break
+		while True: # Username check
+			print("Enter your desired username. Ex: 'LogoE512'.")
+			user = input(':::> ')
+			if checkName(user): print('Err: 
+			if len(user)<4: print('Err: Username must be longer than 3 characters.\n')
+			elif user.find(' ')!=-1: print('Err: Cannot use spaces in username.')
+			elif user.lower() in ['i','o','c','quit','admin','new']: print('Err: Username cannot be command.\n')
+			
+			else: break
+	elif checkName(n):
+	
+	else:
+		print('Err: Name not in database.\n')
 	pass
 
 def checkName(n):
 	with open(opts['name.txt']) as f:
 		for line in f:
-			if n in line:
+			if n.lower() in line.lower():
 				print(line)
 				return True
 	return False
@@ -23,13 +45,12 @@ def getName(n):
 	pass
 
 def getIO():
+	io = ''
 	while True:
-		io = input('Are you signing IN or OUT? :::> ')
-		if io in ['in','IN','i','I']: io = 'i'
-		elif io in ['out','OUT','o','O']: io = 'o'
-		elif io in ['cancel','CANCEL']: io = 'c'
+		io = input('Are you signing IN or OUT? :::> ').lower()[0]
+		if io in ['i','o','c']: break
 		else: print('Invalid input.\n')
-	pass
+	return io
 
 
 def adminMain():
@@ -42,7 +63,7 @@ def adminMain():
 	while admnpass:
 		print('\n'*50)
 		inpt = input(':::>')
-		break
+		break # or admnpass = False
 	pass # work on this i guess
 
 def main():
