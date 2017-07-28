@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from datetime import datetime
 
 from opts import opts
 
@@ -66,17 +67,29 @@ def getIO():
 	return io
 
 def recordIO(n,io):
-	timeIO = time.strftime('%H:%M:%S')
-	dateIO = time.strftime('%a.%b.%d.%Y')
+	timeIO = time.strftime(opts['ioForm'])
 	if io=='c':
 		return
 	elif io=='i':
 		pass
 	elif io=='o':
 		pass
-	
-	with open(opts['path']+n+'.txt','a') as f: f.write(io.upper()+' | '+timeIO+' | '+dateIO+'\n')
-	print(io.upper()+' | '+timeIO+' | '+dateIO)
+	writ = io.upper()+' | '+timeIO+'\n'
+	with open(opts['path']+n+'.txt','a') as f: f.write(writ)
+	print('toht hours: '+str(calcTime(n)/3600))
+
+def calcTime(n): #returns total time in seconds
+	total = 0
+	iLin,oLin,tio = '','',0
+	lastline = 'n'
+	for line in open(opts['path']+n+'.txt'):
+		if line[0]=='I' and lastline[0]!='I':
+			iLin = line[4:-1]
+		elif line[0]=='O' and lastline[0]!='O':
+			oLin = line[4:-1]
+			total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
+		lastline = line
+	return total
 	pass
 
 

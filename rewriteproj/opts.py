@@ -1,14 +1,9 @@
 opts={
-	'short': False,
-	'hours': True,
-	'year': True,
-	'minutesFile': False,
-	'startOfBuildSeason': 'January 7, 2017',
-	'endOfBuildSeason': 'February 23, 2017',
-	'onScreenKeyBoard': True,
+	'ioForm': '%H:%M:%S %a.%b.%d.%Y',
+	'startOfBuildSeason': 'Jan 07, 2017',
+	'endOfBuildSeason': 'Feb 23, 2017',
 	'path': './Test/',
-	'newUpdate': False, 
-	'updateTime': 'Tuesday 19:51:00',
+	'emailTime': 'Tue 19:51:00',
 	'autoClockOut': '00:00:00',
 	'name.txt': 'usernameFile.txt',
 	'adminPass': '17234820'
