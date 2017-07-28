@@ -61,10 +61,9 @@ def newName(allList):
 
 		# Code for writing info to usernameFile:
 		with open(opts['name.txt'], 'a') as nameFile:
-			if choice == "s":
-				nameFile.write(name + "|" + username + "|Student\n")
-			else:
-				nameFile.write(name + "|" + username + "|Mentor\n")
+			jobOpt = ['s':'Student', 'm':'Mentor', 'a':'Adult'] # , 'p':'Programmer', 
+			if jobOpt[choice] != None: nameFile.write(name + "|" + username + "|"+jobOpt[choice]+"\n")
+			else: nameFile.write(name + "|" + username + "|None\n")
 		allList += [name, username]
 	else:
 		name = None
@@ -231,20 +230,6 @@ def getName():
 			name = None
 	else:
 		name=getProperName(name)
-		
-	
-	''' #, "m", "k"
-	else:  # Real name
-		aDict = {"m": ["Mike Koch", "IN"], "k": ["Mike Koch", "OUT"]}
-		if name in aDict:
-			io = aDict[name][1]
-			name = aDict[name][0]
-		else:
-			index = allList.index(name)  # Get the index of the name
-			if index % 2 == 1:
-				# If the name was the username, make it full
-				name = allList[index - 1]
-	'''
 	return name
 
 
@@ -259,3 +244,8 @@ def main():
 
 
 if __name__ == "__main__": main()
+
+'''
+	add auto sign-out at 12 am, make it log zero hours for that person.
+	add check for if sign out after 12, change the zero hours to the proper hours logged
+'''
