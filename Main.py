@@ -1,7 +1,13 @@
-from imp import reload
+from importlib import reload
+from threading import Thread
+from time import sleep
 
-import Service_Handler
+import ioService
+# import 
 
-while True:
-	Service_Handler.main()
-	reload(Service_Handler)
+tc = Thread(target=ioService.main)
+tc.start()
+
+# slack service, just copy the old file
+#sn = Thread(target=slackNotifService.main)
+#sn.start()
