@@ -49,19 +49,20 @@ def ioMain(n):
 		complete = True
 	elif checkName(n):
 		complete = True
-		n,io = getName(n),getIO()
-		recordIO(n,io)
-		pass
+		recordIO(getName(n),getIO())
 	return complete
 
 def checkName(n):
 	for line in open(opts['name.txt']):
-		if n.lower() in line.lower(): return True
+		#if n.lower() in line.lower(): return True
+		for item in line.split("|"):
+			if item.lower() == n.lower(): return True
 	return False
 
 def getName(n):
 	for line in open(opts['name.txt']):
-		if n.lower() in line.lower(): return line.split('|')[0]
+		for item in line.split("|"):
+			if item.lower() == n.lower(): return line.split('|')[0]
 	print('Err: Name not in database.')
 
 def getIO():
