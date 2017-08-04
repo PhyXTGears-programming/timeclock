@@ -28,10 +28,10 @@ def ioMain(n):
 		print("\nEnter your desired username. Ex: 'boboE512'.")
 		while True: # Username check
 			user = input(':::> ')
-			if checkName(user): print('Err: Username already in database.')
+			if checkName(user): print('Err: Username is taken.')
 			elif len(user)<4: print('Err: Username must be longer than 3 characters.')
 			elif not (user.isalnum() or user.isalpha()): print('Err: Use letters and numbers only for username.')
-			elif user.lower() in ['i','o','c','quit','admin','new']: print('Err: Username cannot be command.')
+			elif user.lower() in ['quit','admin']: print('Err: Username cannot be command.')
 			else: break
 		
 		print('\nEnter a role.')
@@ -45,7 +45,7 @@ def ioMain(n):
 				print('Err: Invalid input.')
 		with open(opts['name.txt'],'a') as f: f.write(name+'|'+user+'|'+jobo+'\n')
 		if jobo[0] in 'aeiou': an='n '
-		print('Succesfully registered '+name+' as a'+an+jobo+' under '+user+'.')
+		print('Succesfully registered '+name+' as a'+an+jobo+' with username '+user+'.')
 		complete = True
 	elif checkName(n):
 		complete = True
