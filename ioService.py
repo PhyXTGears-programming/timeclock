@@ -88,8 +88,7 @@ def recordIO(n,io):
 		fintry = False
 		try:
 			rl = open(opts['path']+n+'.txt').readlines()
-			cur = rl[-1].split()
-			bck = rl[-2].split()
+			cur,bck = rl[-1].split(),rl[-2].split()
 			if cur[2]==bck[2] and cur[3]==bck[3]:
 				del rl[-1]
 				open(opts['path']+n+'.txt', 'w').write('\n'.join(rl))
@@ -104,6 +103,7 @@ def recordIO(n,io):
 	
 	file.write(writ)
 	print('Total hours: '+str(round(calcTotalTime(n)/3600, 2)))
+	file.close()
 
 def calcTotalTime(n): #returns total time in seconds
 	total = 0

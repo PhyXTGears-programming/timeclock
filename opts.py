@@ -4,7 +4,7 @@ opts={
 	'endOfBuildSeason': 'Feb 23, 2017',
 	'path': './Times/',
 	'emailTime': 'Tue 19:51:00',
-	'autoClockOut': '18:57:00',
+	'autoClockOut': '00:00:00',
 	'name.txt': 'usernameFile.txt',
 	'adminPass': '17234820',
 	'roles':{
