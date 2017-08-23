@@ -19,11 +19,10 @@ def ioMain(n):
 			sp = name.split()
 			if checkName(name): print('Err: Name already in database.')
 			elif len(sp[0])<2: print('Err: First name too short.')
-			elif not sp[0][0].isupper(): print('Err: First name needs to be capatalized.')
 			elif len(sp)<2: print('Err: Full name required.')
 			elif len(sp[1])<2: print('Err: Last name too short.')
-			elif not sp[1][0].isupper(): print('Err: Last name needs to be capatalized.')
 			else: break
+			name = name.capwords()
 		
 		print("\nEnter your desired username. Ex: 'boboE512'.")
 		while True: # Username check
