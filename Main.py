@@ -6,10 +6,9 @@ import ioService
 import autoClockout
 # import 
 
-tc = Thread(target=ioService.main)
-tc.start()
 ac = Thread(target=autoClockout.main)
 ac.start()
+ioService.main()
 
 # slack service, just copy the old file
 #sn = Thread(target=slackNotifService.main)
