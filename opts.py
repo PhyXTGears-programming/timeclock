@@ -1,5 +1,5 @@
 opts={
-	'ioForm': '%H:%M:%S %a.%b.%d.%Y',
+	'ioForm': '%H:%M:%S %d.%m.%Y',
 	'startOfBuildSeason': 'Jan 07, 2017',
 	'endOfBuildSeason': 'Feb 23, 2017',
 	'path': './Times/',

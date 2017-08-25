@@ -11,18 +11,18 @@ open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
 
 def ioMain(n):
 	complete = False
+	namefound = checkName(n)
 	if n=='new':
 		name,user,jobo,an = '','','',' '
 		print("\nEnter your full name. Ex: 'Bob Smith'.")
 		while True: # Full name check
-			name = input(':::> ')
+			name = input(':::> ').title()
 			sp = name.split()
 			if checkName(name): print('Err: Name already in database.')
 			elif len(sp[0])<2: print('Err: First name too short.')
 			elif len(sp)<2: print('Err: Full name required.')
 			elif len(sp[1])<2: print('Err: Last name too short.')
 			else: break
-			name = name.capwords()
 		
 		print("\nEnter your desired username. Ex: 'boboE512'.")
 		while True: # Username check
@@ -46,9 +46,11 @@ def ioMain(n):
 		if jobo[0] in 'aeiou': an='n '
 		print('Succesfully registered '+name+' as a'+an+jobo+' with username '+user+'.')
 		complete = True
-	elif checkName(n):
+	elif namefound:
 		complete = True
 		recordIO(getName(n),getIO())
+	elif not namefound:
+		print('Err: Name not found in database.')
 	return complete
 
 def checkName(n):
@@ -101,49 +103,36 @@ def recordIO(n,io):
 				return
 	
 	file.write(writ)
-	print('Total hours: '+str(round(calcTotalTime(n)/3600, 2)))
 	file.close()
+	print('Total hours: '+str(round(calcTotalTime(n)/3600,1)))
 
 def calcTotalTime(n): #returns total time in seconds
 	total = 0
-	iLin,oLin,tio = '','',0
+	iLin,oLin = '',''
 	lastline = 'n'
 	for line in open(opts['path']+n+'.txt'):
+		line = line.strip()
 		if line[0]=='i' and lastline[0]!='i':
-			iLin = line[4:-1]
+			iLin = line[4:]
+			print('i:'+iLin)
 		elif line[0]=='o' and lastline[0]!='o':
-			oLin = line[4:-1]
+			oLin = line[4:]
+			print('o:'+oLin)
 			total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
 		lastline = line
 	return total
 	pass
 
 
-def adminMain():
-	admnpass = False
-	while not admnpass:
-		inpt = input('Passkey: ')
-		if inpt==opts['adminPass']: admnpass=True
-		elif inpt.lower() in ['cancel','quit']: break
-		else: print('Invalid input.')
-	while admnpass:
-		print('\n'*50)
-		inpt = input(':::>')
-		break # or admnpass = False
-	pass # work on this i guess
-
-
 def main():
 	while True:
 		print('\n'+'#'*78+'\n')
-		print("Enter a Command or Username.\nType 'help' to show commands")
+		print("Enter a registered username or new to register a user.\nType '!help' to show commands")
 		inpt = input(':::> ')
-		if len(inpt) < 3: print('Invalid input.')
-		elif inpt=='help': pass
-		elif inpt=='admin': adminMain()
+		if inpt=='quit': break
+		elif inpt=='': print('Err: Please enter something.')
+		elif inpt[0]=='!': pass
 		elif ioMain(inpt): pass
-		elif inpt=='quit': break
-		else: print('Err: Invalid input.')
 
 if __name__=='__main__':
 	main()
