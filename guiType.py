@@ -1,6 +1,12 @@
 import random
 import os
 from tkinter import *
+'''
+NOTES:
+	add seperate sign in sign out buttons
+	tabs for each team
+	show hours in list.
+'''
 
 from opts import *
 
@@ -32,16 +38,11 @@ iolist.pack(side=LEFT, fill=BOTH, expand=1)
 
 framelist.pack()
 
-iobutton = Button(root, text='IO', font='Courier 12', command=onSelect, width=16, height=2)
-iobutton.pack()
+ionbutton = Button(root, text='IO', font='Courier 12', command=onSelect, width=16, height=2)
+newbutton = Button(root, text='New User', font='Courier 12', width=16, height=2)
+ionbutton.pack()
+newbutton.pack()
 
-'''namelist.insert(END, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz?!'); iolist.insert(END, 'o')
-for x in range(100):
-	namelist.insert(END, str(x))
-	if random.random() >= 0.5:
-		iolist.insert(END, 'o')
-	else:
-		iolist.insert(END, 'i')'''
 for x in range(10):
 	for line in open(opts['name.txt']):
 		line = line.strip().split('|')
