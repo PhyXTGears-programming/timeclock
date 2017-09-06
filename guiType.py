@@ -4,7 +4,7 @@ from ioService import *
 
 root = Tk()
 nuWin = None
-fullnameEntry=usernameEntry=errorLabel=errtxt = None
+fullnameEntry=usernameEntry=errorLabel = None
 root.title('PhyxtGears1720io')
 root.geometry('650x450')
 '''
@@ -32,18 +32,24 @@ def getNameFromListbox(): print(namelist.get(namelist.curselection()[0])) # retu
 def quitNewUser():
 	global nuWin
 	nuWin.destroy()
+	
+def checkNameDB(n):
+	for line in open(opts['usernameFile']):
+		for item in line.split("|"):
+			if item.lower() == n.lower(): return True
+	return False
 def finishNewUser():
 	global nuWin
-	global fullnameEntry,usernameEntry,errorLabel,errtxt
+	global fullnameEntry,usernameEntry,errorLabel
 	canerr,errmsg = True,'test error'
 	
-	if not checkName(usernameEntry.get()): canerr,errmsg = True,'Err: Username already exists.'
-	if not checkName(fullnameEntry.get()): canerr,errmsg = True,'Err: Fullname already exists.'
+	if not checkNameDB(usernameEntry.get()): canerr,errmsg = True,'Err: Username already exists.'
+	if not checkNameDB(fullnameEntry.get()): canerr,errmsg = True,'Err: Fullname already exists.'
 	
 	if not canerr:
 		pass
 	else:
-		errorLabel.config(text = errtxt)
+		errorLabel.config(text=errmsg)
 		
 	print('Fullname: ',fullnameEntry.get())
 	print('Username: ',usernameEntry.get())
@@ -66,7 +72,7 @@ def makeNewUserWindow():
 	usernameEntry.grid(row=1,column=1)
 	inputframe.pack()
 	
-	errorLabel = Label(nuWin, font='Courier 12', text='1 line\n2 line', fg='red')
+	errorLabel = Label(nuWin, font='Courier 12', text='', fg='red')
 	errorLabel.pack()
 	
 	finishButton = Button(butonframe, text='Create User',font='Courier 12', width=16, command=finishNewUser)
