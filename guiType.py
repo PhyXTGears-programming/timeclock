@@ -1,8 +1,11 @@
-import random
 import os
 from tkinter import *
+from ioService import *
 
 root = Tk()
+nuWin = None
+fullnameEntry=usernameEntry=errorLabel=errtxt = None
+root.title('PhyxtGears1720io')
 root.geometry('650x450')
 '''
 NOTES:
@@ -26,9 +29,30 @@ def setScroll(*args):
 	iolist.yview(*args)
 def getNameFromListbox(): print(namelist.get(namelist.curselection()[0])) # return namelist.get(namelist.curselection()[0])
 
+def quitNewUser():
+	global nuWin
+	nuWin.destroy()
+def finishNewUser():
+	global nuWin
+	global fullnameEntry,usernameEntry,errorLabel,errtxt
+	canerr,errmsg = True,'test error'
+	
+	if not checkName(usernameEntry.get()): canerr,errmsg = True,'Err: Username already exists.'
+	if not checkName(fullnameEntry.get()): canerr,errmsg = True,'Err: Fullname already exists.'
+	
+	if not canerr:
+		pass
+	else:
+		errorLabel.config(text = errtxt)
+		
+	print('Fullname: ',fullnameEntry.get())
+	print('Username: ',usernameEntry.get())
 def makeNewUserWindow():
+	global nuWin
+	global fullnameEntry,usernameEntry,errorLabel
 	nuWin = Toplevel(root)
-	nuWin.geometry('420x200')
+	nuWin.title('Create new user')
+	nuWin.geometry('420x150')
 	
 	inputframe = Frame(nuWin)
 	butonframe = Frame(nuWin)
@@ -45,8 +69,8 @@ def makeNewUserWindow():
 	errorLabel = Label(nuWin, font='Courier 12', text='1 line\n2 line', fg='red')
 	errorLabel.pack()
 	
-	finishButton = Button(butonframe, text='Create User',font='Courier 12', width=16)
-	cancelButton = Button(butonframe, text='Cancel',     font='Courier 12', width=16)
+	finishButton = Button(butonframe, text='Create User',font='Courier 12', width=16, command=finishNewUser)
+	cancelButton = Button(butonframe, text='Cancel',     font='Courier 12', width=16, command=quitNewUser)
 	finishButton.grid(row=0,column=1)
 	cancelButton.grid(row=0,column=0)
 	butonframe.pack()
