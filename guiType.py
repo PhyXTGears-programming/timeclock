@@ -152,7 +152,7 @@ iotext.pack()
 newbutton.pack(pady=36)
 frameio.pack()
 
-Button(text='QUIT', font='Courier 16 bold', height=2, fg='red', command=root.destroy).pack(side=RIGHT,padx=12,pady=70)
+Button(text='QUIT', font='Courier 16 bold', height=21, fg='red', command=root.destroy).pack(side=RIGHT,padx=12,pady=70)
 
 #for x in range(100):
 for line in open(opts['usernameFile']):
