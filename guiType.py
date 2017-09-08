@@ -42,7 +42,7 @@ def quitNewUser():
 def checkNameDB(n):
 	for line in open(opts['usernameFile']):
 		for item in line.split("|"):
-			if item.lower() == n.lower(): return True
+			if item.lower().strip(' ') == n.lower().strip(' '): return True
 	return False
 def addNameDB(full,user,job=''):
 	file = open(opts['usernameFile'], 'a+')
@@ -106,7 +106,7 @@ def ioSignI():
 		return
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
-	file = open(opts['pathTime']+nameIO+'.txt', 'a+')
+	file = open(opts['pathTime']+nameIO.strip(' ')+'.txt', 'a+')
 	file.write('i | '+timeIO+'\n')
 	file.close()
 	iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
@@ -117,7 +117,7 @@ def ioSignO():
 		return
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
-	file = open(opts['pathTime']+nameIO+'.txt', 'a+')
+	file = open(opts['pathTime']+nameIO.strip(' ')+'.txt', 'a+')
 	file.write('o | '+timeIO+'\n')
 	file.close()
 	iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
