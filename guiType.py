@@ -128,7 +128,7 @@ scrolbar = Scrollbar(framelist, orient=VERTICAL)
 namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18')
 iolist   = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18', justify=CENTER)
 
-namelist.config(width=46,height=24)
+namelist.config(width=35,height=20)
 iolist.config(width=1,height=18)
 scrolbar.config(command=setScroll, width=52)
 
@@ -152,7 +152,7 @@ iotext.pack()
 newbutton.pack(pady=36)
 frameio.pack()
 
-Button(text='QUIT', font='Courier 16 bold', fg='red', command=root.destroy).pack()
+Button(text='QUIT', font='Courier 16 bold', height=2, fg='red', command=root.destroy).pack(side=RIGHT,padx=12,pady=70)
 
 #for x in range(100):
 for line in open(opts['usernameFile']):
