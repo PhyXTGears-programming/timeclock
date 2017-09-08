@@ -125,8 +125,8 @@ def ioSignO():
 
 framelist = Frame(root)
 scrolbar = Scrollbar(framelist, orient=VERTICAL)
-namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 14')
-iolist   = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 14', justify=CENTER)
+namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18')
+iolist   = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18', justify=CENTER)
 
 namelist.config(width=46,height=24)
 iolist.config(width=1,height=18)
@@ -151,6 +151,8 @@ outbutton.pack(pady=4)
 iotext.pack()
 newbutton.pack(pady=36)
 frameio.pack()
+
+Button(text='QUIT', font='Courier 16 bold', fg='red', command=root.destroy).pack()
 
 #for x in range(100):
 for line in open(opts['usernameFile']):
