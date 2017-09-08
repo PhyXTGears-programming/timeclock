@@ -9,6 +9,7 @@ fullnameEntry=usernameEntry=errorLabel = None
 namelist=iolist=iotext = None
 root.title('PhyxtGears1720io')
 root.geometry('800x600')
+root.attributes('-fullscreen',True)
 '''
 NOTES:
 	check for files and folders at start of program
