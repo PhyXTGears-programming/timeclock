@@ -1,6 +1,10 @@
 import os
+import sys
+import platform
+from subprocess import run
 from tkinter import *
 #from tkinter.ttk import *
+
 from ioService import *
 
 root = Tk()
@@ -73,6 +77,12 @@ def finishNewUser():
 	print('Fullname: ',fullnameEntry.get())
 	print('Username: ',usernameEntry.get())
 def makeNewUserWindow():
+	# start on screen keyboard
+	if platform.system()=='Windows': # open windows on-screen-keyboard
+		run('C:\\WINDOWS\\system32\\osk.exe', shell=True)
+	elif platform.system()=='Linux': # open Linux matchbox-keyboard
+		run('sudo matchbox-keyboard', shell=True)
+	
 	global nuWin
 	global fullnameEntry,usernameEntry,errorLabel
 	nuWin = Toplevel(root)
