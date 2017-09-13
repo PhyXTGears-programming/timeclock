@@ -1,15 +1,16 @@
 import os
 import sys
 import platform
-from subprocess import run
+import subprocess
 from tkinter import *
 #from tkinter.ttk import *
 
 from ioService import *
+import osk
 
 root = Tk()
 nuWin = None
-fullnameEntry=usernameEntry=errorLabel = None
+fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
 root.title('PhyxtGears1720io')
 root.geometry('800x600')
@@ -76,27 +77,42 @@ def finishNewUser():
 		
 	print('Fullname: ',fullnameEntry.get())
 	print('Username: ',usernameEntry.get())
+def setVK(choice):
+	global vkey, fullnameEntry,usernameEntry
+	vkey.destroy()
+	if choice==1:
+		vkey.attach=fullnameEntry
+	elif choice==2:
+		vkey.attach=usernameEntry
 def makeNewUserWindow():
 	# start on screen keyboard
-	if platform.system()=='Windows': # open windows on-screen-keyboard
-		run('C:\\WINDOWS\\system32\\osk.exe', shell=True)
-	elif platform.system()=='Linux': # open Linux matchbox-keyboard
-		run('sudo matchbox-keyboard', shell=True)
+	
+	#if platform.system()=='Windows': # open windows on-screen-keyboard
+	#	subprocess.Popen('C:\\WINDOWS\\system32\\osk.exe', shell=True)
+	#elif platform.system()=='Linux': # open Linux matchbox-keyboard
+	#	subprocess.Popen('sudo matchbox-keyboard', shell=True)
 	
 	global nuWin
-	global fullnameEntry,usernameEntry,errorLabel
+	global fullnameEntry,usernameEntry,errorLabel,vkey
+	
 	nuWin = Toplevel(root)
 	nuWin.title('Create new user')
-	nuWin.geometry('460x160')
+	#nuWin.geometry('460x160')
+	
 	
 	inputframe = Frame(nuWin)
 	butonframe = Frame(nuWin)
+	vkeyframe = Frame(nuWin, pady = 8)
 	
-	Label(inputframe, text='Fullname: ', font='Courier 14').grid(sticky=E,padx=2,pady=2)
-	Label(inputframe, text='Username: ', font='Courier 14').grid(sticky=E,padx=2,pady=2)
+	fullinpt = Label(inputframe, text='Fullname: ', font='Courier 14').grid(sticky=E,padx=2,pady=2)
+	userinpt = Label(inputframe, text='Username: ', font='Courier 14').grid(sticky=E,padx=2,pady=2)
 	
-	fullnameEntry = Entry(inputframe, font='Courier 14', width=30)
-	usernameEntry = Entry(inputframe, font='Courier 14', width=30)
+	fullnameEntry = Entry(inputframe, font='Courier 18', width=42)
+	usernameEntry = Entry(inputframe, font='Courier 18', width=42)
+	
+	fullnameEntry.bind('<FocusIn>', lambda e: setVK(1))
+	usernameEntry.bind('<FocusIn>', lambda e: setVK(2))
+	
 	fullnameEntry.grid(row=0,column=1)
 	usernameEntry.grid(row=1,column=1)
 	inputframe.pack()
@@ -109,6 +125,9 @@ def makeNewUserWindow():
 	finishButton.grid(row=0,column=1)
 	cancelButton.grid(row=0,column=0)
 	butonframe.pack()
+	
+	vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry)
+	vkeyframe.pack()
 
 def ioSignI():
 	global namelist,iotext
