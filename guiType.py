@@ -35,6 +35,10 @@ try:
 except:
 	pass
 open(opts['usernameFile'],'a+').close()
+with open(opts['usernameFile'],'r') as u:
+	names = u.readlines()
+	names.sort()
+	with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
 
 
 def setScroll(*args):
@@ -69,7 +73,13 @@ def finishNewUser():
 	if errmsg == 'no error':
 		errorLabel.config(text='Making User\n-\nNo Error!', fg='green')
 		addNameDB(full,user) # todo: add job options
-		namelist.insert(END, full)
+		newnamelist = []
+		for i, entry in enumerate(namelist.get(0, namelist.size())): newnamelist = newnamelist + [entry]
+		for i in range(namelist.size()): namelist.delete(i,END)
+		newnamelist = newnamelist + [full]
+		newnamelist.sort()
+		for i in newnamelist: namelist.insert(END, i)
+		#namelist.insert(END, full)
 		iolist.insert(END, 'N')
 		nuWin.destroy()
 	else:
