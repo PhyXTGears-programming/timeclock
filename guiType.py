@@ -137,7 +137,7 @@ def ioSignI():
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
-	try:
+	'''try:
 		read = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r')
 		readline = read.readlines()
 		print(readline[0][0],readline[-1][0])
@@ -146,7 +146,9 @@ def ioSignI():
 			iotext.config(text=nameIO.split()[0]+' signed in!', fg='green')
 		read.close()
 	except:
-		iotext.config(text=nameIO.split()[0]+' is not signed out!', fg='red')
+		iotext.config(text=nameIO.split()[0]+' is not signed out!', fg='red')'''
+	file.write('i | '+timeIO+'\n')
+	iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green') 
 	file.close()
 def ioSignO():
 	global namelist,iotext
@@ -156,7 +158,7 @@ def ioSignO():
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
-	print(file.readlines(0))
+	'''print(file.readlines(0))
 	try:
 		read = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r')
 		readline = read.readlines()
@@ -166,7 +168,9 @@ def ioSignO():
 			iotext.config(text=nameIO.split()[0]+' signed out!', fg='green')
 		read.close()
 	except:
-		iotext.config(text=nameIO.split()[0]+' is not signed in!', fg='red')
+		iotext.config(text=nameIO.split()[0]+' is not signed in!', fg='red')'''
+	file.write('o | '+timeIO+'\n')
+	iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green') 
 	file.close()
 
 framelist = Frame(root)
