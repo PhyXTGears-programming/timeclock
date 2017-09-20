@@ -37,6 +37,7 @@ except:
 open(opts['usernameFile'],'a+').close()
 with open(opts['usernameFile'],'r') as u:
 	names = u.readlines()
+	names = [x.title() for x in names]
 	names.sort()
 	with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
 
@@ -76,7 +77,7 @@ def finishNewUser():
 		newnamelist = []
 		for i, entry in enumerate(namelist.get(0, namelist.size())): newnamelist = newnamelist + [entry]
 		for i in range(namelist.size()): namelist.delete(i,END)
-		newnamelist = newnamelist + [full]
+		newnamelist = [x.title() for x in newnamelist + [full]]
 		newnamelist.sort()
 		for i in newnamelist: namelist.insert(END, i)
 		#namelist.insert(END, full)
