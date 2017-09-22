@@ -185,7 +185,7 @@ class vn(tk.Frame):
 			i = 0
 			for key in row:
 				c = lambda key=key: self.addKP(key)
-				tk.Button(rows[n],text=key,font=f,command=c).grid(column=i,row=0)
+				tk.Button(rows[n],text=key,font=f,command=c,width=3).grid(column=i,row=0)
 				i += 1
 			rows[n].grid(column=0,row=n)
 	def addKP(self,k):

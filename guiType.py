@@ -1,12 +1,10 @@
 import os
 import time
 import sys
-import platform
-import subprocess
 from tkinter import *
 #from tkinter.ttk import *
 
-#from ioService import *
+from ioServ import *
 import osk
 
 root = Tk()
@@ -18,22 +16,16 @@ root.geometry('800x600') #1024x768
 #root.attributes('-fullscreen',True)
 '''
 NOTES:
-	check for files and folders at start of program
-	add seperate sign in sign out buttons
-	tabs for each team
+	tabs for each team (FLL and FIRST)
 	show hours in list.
 	REORGANIZE IT ALL
 '''
 
-opts = {}
-for line in open('opts.txt'): # load options
-	line = line.strip().split(' : ')
-	opts[line[0]] = line[1]
+opts = loadOpts()
 
-try:
-	os.mkdir(opts['pathTime'])
-except:
-	pass
+try: os.mkdir(opts['pathTime'])
+except: pass
+
 open(opts['usernameFile'],'a+').close()
 with open(opts['usernameFile'],'r') as u:
 	names = u.readlines()
@@ -86,8 +78,6 @@ def finishNewUser():
 	else:
 		errorLabel.config(text=errmsg, fg='red')
 		
-	print('Fullname: ',fullnameEntry.get())
-	print('Username: ',usernameEntry.get())
 def setVK(choice):
 	global vkey, fullnameEntry,usernameEntry
 	#vkey.destroy()
@@ -186,7 +176,8 @@ def ioSign(c):
 def confirmQuit():
 	global root,opts
 	qtWin = Toplevel(root)
-	Label(qtWin,text='Enter AdminPass to quit.', font='Courier 16 bold').pack(pady=2)
+	qtWin.title('Quit?')
+	Label(qtWin,text='Enter AdminPass\nto quit.', font='Courier 16 bold').pack(pady=2)
 	passEntry = Entry(qtWin,font='Courier 14',width=10)
 	passEntry.config(show='*')
 	passEntry.pack(pady=2)
