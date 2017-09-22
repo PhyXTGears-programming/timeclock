@@ -2,7 +2,6 @@ import os
 import sys
 import time
 from datetime import datetime
-from importlib import reload
 
 
 #if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
@@ -15,18 +14,15 @@ def loadOpts():
 		opts[line[0]] = line[1]
 	return opts
 
-def checkName(n):
-	for line in open(opts['name.txt']):
-		#if n.lower() in line.lower(): return True
+def checkNameDB(n):
+	for line in open(opts['usernameFile']):
 		for item in line.split("|"):
-			if item.lower() == n.lower(): return True
+			if item.lower().replace(' ','') == n.lower().replace(' ',''): return True
 	return False
-
-def getName(n):
-	for line in open(opts['name.txt']):
-		for item in line.split("|"):
-			if item.lower() == n.lower(): return line.split('|')[0]
-	print('Err: Name not in database.')
+def addNameDB(full,user,job=''):
+	file = open(opts['usernameFile'], 'a+')
+	file.write(full+'|'+user+'\n') #full+'|'+user+'|'+job+'\n'
+	file.close()
 
 def calcTotalTime(n): #returns total time in seconds
 	total = 0
@@ -44,7 +40,7 @@ def calcTotalTime(n): #returns total time in seconds
 		lastline = line
 	return total
 
-
+'''
 def recordIO(n,io):
 	file = open(opts['path']+n+'.txt', 'a+') # create file if it doesnt exist
 	timeIO = time.strftime(opts['ioForm'])
@@ -135,5 +131,6 @@ def main():
 		elif inpt=='': print('Err: Please enter something.')
 		elif inpt[0]=='!': pass
 		elif ioMain(inpt): pass
+'''
 
 if __name__=='__main__': main()

@@ -37,20 +37,7 @@ with open(opts['usernameFile'],'r') as u:
 def setScroll(*args):
 	namelist.yview(*args)
 	iolist.yview(*args)
-
-def quitNewUser():
-	global nuWin
-	nuWin.destroy()
 	
-def checkNameDB(n):
-	for line in open(opts['usernameFile']):
-		for item in line.split("|"):
-			if item.lower().replace(' ','') == n.lower().replace(' ',''): return True
-	return False
-def addNameDB(full,user,job=''):
-	file = open(opts['usernameFile'], 'a+')
-	file.write(full+'|'+user+'\n') #full+'|'+user+'|'+job+'\n'
-	file.close()
 def finishNewUser():
 	global nuWin
 	global fullnameEntry,usernameEntry,errorLabel
@@ -115,36 +102,13 @@ def makeNewUserWindow():
 	errorLabel.pack()
 	
 	finishButton = Button(butonframe, text='Create User',font='Courier 14', fg='blue', width=16, command=finishNewUser)
-	cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=quitNewUser)
+	cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=nuWin.destory)
 	finishButton.grid(row=0,column=1)
 	cancelButton.grid(row=0,column=0)
 	butonframe.pack()
 	
 	vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry)
 	vkeyframe.pack()
-
-def ioSignI():
-	global namelist,iotext
-	if len(namelist.curselection())==0:
-		iotext.config(text='Nothing Selected!', fg='red')
-		return
-	nameIO = namelist.get(namelist.curselection()[0])
-	timeIO = time.strftime(opts['ioForm'])
-	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
-	file.write('i | '+timeIO+'\n')
-	iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green') 
-	file.close()
-def ioSignO():
-	global namelist,iotext
-	if len(namelist.curselection())==0:
-		iotext.config(text='Nothing Selected!', fg='red')
-		return
-	nameIO = namelist.get(namelist.curselection()[0])
-	timeIO = time.strftime(opts['ioForm'])
-	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
-	file.write('o | '+timeIO+'\n')
-	iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green') 
-	file.close()
 
 def ioSign(c):
 	global namelsit,iotext
@@ -178,8 +142,7 @@ def confirmQuit():
 	qtWin = Toplevel(root)
 	qtWin.title('Quit?')
 	Label(qtWin,text='Enter AdminPass\nto quit.', font='Courier 16 bold').pack(pady=2)
-	passEntry = Entry(qtWin,font='Courier 14',width=10)
-	passEntry.config(show='*')
+	passEntry = Entry(qtWin,font='Courier 14',width=10,show='*')
 	passEntry.pack(pady=2)
 	
 	def areYouSure():
