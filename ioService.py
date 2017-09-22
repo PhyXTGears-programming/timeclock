@@ -121,7 +121,13 @@ def calcTotalTime(n): #returns total time in seconds
 			total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
 		lastline = line
 	return total
-	pass
+
+def getOpts():
+	opts = {}
+	for line in open('opts.txt'): # load options
+		line = line.strip().split(' : ')
+		opts[line[0]] = line[1]
+	return opts
 
 
 def main():
@@ -134,5 +140,4 @@ def main():
 		elif inpt[0]=='!': pass
 		elif ioMain(inpt): pass
 
-if __name__=='__main__':
-	main()
+if __name__=='__main__': main()

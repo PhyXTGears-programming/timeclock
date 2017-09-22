@@ -14,8 +14,8 @@ nuWin = None
 fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
 root.title('PhyxtGears1720io')
-root.geometry('800x600')
-root.attributes('-fullscreen',True)
+root.geometry('1024x768')
+#root.attributes('-fullscreen',True)
 '''
 NOTES:
 	check for files and folders at start of program
@@ -96,13 +96,6 @@ def setVK(choice):
 	elif choice==2:
 		vkey.attach=usernameEntry
 def makeNewUserWindow():
-	# start on screen keyboard
-	
-	#if platform.system()=='Windows': # open windows on-screen-keyboard
-	#	subprocess.Popen('C:\\WINDOWS\\system32\\osk.exe', shell=True)
-	#elif platform.system()=='Linux': # open Linux matchbox-keyboard
-	#	subprocess.Popen('sudo matchbox-keyboard', shell=True)
-	
 	global nuWin
 	global fullnameEntry,usernameEntry,errorLabel,vkey
 	
@@ -148,16 +141,6 @@ def ioSignI():
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
-	'''try:
-		read = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r')
-		readline = read.readlines()
-		print(readline[0][0],readline[-1][0])
-		if readline[0][0]=='' or readline[-1][0] != 'i':
-			file.write('i | '+timeIO+'\n')
-			iotext.config(text=nameIO.split()[0]+' signed in!', fg='green')
-		read.close()
-	except:
-		iotext.config(text=nameIO.split()[0]+' is not signed out!', fg='red')'''
 	file.write('i | '+timeIO+'\n')
 	iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green') 
 	file.close()
@@ -169,56 +152,74 @@ def ioSignO():
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
-	'''print(file.readlines(0))
-	try:
-		read = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r')
-		readline = read.readlines()
-		print(readline[0][0],readline[-1][0])
-		if readline[0][0]=='' or readline[-1][0] != 'o':
-			file.write('o | '+timeIO+'\n')
-			iotext.config(text=nameIO.split()[0]+' signed out!', fg='green')
-		read.close()
-	except:
-		iotext.config(text=nameIO.split()[0]+' is not signed in!', fg='red')'''
 	file.write('o | '+timeIO+'\n')
 	iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green') 
 	file.close()
 
-framelist = Frame(root)
-scrolbar = Scrollbar(framelist, orient=VERTICAL)
-namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18')
-iolist   = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18', justify=CENTER)
+def ioSign(c):
+	global namelsit,iotext
+	if len(namelist.curselection())==0:
+		iotext.config(text='Nothing Selected!', fg='red')
+		return
+	
+	nameIO = namelist.get(namelist.curselection()[0])
+	timeIO = time.strftime(opts['ioForm'])
+	
+	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
+		try:
+			lines = f.readlines()
+			if lines[-1][0]==c:
+				if c=='i': iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
+				elif c=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='red')
+				f.close()
+				return
+		except:
+			pass
+	
+	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
+	file.write(c+' | '+timeIO+'\n')
+	file.close()
+	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
+	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
+	pass
 
-namelist.config(width=35,height=20)
-iolist.config(width=1,height=18)
-scrolbar.config(command=setScroll, width=52)
+def main():
+	global namelist,iolist,iotext
+	framelist = Frame(root)
+	scrolbar = Scrollbar(framelist, orient=VERTICAL)
+	namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18')
+	iolist   = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18', justify=CENTER)
 
-scrolbar.pack(side=RIGHT, fill=Y)
-namelist.pack(side=LEFT, fill=BOTH, expand=1)
-iolist.pack(side=LEFT, fill=BOTH, expand=1)
-framelist.pack(side=LEFT,padx=12)
+	namelist.config(width=35,height=20)
+	iolist.config(width=1,height=18)
+	scrolbar.config(command=setScroll, width=52)
 
-logo1720 = PhotoImage(file='assets/logo.gif')
-Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
-Label(root, image=logo1720).pack()
+	scrolbar.pack(side=RIGHT, fill=Y)
+	namelist.pack(side=LEFT, fill=BOTH, expand=1)
+	iolist.pack(side=LEFT, fill=BOTH, expand=1)
+	framelist.pack(side=LEFT,padx=12)
 
-frameio = Frame(root)
-innbutton = Button(frameio, text='IN',  font='Courier 16 bold', fg='green', command=ioSignI, width=12, height=2)
-outbutton = Button(frameio, text='OUT', font='Courier 16 bold', fg='red',   command=ioSignO, width=12, height=2)
-iotext = Label(frameio, text='', font='Courier 16 bold')
-newbutton = Button(frameio, text='New User', font='Courier 16 bold', fg='blue', command=makeNewUserWindow, width=12, height=2)
-innbutton.pack(pady=4)
-outbutton.pack(pady=4)
-iotext.pack()
-newbutton.pack(pady=36)
-frameio.pack()
+	logo1720 = PhotoImage(file='assets/logo.gif')
+	Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
+	Label(root, image=logo1720).pack()
 
-#Button(text='QUIT', font='Courier 16 bold', height=2, fg='red', command=root.destroy).pack(side=RIGHT,padx=12,pady=64)
+	frameio = Frame(root)
+	innbutton = Button(frameio, text='IN',  font='Courier 16 bold', fg='green', command=lambda: ioSign('i'), width=12, height=2)
+	outbutton = Button(frameio, text='OUT', font='Courier 16 bold', fg='red',   command=lambda: ioSign('o'), width=12, height=2)
+	iotext = Label(frameio, text='', font='Courier 16 bold')
+	newbutton = Button(frameio, text='New User', font='Courier 16 bold', fg='blue', command=makeNewUserWindow, width=12, height=2)
+	innbutton.pack(pady=4)
+	outbutton.pack(pady=4)
+	iotext.pack()
+	newbutton.pack(pady=36)
+	frameio.pack()
 
-for line in open(opts['usernameFile']):
-	line = line.strip().split('|')
-	namelist.insert(END, line[0])
-	iolist.insert(END, 'N')
-	#if random.random() >= 0.5: iolist.insert(END, 'o') else: iolist.insert(END, 'i')
+	#Button(text='QUIT', font='Courier 16 bold', height=2, fg='red', command=root.destroy).pack(side=RIGHT,padx=12,pady=64)
 
-root.mainloop()
+	for line in open(opts['usernameFile']):
+		line = line.strip().split('|')
+		namelist.insert(END, line[0])
+		iolist.insert(END, 'N')
+
+	root.mainloop()
+if __name__=='__main__': main()

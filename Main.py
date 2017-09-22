@@ -1,15 +1,9 @@
-from importlib import reload
 from threading import Thread
-from time import sleep
 
-import ioService
+#import ioService
+import guiType
 import autoClockout
-# import 
 
-ac = Thread(target=autoClockout.main)
-ac.start()
-ioService.main()
-
-# slack service, just copy the old file
-#sn = Thread(target=slackNotifService.main)
-#sn.start()
+Thread(target=autoClockout.main).start() # autoclockout
+guiType.main()
+#ioService.main()

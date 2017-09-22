@@ -1,7 +1,11 @@
 # auto clock out at midnight or whatever
 import os
 import time
-from opts import opts
+
+opts = {}
+for line in open('opts.txt'): # load options
+	line = line.strip().split(' : ')
+	opts[line[0]] = line[1]
 
 def main():
 	while True:
@@ -13,5 +17,3 @@ def main():
 					io[0] = 'o'
 					with open(opts['path']+item, 'a') as i: i.write(' '.join(io)+'\n')
 			time.sleep(1)
-
-if __name__=="__main__": main()
