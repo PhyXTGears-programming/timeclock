@@ -68,22 +68,16 @@ class vk(tk.Frame):
 			'row1': ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
 			'row2': ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
 			'row3': ['ABC', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
-			'row4': ['-', '[ space ]', 'Bksp']
+			'row4': ['-', '[ space ]', '<==']
 		}
 		self.Alpha = {
 			'row1': ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
 			'row2': ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
 			'row3': ['abc', 'Z', 'X', 'C', 'V', 'B', 'N', 'M'],
-			'row4': ['-', '[ space ]', 'Bksp']
-		}
-		self.Symbol = {
-			'row1': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'Bksp'],
-			'row2': ['abc', '!', '"', '$', '%', '&', '/', '(', ')', '[', ']', '='],
-			'row3': ['@', '-', '_', '?', '#', '*', '{', '}', ':', ';', 'ENTER'],
-			'row4': ['<<<','+', '[ space ]', '.', ',', '>>>']
+			'row4': ['-', '[ space ]', '<==']
 		}
 
-		for i in range(1, 3):
+		for i in range(1, 2):
 			if i == 1:
 				self.keyStyle = self.alpha
 				self.row1 = self.row1_alpha
@@ -151,23 +145,14 @@ class vk(tk.Frame):
 						i += 1
 
 	def _attach_key_press(self, k):
-		if k == '>>>':
-			self.attach.tk_focusNext().focus_set()
-		elif k == '<<<':
-			self.attach.tk_focusPrev().focus_set()
-		elif k == 'Sym':
-			self.Symbol_Frame.tkraise()
-		elif k == 'abc':
+		if k == 'abc':
 			self.alpha_Frame.tkraise()
 		elif k == 'ABC':
 			self.Alpha_Frame.tkraise()
-		elif k == 'Bksp':
+		elif k == '<==':
 			self.remaining = self.attach.get()[:-1]
 			self.attach.delete(0, tk.END)
 			self.attach.insert(0, self.remaining)
-		elif k == 'ENTER':
-			pass # Define, what's supposed to happen..
-			#self.controller.enter_cb(self.enterAction)
 		elif k == '[ space ]':
 			self.attach.insert(tk.END, ' ')
 		else:
@@ -180,8 +165,36 @@ class vn(tk.Frame):
 		self.attach = attach
 		self.keysize = keysize
 		
-		self.numFrame = None
-		
+		self.numFrame = tk.Frame(parent)
 		self.init_keys()
-		
+		self.numFrame.pack(pady=2)
 		self.pack()
+	
+	def init_keys(self):
+		self.numpad = [
+			['9','8','7'],
+			['6','5','4'],
+			['3','2','1'],
+			['<','0','_'],
+		]
+		f = 'Courier 14'
+		rows = []
+		for row in self.numpad:
+			n = len(rows)
+			rows.insert(n, tk.Frame(self.numFrame))
+			i = 0
+			for key in row:
+				c = lambda key=key: self.addKP(key)
+				tk.Button(rows[n],text=key,font=f,command=c).grid(column=i,row=0)
+				i += 1
+			rows[n].grid(column=0,row=n)
+	def addKP(self,k):
+		if k == '<':
+			self.remaining = self.attach.get()[:-1]
+			self.attach.delete(0, tk.END)
+			self.attach.insert(0, self.remaining)
+		elif k == '_':
+			self.attach.insert(tk.END, ' ')
+		else:
+			self.attach.insert(tk.END, k)
+			

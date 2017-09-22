@@ -186,19 +186,21 @@ def ioSign(c):
 def confirmQuit():
 	global root,opts
 	qtWin = Toplevel(root)
-	Label(qtWin,text='Enter AdminPass to quit.', font='Courier 16 bold').pack()
+	Label(qtWin,text='Enter AdminPass to quit.', font='Courier 16 bold').pack(pady=2)
 	passEntry = Entry(qtWin,font='Courier 14',width=10)
-	passEntry.pack()
+	passEntry.config(show='*')
+	passEntry.pack(pady=2)
 	
 	def areYouSure():
 		if passEntry.get()==opts['adminPass']: root.destroy()
 	
 	framebutton = Frame(qtWin)
 	quitit = Button(framebutton,text='Quit',  font='Courier 14 bold',fg='red', command=areYouSure)
-	cancit = Button(framebutton,text='Cancel',font='Courier 14 bold',fg='green', command=qtWin.destroy)
+	cancit = Button(framebutton,text='Cancel',font='Courier 14 bold',fg='blue', command=qtWin.destroy)
 	quitit.grid(column=0,row=0)
 	cancit.grid(column=1,row=0)
-	framebutton.pack()
+	framebutton.pack(pady=2)
+	vnum = osk.vn(parent=qtWin, attach=passEntry)
 	
 
 def main():
