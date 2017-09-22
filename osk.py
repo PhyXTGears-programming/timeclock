@@ -172,3 +172,16 @@ class vk(tk.Frame):
 			self.attach.insert(tk.END, ' ')
 		else:
 			self.attach.insert(tk.END, k)
+			
+class vn(tk.Frame):
+	#virtual numpad
+	def __init__(self, parent, attach, keysize=4):
+		tk.Frame.__init__(self,takefocus=0)
+		self.attach = attach
+		self.keysize = keysize
+		
+		self.numFrame = None
+		
+		self.init_keys()
+		
+		self.pack()

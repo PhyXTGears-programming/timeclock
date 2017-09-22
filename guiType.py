@@ -96,7 +96,7 @@ def setVK(choice):
 	elif choice==2:
 		vkey.attach=usernameEntry
 def makeNewUserWindow():
-	global nuWin
+	global root,nuWin
 	global fullnameEntry,usernameEntry,errorLabel,vkey
 	
 	nuWin = Toplevel(root)
@@ -183,6 +183,24 @@ def ioSign(c):
 	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
 	pass
 
+def confirmQuit():
+	global root,opts
+	qtWin = Toplevel(root)
+	Label(qtWin,text='Enter AdminPass to quit.', font='Courier 16 bold').pack()
+	passEntry = Entry(qtWin,font='Courier 14',width=10)
+	passEntry.pack()
+	
+	def areYouSure():
+		if passEntry.get()==opts['adminPass']: root.destroy()
+	
+	framebutton = Frame(qtWin)
+	quitit = Button(framebutton,text='Quit',  font='Courier 14 bold',fg='red', command=areYouSure)
+	cancit = Button(framebutton,text='Cancel',font='Courier 14 bold',fg='green', command=qtWin.destroy)
+	quitit.grid(column=0,row=0)
+	cancit.grid(column=1,row=0)
+	framebutton.pack()
+	
+
 def main():
 	global namelist,iolist,iotext
 	framelist = Frame(root)
@@ -206,16 +224,16 @@ def main():
 	frameio = Frame(root)
 	innbutton = Button(frameio, text='IN',  font='Courier 16 bold', fg='green', command=lambda: ioSign('i'), width=12, height=2)
 	outbutton = Button(frameio, text='OUT', font='Courier 16 bold', fg='red',   command=lambda: ioSign('o'), width=12, height=2)
-	iotext = Label(frameio, text='', font='Courier 16 bold', wraplength=192, justify=CENTER)
+	iotext = Label(frameio, text='', font='Courier 16 bold',height=6, wraplength=192, justify=CENTER)
 	newbutton = Button(frameio, text='New User', font='Courier 16 bold', fg='blue', command=makeNewUserWindow, width=12, height=2)
 	
 	innbutton.pack(pady=4)
 	outbutton.pack(pady=4)
 	iotext.pack()
-	newbutton.pack(pady=36)
+	newbutton.pack(pady=4)
 	frameio.pack()
 
-	#Button(text='QUIT', font='Courier 16 bold', height=2, fg='red', command=root.destroy).pack(side=RIGHT,padx=12,pady=64)
+	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT,padx=12)
 
 	for line in open(opts['usernameFile']):
 		line = line.strip().split('|')
