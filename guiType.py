@@ -208,6 +208,7 @@ def main():
 	outbutton = Button(frameio, text='OUT', font='Courier 16 bold', fg='red',   command=lambda: ioSign('o'), width=12, height=2)
 	iotext = Label(frameio, text='', font='Courier 16 bold', wraplength=192, justify=CENTER)
 	newbutton = Button(frameio, text='New User', font='Courier 16 bold', fg='blue', command=makeNewUserWindow, width=12, height=2)
+	
 	innbutton.pack(pady=4)
 	outbutton.pack(pady=4)
 	iotext.pack()
