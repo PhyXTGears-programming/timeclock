@@ -15,7 +15,7 @@ fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
 root.title('PhyxtGears1720io')
 root.geometry('800x600') #1024x768
-root.attributes('-fullscreen',True)
+#root.attributes('-fullscreen',True)
 '''
 NOTES:
 	check for files and folders at start of program
@@ -206,7 +206,7 @@ def main():
 	frameio = Frame(root)
 	innbutton = Button(frameio, text='IN',  font='Courier 16 bold', fg='green', command=lambda: ioSign('i'), width=12, height=2)
 	outbutton = Button(frameio, text='OUT', font='Courier 16 bold', fg='red',   command=lambda: ioSign('o'), width=12, height=2)
-	iotext = Label(frameio, text='', font='Courier 16 bold')
+	iotext = Label(frameio, text='', font='Courier 16 bold', wraplength=192, justify=CENTER)
 	newbutton = Button(frameio, text='New User', font='Courier 16 bold', fg='blue', command=makeNewUserWindow, width=12, height=2)
 	innbutton.pack(pady=4)
 	outbutton.pack(pady=4)
