@@ -14,6 +14,8 @@ def loadOpts():
 		opts[line[0]] = line[1]
 	return opts
 
+opts = loadOpts()
+
 def checkNameDB(n):
 	for line in open(opts['usernameFile']):
 		for item in line.split("|"):

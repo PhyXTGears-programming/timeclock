@@ -72,6 +72,9 @@ def setVK(choice):
 		vkey.attach=fullnameEntry
 	elif choice==2:
 		vkey.attach=usernameEntry
+def quitNewUser():
+	global nuWin
+	nuWin.destroy()
 def makeNewUserWindow():
 	global root,nuWin
 	global fullnameEntry,usernameEntry,errorLabel,vkey
@@ -102,7 +105,7 @@ def makeNewUserWindow():
 	errorLabel.pack()
 	
 	finishButton = Button(butonframe, text='Create User',font='Courier 14', fg='blue', width=16, command=finishNewUser)
-	cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=nuWin.destory)
+	cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=quitNewUser)
 	finishButton.grid(row=0,column=1)
 	cancelButton.grid(row=0,column=0)
 	butonframe.pack()
@@ -119,6 +122,7 @@ def ioSign(c):
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	
+	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close()
 	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
 		try:
 			lines = f.readlines()
