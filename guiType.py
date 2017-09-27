@@ -72,10 +72,10 @@ def setVK(choice):
 		vkey.attach=fullnameEntry
 	elif choice==2:
 		vkey.attach=usernameEntry
-def quitNewUser():
+def quitNewUser(): # quit new user (dumb dank hack)
 	global nuWin
 	nuWin.destroy()
-def makeNewUserWindow():
+def makeNewUserWindow(): # new user window
 	global root,nuWin
 	global fullnameEntry,usernameEntry,errorLabel,vkey
 	
@@ -91,8 +91,8 @@ def makeNewUserWindow():
 	Label(inputframe, text='Fullname: ', font='Courier 14').grid(sticky=E,padx=2,pady=2)
 	Label(inputframe, text='Username: ', font='Courier 14').grid(sticky=E,padx=2,pady=2)
 	
-	fullnameEntry = Entry(inputframe, font='Courier 18', width=42)
-	usernameEntry = Entry(inputframe, font='Courier 18', width=42)
+	fullnameEntry = Entry(inputframe, font='Courier 18', width=42) # full name textbox
+	usernameEntry = Entry(inputframe, font='Courier 18', width=42) # username  textbox
 	
 	fullnameEntry.bind('<FocusIn>', lambda e: setVK(1))
 	usernameEntry.bind('<FocusIn>', lambda e: setVK(2))
@@ -101,16 +101,16 @@ def makeNewUserWindow():
 	usernameEntry.grid(row=1,column=1)
 	inputframe.pack()
 	
-	errorLabel = Label(nuWin, font='Courier 14', text='', fg='red')
+	errorLabel = Label(nuWin, font='Courier 14', text='', fg='red') # if theres an error with the name (ie name exists or not a real name) show on screen
 	errorLabel.pack()
 	
-	finishButton = Button(butonframe, text='Create User',font='Courier 14', fg='blue', width=16, command=finishNewUser)
+	finishButton = Button(butonframe, text='Create User',font='Courier 14', fg='blue', width=16, command=finishNewUser) #i hacked google
 	cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=quitNewUser)
 	finishButton.grid(row=0,column=1)
 	cancelButton.grid(row=0,column=0)
 	butonframe.pack()
 	
-	vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry)
+	vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry) # on screen alphabet keyboard
 	vkeyframe.pack()
 
 def ioSign(c):
@@ -122,7 +122,7 @@ def ioSign(c):
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	
-	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close()
+	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close() # make file if it doesn't exist
 	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
 		try:
 			lines = f.readlines()
