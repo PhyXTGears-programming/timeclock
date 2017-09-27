@@ -114,12 +114,12 @@ def makeNewUserWindow(): # new user window
 	vkeyframe.pack()
 
 def ioSign(c):
-	global namelsit,iotext
+	global namelsit,iolist,iotext
 	if len(namelist.curselection())==0:
 		iotext.config(text='Nothing Selected!', fg='red')
 		return
 	
-	nameIO = namelist.get(namelist.curselection()[0])
+	nameIO = namelist.get(namelist.curselection()[0])[0]
 	timeIO = time.strftime(opts['ioForm'])
 	
 	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close() # make file if it doesn't exist
@@ -127,8 +127,8 @@ def ioSign(c):
 		try:
 			lines = f.readlines()
 			if lines[-1][0]==c:
-				if c=='i': iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
-				elif c=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='red')
+				if c=='i': iotext.config(text=nameIO.split()+' is already signed in!', fg='red')
+				elif c=='o': iotext.config(text=nameIO.split()+' is already signed out!', fg='red')
 				f.close()
 				return
 		except:
@@ -137,6 +137,8 @@ def ioSign(c):
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
+	iolist.delete(namelist.curselection())
+	iolist.insert(namelist.curselection(), c)
 	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
 	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
 	pass
@@ -196,9 +198,13 @@ def main():
 	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT,padx=12)
 
 	for line in open(opts['usernameFile']):
-		line = line.strip().split('|')
-		namelist.insert(END, line[0])
-		iolist.insert(END, 'N')
+		line = line.strip().split('|')[0]
+		namelist.insert(END, line)
+		try:
+			with open(opts['pathTime']+line.replace(' ','')+'.txt','r+') as f:
+				iolist.insert(END, f.readlines()[-1][0])
+		except:
+			iolist.insert(END, 'N')
 
 	root.mainloop()
 if __name__=='__main__': main()
