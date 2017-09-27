@@ -13,7 +13,7 @@ fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
 root.title('PhyxtGears1720io')
 root.geometry('800x600') #1024x768
-#root.attributes('-fullscreen',True)
+root.attributes('-fullscreen',True)
 '''
 NOTES:
 	tabs for each team (FLL and FIRST)
