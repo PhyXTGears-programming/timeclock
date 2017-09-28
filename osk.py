@@ -77,7 +77,7 @@ class vk(tk.Frame):
 			'row4': ['-', '[ space ]', '<==']
 		}
 
-		for i in range(1, 2):
+		for i in range(1, 3):
 			if i == 1:
 				self.keyStyle = self.alpha
 				self.row1 = self.row1_alpha
@@ -149,6 +149,7 @@ class vk(tk.Frame):
 			self.alpha_Frame.tkraise()
 		elif k == 'ABC':
 			self.Alpha_Frame.tkraise()
+			print('raised')
 		elif k == '<==':
 			self.remaining = self.attach.get()[:-1]
 			self.attach.delete(0, tk.END)
