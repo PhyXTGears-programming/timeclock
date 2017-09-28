@@ -1,6 +1,7 @@
 import os
 import time
 import sys
+from platform import system
 from tkinter import *
 #from tkinter.ttk import *
 
@@ -13,7 +14,7 @@ fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
 root.title('PhyxtGears1720io')
 root.geometry('800x600') #1024x768
-root.attributes('-fullscreen',True)
+if system() != 'Windows': root.attributes('-fullscreen',True)
 '''
 NOTES:
 	tabs for each team (FLL and FIRST)
@@ -119,7 +120,7 @@ def ioSign(c):
 		iotext.config(text='Nothing Selected!', fg='red')
 		return
 	
-	nameIO = namelist.get(namelist.curselection()[0])[0]
+	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
 	
 	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close() # make file if it doesn't exist
