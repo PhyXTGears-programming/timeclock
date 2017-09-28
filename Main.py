@@ -1,9 +1,9 @@
 from threading import Thread
 
-#import ioService
 import guiType
 import autoClockout
 
-Thread(target=autoClockout.main).start() # autoclockout
+autoclockout = Thread(target=autoClockout.main, daemonic=True).start() # autoclockout
 guiType.main()
-#ioService.main()
+
+autoclockout.join(0)

@@ -1,5 +1,5 @@
 ioForm : %H:%M:%S %d.%m.%Y
-pathTime : ./Times/
+pathTime : ./times/
 autoClockOut : 00:00:00
 autoClockLim : 03:00:00
 usernameFile : usernameFile.txt
