@@ -131,16 +131,20 @@ def ioSign(c):
 	
 	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close() # make file if it doesn't exist
 	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
+		lines = f.readlines()
 		try:
-			lines = f.readlines()
 			if lines[-1][0]==c:
-				if c=='i': iotext.config(text=nameIO.split()+' is already signed in!', fg='red')
-				elif c=='o': iotext.config(text=nameIO.split()+' is already signed out!', fg='red')
+				if c=='i': iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
+				elif c=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='red')
 				f.close()
 				return
 		except:
-			pass
-	
+			if not lines: 
+				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='red')
+				f.close()
+				return
+		if lines and lines[-1].strip()[-1]=='a': pass
+
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
