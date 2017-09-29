@@ -23,7 +23,7 @@ def checkNameDB(n):
 	return False
 def addNameDB(full,user,job=''):
 	file = open(opts['usernameFile'], 'a+')
-	file.write(full+'|'+user+'\n') #full+'|'+user+'|'+job+'\n'
+	file.write(full.title()+'|'+user.title()+'\n') #full+'|'+user+'|'+job+'\n'
 	file.close()
 
 def calcTotalTime(n): #returns total time in seconds

@@ -149,7 +149,6 @@ class vk(tk.Frame):
 			self.alpha_Frame.tkraise()
 		elif k == 'ABC':
 			self.Alpha_Frame.tkraise()
-			print('raised')
 		elif k == '<==':
 			self.remaining = self.attach.get()[:-1]
 			self.attach.delete(0, tk.END)

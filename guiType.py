@@ -28,11 +28,6 @@ try: os.mkdir(opts['pathTime'])
 except: pass
 
 open(opts['usernameFile'],'a+').close()
-with open(opts['usernameFile'],'r') as u:
-	names = u.readlines()
-	names = [x.title() for x in names]
-	names.sort()
-	with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
 
 
 def setScroll(*args):
@@ -54,14 +49,7 @@ def finishNewUser():
 	if errmsg == 'no error':
 		errorLabel.config(text='Making User\n-\nNo Error!', fg='green')
 		addNameDB(full,user) # todo: add job options
-		newnamelist = []
-		for i, entry in enumerate(namelist.get(0, namelist.size())): newnamelist = newnamelist + [entry]
-		for i in range(namelist.size()): namelist.delete(i,END)
-		newnamelist = [x.title() for x in newnamelist + [full]]
-		newnamelist.sort()
-		for i in newnamelist: namelist.insert(END, i)
-		#namelist.insert(END, full)
-		iolist.insert(END, 'N')
+		refreshListboxes()
 		nuWin.destroy()
 	else:
 		errorLabel.config(text=errmsg, fg='red')
@@ -114,6 +102,24 @@ def makeNewUserWindow(): # new user window
 	vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry) # on screen alphabet keyboard
 	vkeyframe.pack()
 
+def refreshListboxes(): # BADLY NEEDS OPTIMIZATIONS
+	global namelist,iolist,iotext
+	namelist.delete(0,END)
+	iolist.delete(0,END)
+	with open(opts['usernameFile'],'r') as u:
+		names = u.readlines()
+		names = [x.title() for x in names]
+		names.sort()
+	with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
+	for line in open(opts['usernameFile']):
+		line = line.strip().split('|')[0]
+		namelist.insert(END, line)
+		try:
+			with open(opts['pathTime']+line.replace(' ','')+'.txt','r+') as f:
+				iolist.insert(END, f.readlines()[-1][0])
+		except:
+			iolist.insert(END, 'N')
+
 def ioSign(c):
 	global namelsit,iolist,iotext
 	if len(namelist.curselection())==0:
@@ -138,8 +144,7 @@ def ioSign(c):
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
-	iolist.delete(namelist.curselection())
-	iolist.insert(namelist.curselection(), c)
+	refreshListboxes()
 	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
 	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
 	pass
@@ -198,14 +203,7 @@ def main():
 
 	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT,padx=12)
 
-	for line in open(opts['usernameFile']):
-		line = line.strip().split('|')[0]
-		namelist.insert(END, line)
-		try:
-			with open(opts['pathTime']+line.replace(' ','')+'.txt','r+') as f:
-				iolist.insert(END, f.readlines()[-1][0])
-		except:
-			iolist.insert(END, 'N')
+	refreshListboxes()
 
 	root.mainloop()
 if __name__=='__main__': main()
