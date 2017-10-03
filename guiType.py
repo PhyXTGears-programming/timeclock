@@ -102,23 +102,41 @@ def makeNewUserWindow(): # new user window
 	vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry) # on screen alphabet keyboard
 	vkeyframe.pack()
 
-def refreshListboxes(): # BADLY NEEDS OPTIMIZATIONS
+def refreshListboxes(n=None):
 	global namelist,iolist,iotext
-	namelist.delete(0,END)
-	iolist.delete(0,END)
-	with open(opts['usernameFile'],'r') as u:
-		names = u.readlines()
-		names = [x.title() for x in names]
-		names.sort()
-	with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
-	for line in open(opts['usernameFile']):
-		line = line.strip().split('|')[0]
-		namelist.insert(END, line)
+	if n==None:
+		namelist.delete(0,END)
+		iolist.delete(0,END)
+		with open(opts['usernameFile']) as u:
+			names = [x.title() for x in u.readlines()]
+			names.sort()
+		with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
+		for line in open(opts['usernameFile']):
+			line = line.strip().split('|')[0]
+			namelist.insert(END, line)
+			try:
+				with open(opts['pathTime']+line.replace(' ','')+'.txt','r+') as f:
+					iolist.insert(END, f.readlines()[-1][0])
+			except:
+				iolist.insert(END, 'N')
+	elif n=='name' or n==None:
+		namelist.delete(0,END)
+		with open(opts['usernameFile']) as u:
+			names = [x.title() for x in u.readlines()]
+			names.sort()
+		with open(opts['usernameFile'],'w') as f: f.write(''.join(names))
+		for line in open(opts['usernameFile']):
+			line = line.strip().split('|')[0]
+			namelist.insert(END, line)
+	elif n=='io' or n==None:
+		select = namelist.curselection()
+		iolist.delete(select[0])
 		try:
-			with open(opts['pathTime']+line.replace(' ','')+'.txt','r+') as f:
-				iolist.insert(END, f.readlines()[-1][0])
+			with open(opts['pathTime']+namelist.get(select[0]).replace(' ','')+'.txt','r+') as f:
+				iolist.insert(select[0], f.readlines()[-1][0])
 		except:
-			iolist.insert(END, 'N')
+			iolist.insert(select, 'N')
+	pass
 
 def ioSign(c):
 	global namelsit,iolist,iotext
@@ -139,7 +157,7 @@ def ioSign(c):
 				f.close()
 				return
 		except:
-			if not lines: 
+			if not lines and c=='o': 
 				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='red')
 				f.close()
 				return
@@ -148,7 +166,7 @@ def ioSign(c):
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
-	refreshListboxes()
+	refreshListboxes('io')
 	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
 	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
 	pass
