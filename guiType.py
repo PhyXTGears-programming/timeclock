@@ -136,6 +136,8 @@ def refreshListboxes(n=None):
 				iolist.insert(select[0], f.readlines()[-1][0])
 		except:
 			iolist.insert(select, 'N')
+		iolist.see(select[0]+1)
+		namelist.see(select[0])
 	pass
 
 def ioSign(c):
