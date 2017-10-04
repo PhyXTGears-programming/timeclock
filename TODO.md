@@ -4,8 +4,8 @@
 - [X] On screen keyboard
 - [ ] Automatic boot script
 - [ ] Script to write all userdata to NAS drive
-- [ ] More fullname and username checks
+- [X] More fullname and username checks
 - [X] Sign in/out checks
-- [ ] Find and use FLL team logo in GUI
+- [X] Find and use FLL team logo in GUI
 - [X] Auto-alphebetize
 - [ ] 3 key input

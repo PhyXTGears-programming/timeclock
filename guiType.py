@@ -1,5 +1,6 @@
 import os
 import time
+import datetime
 import sys
 from platform import system
 from tkinter import *
@@ -12,6 +13,7 @@ root = Tk()
 nuWin = None
 fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
+root.config(bg='#000000')
 root.title('PhyxtGears1720io')
 root.geometry('800x600') #1024x768
 if system() != 'Windows': root.attributes('-fullscreen',True)
@@ -148,29 +150,35 @@ def ioSign(c):
 	
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
+
+	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
+	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
 	
 	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close() # make file if it doesn't exist
 	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
 		lines = f.readlines()
-		try:
+		quitSign = False
+		if lines and lines[-1][-2]!='a':
 			if lines[-1][0]==c:
-				if c=='i': iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
+				if c=='i':iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
 				elif c=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='red')
 				f.close()
 				return
-		except:
+		else:
 			if not lines and c=='o': 
 				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='red')
 				f.close()
 				return
-		if lines and lines[-1].strip()[-1]=='a': pass
+		if lines and c=='o' and lines[-1].strip()[-1]=='a': # '''and datetime.now() < datetime.strptime(opts['autoClockLim'])'''
+			nfile = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'w+')
+			nfile.write(''.join(lines[:-1]))
+			iotext.config(text=nameIO.split()[0]+' signed out proper!', fg='Green')
+
 
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
 	refreshListboxes('io')
-	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
-	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
 	pass
 
 def confirmQuit():
@@ -214,10 +222,10 @@ def main():
 	Label(root, image=logo1720).pack()
 
 	frameio = Frame(root)
-	innbutton = Button(frameio, text='IN',  font='Courier 16 bold', fg='green', command=lambda: ioSign('i'), width=12, height=2)
-	outbutton = Button(frameio, text='OUT', font='Courier 16 bold', fg='red',   command=lambda: ioSign('o'), width=12, height=2)
+	innbutton = Button(frameio, text='IN',  font='Courier 16 bold', bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
+	outbutton = Button(frameio, text='OUT', font='Courier 16 bold', bg='red',  fg='white',   command=lambda: ioSign('o'), width=12, height=2)
 	iotext = Label(frameio, text='', font='Courier 16 bold',height=6, wraplength=192, justify=CENTER)
-	newbutton = Button(frameio, text='New User', font='Courier 16 bold', fg='blue', command=makeNewUserWindow, width=12, height=2)
+	newbutton = Button(frameio, text='New User', font='Courier 16 bold', bg='blue',fg='white', command=makeNewUserWindow, width=12, height=2)
 	
 	innbutton.pack(pady=4)
 	outbutton.pack(pady=4)
