@@ -158,7 +158,16 @@ def ioSign(c):
 	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
 		lines = f.readlines()
 		quitSign = False
-		if lines and lines[-1][-2]!='a':
+		inTimeFrame = lines[-1][-2]=='a' and datetime.strptime(lines[-1][4:-3],opts['ioForm'])<datetime.now()<datetime.now().replace(hour=4,minute=30,second=0,microsecond=0)
+		if lines and c=='o' and lines[-1][-2]=='a' and inTimeFrame: # and datetime.now() < datetime.strptime(opts['autoClockLim'])
+			nfile = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'w+')
+			nfile.write(''.join(lines[:-1]))
+			nfile.close()
+			iotext.config(text=nameIO.split()[0]+' signed out proper!', fg='Green')
+			# note for future annoucement system
+			# have annoucements over phone system annoucing the time till autoclockout cutoff
+			# "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
+		elif lines and lines[-1][-2]!='a':
 			if lines[-1][0]==c:
 				if c=='i':iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
 				elif c=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='red')
@@ -169,13 +178,9 @@ def ioSign(c):
 				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='red')
 				f.close()
 				return
-		'''if lines and c=='o' and lines[-1].strip()[-1]=='a': # and datetime.now() < datetime.strptime(opts['autoClockLim'])
-			nfile = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'w+')
-			nfile.write(''.join(lines[:-1]))
-			iotext.config(text=nameIO.split()[0]+' signed out proper!', fg='Green')
-		'''
 
-
+	# note for out signio: even if there is an issue one signout, show an error but still log the out.
+	# this was robbies idea
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
