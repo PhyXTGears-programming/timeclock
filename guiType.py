@@ -13,7 +13,7 @@ root = Tk()
 nuWin = None
 fullnameEntry=usernameEntry=errorLabel=vkey = None
 namelist=iolist=iotext = None
-root.config(bg='#000000')
+#root.config(bg='#000000')
 root.title('PhyxtGears1720io')
 root.geometry('800x600') #1024x768
 if system() != 'Windows': root.attributes('-fullscreen',True)
