@@ -169,10 +169,11 @@ def ioSign(c):
 				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='red')
 				f.close()
 				return
-		if lines and c=='o' and lines[-1].strip()[-1]=='a': # '''and datetime.now() < datetime.strptime(opts['autoClockLim'])'''
+		'''if lines and c=='o' and lines[-1].strip()[-1]=='a': # and datetime.now() < datetime.strptime(opts['autoClockLim'])
 			nfile = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'w+')
 			nfile.write(''.join(lines[:-1]))
 			iotext.config(text=nameIO.split()[0]+' signed out proper!', fg='Green')
+		'''
 
 
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
