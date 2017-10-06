@@ -15,7 +15,7 @@ def main():
 				io = []
 				with open(opts['pathTime']+item) as i: io = i.readlines()[-1].split()
 				if io[0] == 'i':
-					io[0] = 'o'
-					with open(opts['pathTime']+item, 'a') as i: i.write(' '.join(io)+' a\n')
+					io[0] = 'a'
+					with open(opts['pathTime']+item, 'a') as i: i.write(' '.join(io)+' '+time.strftime(opts['ioform'])+'\n')
 			refreshListboxes()
 			time.sleep(1)
