@@ -30,15 +30,19 @@ def calcTotalTime(n): #returns total time in seconds
 	total = 0
 	iLin,oLin = '',''
 	lastline = 'n'
-	for line in open(opts['path']+n+'.txt'):
+	for line in open(opts['pathTime']+n+'.txt'):
 		line = line.strip()
-		if line[0]=='i' and lastline[0]!='i':
+		lastIOA = lastline[0]
+		currIOA = line[0]
+		
+		if currIOA=='i':
 			iLin = line[4:]
-			print('i:'+iLin)
+			#print('i:'+iLin)
 		elif line[0]=='o' and lastline[0]!='o':
 			oLin = line[4:]
-			print('o:'+oLin)
+			#print('o:'+oLin)
 			total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
+	
 		lastline = line
 	return total
 
@@ -135,4 +139,4 @@ def main():
 		elif ioMain(inpt): pass
 '''
 
-if __name__=='__main__': main()
+#if __name__=='__main__': main()

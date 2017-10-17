@@ -170,27 +170,27 @@ def ioSign(c):
 			# "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
 		elif lines and IOA in 'ioa':
 			if IOA=='i' and c=='i':
-				iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='red')
+				iotext.config(text=nameIO.split()[0]+' is already signed in!', fg='orange')
 				f.close()
 				return
 			elif IOA in 'oa' and c=='o':
-				if IOA=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='red')
-				elif IOA=='a': iotext.config(text=nameIO.split()[0]+' was auto-signed out!', fg='red')
+				if IOA=='o': iotext.config(text=nameIO.split()[0]+' is already signed out!', fg='orange')
+				elif IOA=='a': iotext.config(text=nameIO.split()[0]+' was auto-signed out!', fg='orange')
 				f.close()
 				return
 		else:
 			if not lines and c=='o': 
-				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='red')
+				iotext.config(text=nameIO.split()[0]+' has never signed in!', fg='orange')
 				f.close()
 				return
 
 	# note for out signio: even if there is an issue one signout, show an error but still log the out.
-	# this was robbies idea
+	# this was robby's idea
 	file = open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+')
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
 	refreshListboxes('io')
-	pass
+	print(calcTotalTime(nameIO.replace(' ','')))
 
 def confirmQuit():
 	global root,opts
