@@ -150,9 +150,7 @@ def ioSign(c):
 	
 	nameIO = namelist.get(namelist.curselection()[0])
 	timeIO = time.strftime(opts['ioForm'])
-
-	if c=='i': iotext.config(text=nameIO.split()[0]+' signed in!', fg='Green')
-	elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out!', fg='Green')
+	autoClocked = False
 	
 	open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'a+').close() # make file if it doesn't exist
 	with open(opts['pathTime']+nameIO.replace(' ','')+'.txt', 'r+') as f:
@@ -165,6 +163,7 @@ def ioSign(c):
 			nfile.write('\n'.join(lines[:-1])+'\n')
 			nfile.close()
 			iotext.config(text=nameIO.split()[0]+' signed out proper!', fg='Green')
+			autoClocked = True
 			# note for future annoucement system
 			# have annoucements over phone system annoucing the time till autoclockout cutoff
 			# "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
@@ -190,7 +189,10 @@ def ioSign(c):
 	file.write(c+' | '+timeIO+'\n')
 	file.close()
 	refreshListboxes('io')
-	print(calcTotalTime(nameIO.replace(' ','')))
+	if not autoClocked:
+		hours = str(round(calcTotalTime(nameIO.replace(' ',''))/60/60,2))
+		if c=='i': iotext.config(text=nameIO.split()[0]+' signed in! '+hours+' hours.', fg='Green')
+		elif c=='o': iotext.config(text=nameIO.split()[0]+' signed out! '+hours+' hours.', fg='Green')
 
 def confirmQuit():
 	global root,opts

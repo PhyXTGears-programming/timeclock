@@ -38,7 +38,7 @@ def calcTotalTime(n): #returns total time in seconds
 		if currIOA=='i':
 			iLin = line[4:]
 			#print('i:'+iLin)
-		elif line[0]=='o' and lastline[0]!='o':
+		elif line[0]=='o' and lastline[0]!='o' and iLin!='':
 			oLin = line[4:]
 			#print('o:'+oLin)
 			total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
