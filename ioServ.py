@@ -1,56 +1,63 @@
-import os
-import sys
-import time
 from datetime import datetime
 
+# if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
+# open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
 
-#if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
-#open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
 
 def loadOpts():
-  opts = {}
-  for line in open('opts.txt'): # load options
-    line = line.strip().split(' : ')
-    opts[line[0]] = line[1]
-  return opts
+    opts = {}
+    for line in open('opts.txt'):  # load options
+        line = line.strip().split(' : ')
+        opts[line[0]] = line[1]
+    return opts
+
 
 opts = loadOpts()
 
-def checkNameDB(n): # check for if a name exists already
-  for line in open(opts['usernameFile']):
-    for item in line.split("|"):
-      if item.lower().replace(' ','') == n.lower().replace(' ',''): return True
-  return False
-def addNameDB(full,user,job=''): # add a new name to the list
-  file = open(opts['usernameFile'], 'a+')
-  file.write(full.title()+'|'+user.title()+'\n') #full+'|'+user+'|'+job+'\n'
-  file.close()
-def sortUsernameList(): # alphebetize names
+
+def checkNameDB(n):  # check for if a name exists already
+    for line in open(opts['usernameFile']):
+        for item in line.split("|"):
+            if item.lower().replace(' ', '') == n.lower().replace(' ', ''):
+                return True
+    return False
+
+
+def addNameDB(full, user, job=''):  # add a new name to the list
+    file = open(opts['usernameFile'], 'a+')
+    file.write(full.title() + '|' + user.title() + '\n')  # full+'|'+user+'|'+job+'\n'
+    file.close()
+
+
+def sortUsernameList():  # alphebetize names
     with open(opts['usernameFile']) as u:
         names = [x.title() for x in u.readlines()]
         names.sort()
     with open(opts['usernameFile'], 'w') as f:
         f.write(''.join(names))
 
-def calcTotalTime(n): #returns total time in seconds
-  total = 0
-  iLin,oLin = '',''
-  prev = 'n'
-  for line in open(opts['pathTime']+n+'.txt'):
-    line = line.strip()
-    lastIOA = prev[0]
-    currIOA = line[0]
-    
-    if currIOA=='i':
-      iLin = line[4:]
-    elif currIOA=='o' and lastIOA!='o' and iLin!='':
-      oLin = line[4:]
-      total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
-  
-    prev = line
-  return total
 
-def mkfile(t): open(t,'a+').close() # make files if they dont exist
+def calcTotalTime(n):  # returns total time in seconds
+    total = 0
+    iLin, oLin = '', ''
+    prev = 'n'
+    for line in open(opts['pathTime'] + n + '.txt'):
+        line = line.strip()
+        lastIOA = prev[0]
+        currIOA = line[0]
+
+        if currIOA == 'i':
+            iLin = line[4:]
+        elif currIOA == 'o' and lastIOA != 'o' and iLin != '':
+            oLin = line[4:]
+            total = total + (datetime.strptime(oLin, opts['ioForm']) - datetime.strptime(iLin, opts['ioForm'])).total_seconds()
+        prev = line
+    return total
+
+
+def mkfile(t):
+    open(t, 'a+').close()  # make files if they dont exist
+
 
 '''
 def recordIO(n,io):
@@ -58,7 +65,7 @@ def recordIO(n,io):
   timeIO = time.strftime(opts['ioForm'])
   writ = io+' | '+timeIO+'\n'
   # print(open(opts['path']+n+'.txt').readlines()[-1])
-  
+
   if io=='c':
     return
   elif io=='i':
@@ -79,7 +86,7 @@ def recordIO(n,io):
       if rl and rl[-1][0]!="i":
         print("Didn't sign in!")
         return
-  
+
   file.write(writ)
   file.close()
   print('Total hours: '+str(round(calcTotalTime(n)/3600,1)))
@@ -105,7 +112,7 @@ def ioMain(n):
       elif len(sp)<2: print('Err: Full name required.')
       elif len(sp[1])<2: print('Err: Last name too short.')
       else: break
-    
+
     print("\nEnter your desired username. Ex: 'boboE512'.")
     while True: # Username check
       user = input(':::> ')
@@ -114,7 +121,7 @@ def ioMain(n):
       elif not (user.isalnum() or user.isalpha()): print('Err: Use letters and numbers only for username.')
       elif user.lower() in ['quit','admin']: print('Err: Username cannot be command.')
       else: break
-    
+
     print('\nEnter a role.')
     for i,v in opts['roles'].items(): print(i+'. '+v)
     while True:
@@ -145,4 +152,4 @@ def main():
     elif ioMain(inpt): pass
 '''
 
-#if __name__=='__main__': main()
+# if __name__=='__main__': main()
