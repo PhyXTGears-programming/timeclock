@@ -13,8 +13,7 @@ root = Tk()
 nuWin = None
 
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
-nuFullE = nuUserE = nuErrT = vkey = None
-nameL = infoT = None
+nameL = infoT = nuFullE = nuUserE = nuErrT = vkey = None
 
 # root.config(bg='#000000')
 root.title('PhyxtGears1720io')
@@ -83,56 +82,55 @@ def makeNewUserWindow():  # new user window
     nuWin.title('Create new user')
     # nuWin.geometry('460x160')
 
-    inputframe = Frame(nuWin)
-    butonframe = Frame(nuWin)
-    vkeyframe = Frame(nuWin, pady=8)
+    inputF = Frame(nuWin)
+    buttnF = Frame(nuWin)
+    vkeyF = Frame(nuWin, pady=8)
 
-    Label(inputframe, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
-    Label(inputframe, text='Username: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
+    Label(inputF, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
+    Label(inputF, text='Username: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
 
-    nuFullE = Entry(inputframe, font='Courier 18', width=42)  # full name textbox
-    nuUserE = Entry(inputframe, font='Courier 18', width=42)  # username  textbox
+    nuFullE = Entry(inputF, font='Courier 18', width=42)  # full name textbox
+    nuUserE = Entry(inputF, font='Courier 18', width=42)  # username  textbox
 
     nuFullE.bind('<FocusIn>', lambda e: setVK(1))
     nuUserE.bind('<FocusIn>', lambda e: setVK(2))
 
     nuFullE.grid(row=0, column=1)
     nuUserE.grid(row=1, column=1)
-    inputframe.pack()
+    inputF.pack()
 
     nuErrT = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
     nuErrT.pack()
 
-    finishButton = Button(butonframe, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser)  # i hacked google
-    cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=quitNewUser)
-    finishButton.grid(row=0, column=1)
-    cancelButton.grid(row=0, column=0)
-    butonframe.pack()
+    finB = Button(buttnF, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser)
+    canB = Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=quitNewUser)
+    finB.grid(row=0, column=1)
+    canB.grid(row=0, column=0)
+    buttnF.pack()
 
-    vkey = osk.vk(parent=vkeyframe, attach=nuFullE)  # on screen alphabet keyboard
-    vkeyframe.pack()
+    vkey = osk.vk(parent=vkeyF, attach=nuFullE)  # on screen alphabet keyboard
+    vkeyF.pack()
 
 
 def refreshListboxes(n=None):
     global nameL, infoT
-    if n == None:
-        select = nameL.curselection()
-        nameL.delete(0, END)
-        sortUsernameList()
+    select = nameL.curselection()
+    nameL.delete(0, END)
+    sortUsernameList()
 
-        nameIO = ''
-        typeIO = 'N'
+    nameIO = ''
+    typeIO = 'N'
 
-        for line in open(opts['usernameFile']):
-            nameIO = line.strip().split('|')[0]
-            try:
-                with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-                    typeIO = f.readlines()[-1][0] #iolist.insert(END, f.readlines()[-1][0])
-            except:
-                typeIO = 'N'
-            nameL.insert(END, nameIO+' '*(35-len(nameIO))+typeIO)
+    for line in open(opts['usernameFile']):
+        nameIO = line.strip().split('|')[0]
+        try:
+            with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
+                typeIO = f.readlines()[-1][0] #iolist.insert(END, f.readlines()[-1][0])
+        except:
+            typeIO = 'N'
+        nameL.insert(END, nameIO+' '*(35-len(nameIO))+typeIO)
 
-        if select: nameL.see(select[0])
+    if select: nameL.see(select[0])
 
 
 def ioSign(c):

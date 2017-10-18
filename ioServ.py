@@ -35,21 +35,19 @@ def sortUsernameList():
 def calcTotalTime(n): #returns total time in seconds
   total = 0
   iLin,oLin = '',''
-  lastline = 'n'
+  prev = 'n'
   for line in open(opts['pathTime']+n+'.txt'):
     line = line.strip()
-    lastIOA = lastline[0]
+    lastIOA = prev[0]
     currIOA = line[0]
     
     if currIOA=='i':
       iLin = line[4:]
-      #print('i:'+iLin)
-    elif line[0]=='o' and lastline[0]!='o' and iLin!='':
+    elif currIOA=='o' and lastIOA!='o' and iLin!='':
       oLin = line[4:]
-      #print('o:'+oLin)
       total = total + (datetime.strptime(oLin,opts['ioForm']) - datetime.strptime(iLin,opts['ioForm'])).total_seconds()
   
-    lastline = line
+    prev = line
   return total
 
 '''

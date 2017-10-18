@@ -1,12 +1,10 @@
 # auto clock out at midnight or whatever
 import os
 import time
+from ioServ import loadOpts
 from guiType import refreshListboxes
 
-opts = {}
-for line in open('opts.txt'): # load options
-  line = line.strip().split(' : ')
-  opts[line[0]] = line[1]
+opts = loadOpts()
 
 def main():
   while True:
