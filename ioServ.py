@@ -16,16 +16,16 @@ def loadOpts():
 
 opts = loadOpts()
 
-def checkNameDB(n):
+def checkNameDB(n): # check for if a name exists already
   for line in open(opts['usernameFile']):
     for item in line.split("|"):
       if item.lower().replace(' ','') == n.lower().replace(' ',''): return True
   return False
-def addNameDB(full,user,job=''):
+def addNameDB(full,user,job=''): # add a new name to the list
   file = open(opts['usernameFile'], 'a+')
   file.write(full.title()+'|'+user.title()+'\n') #full+'|'+user+'|'+job+'\n'
   file.close()
-def sortUsernameList():
+def sortUsernameList(): # alphebetize names
     with open(opts['usernameFile']) as u:
         names = [x.title() for x in u.readlines()]
         names.sort()
@@ -50,7 +50,7 @@ def calcTotalTime(n): #returns total time in seconds
     prev = line
   return total
 
-def mkfile(t): open(t,'a+').close()
+def mkfile(t): open(t,'a+').close() # make files if they dont exist
 
 '''
 def recordIO(n,io):

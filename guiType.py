@@ -116,56 +116,42 @@ def ioSign(c):
     if len(nameL.curselection()) == 0:
         infoT.config(text='Nothing Selected!', fg='red')
         return
-
+    theNow = datetime.now()
     nameIO = nameL.get(nameL.curselection()[0])[:-1]
     timeIO = time.strftime(opts['ioForm'])
     autoClocked = False
 
     mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
 
-    # REWRITE THIS WHOLE THING
-    with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-        lines = [line.strip() for line in f]
-        inTimeFrame = lines and lines[-1][0] == 'a' and datetime.strptime(lines[-1][4:], opts['ioForm']) < datetime.now() < datetime.now().replace(hour=4, minute=30, second=0, microsecond=0)
-        if lines and c == 'o' and lines[-1][0] == 'a' and inTimeFrame:  # and datetime.now() < datetime.strptime(opts['autoClockLim'])
-            nfile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+')
-            nfile.write('\n'.join(lines[:-1]) + '\n')
-            nfile.close()
-            infoT.config(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
-            autoClocked = True
-            # note for future annoucement system
-            # have annoucements over phone system annoucing the time till autoclockout cutoff
-            # "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
-        elif lines and lines[-1][0] in 'ioa':
-            if lines[-1][0] == 'i' and c == 'i':
-                infoT.config(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
-                f.close()
-                return
-            elif lines[-1][0] in 'oa' and c == 'o':
-                if lines[-1][0] == 'o':
-                    infoT.config(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
-                elif lines[-1][0] == 'a':
-                    infoT.config(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
-                f.close()
-                return
-        else:
-            if not lines and c == 'o':
-                infoT.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
-                f.close()
-                return
-
-    # note for out signio: even if there is an issue one signout, show an error but still log the out.
-    # this was robby's idea
-    file = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+')
-    file.write(c + ' | ' + timeIO + '\n')
-    file.close()
-    refreshListboxes()
-    if not autoClocked:
-        hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
+    readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
+    lines = [line.strip() for line in readFile]
+    inTimeFrame = datetime.strptime(lines[-1][4:],opts['ioForm']) < theNow < theNow.replace(hour=4,minute=30,second=0,microsecond=0)
+    if lines and lines[-1][0]=='a' and c=='o' and inTimeFrame: 
+        # RECOVERING AUTOCLOCKOUT
+        with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+') as f: f.write('\n'.join(lines[:-1])+'\n'+c+' | '+timeIO+'\n')
+        # note for future annoucement system: have annoucements over phone system annoucing the time till autoclockout cutoff
+        # ie: "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
+        infoT.config(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
+    elif lines and lines[-1][0] in 'ioa':
+        # DOUBLE SIGN IN/OUT
         if c == 'i':
-            infoT.config(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
+            infoT.config(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
         elif c == 'o':
-            infoT.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
+            if   lines[-1][0]=='o': infoT.config(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
+            elif lines[-1][0]=='a': infoT.config(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
+    elif not lines and c == 'o':
+        # NEVER SIGNED IN BEFORE
+        infoT.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
+    else:
+        # NORMAL SIGN IN/OUT
+        with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f: f.write(c + ' | ' + timeIO + '\n')
+        hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
+        if c == 'i':   infoT.config(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
+        elif c == 'o': infoT.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
+        # note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
+    readFile.close()
+
+    refreshListboxes()
 
 
 def confirmQuit(): # quit program window with passcode protection
