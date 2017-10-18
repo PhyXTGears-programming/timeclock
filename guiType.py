@@ -35,11 +35,6 @@ except:
 open(opts['usernameFile'], 'a+').close()
 
 
-def setScroll(*args):
-    namelist.yview(*args)
-    iolist.yview(*args)
-
-
 def finishNewUser():
     global nuWin
     global fullnameEntry, usernameEntry, errorLabel
@@ -115,55 +110,42 @@ def makeNewUserWindow():  # new user window
     vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry)  # on screen alphabet keyboard
     vkeyframe.pack()
 
+def sortUsernameList():
+    with open(opts['usernameFile']) as u:
+        names = [x.title() for x in u.readlines()]
+        names.sort()
+    with open(opts['usernameFile'], 'w') as f:
+        f.write(''.join(names))
 
 def refreshListboxes(n=None):
-    global namelist, iolist, iotext
+    global namelist, iotext
     if n == None:
-        namelist.delete(0, END)
-        iolist.delete(0, END)
-        with open(opts['usernameFile']) as u:
-            names = [x.title() for x in u.readlines()]
-            names.sort()
-        with open(opts['usernameFile'], 'w') as f:
-            f.write(''.join(names))
-        for line in open(opts['usernameFile']):
-            line = line.strip().split('|')[0]
-            namelist.insert(END, line)
-            try:
-                with open(opts['pathTime'] + line.replace(' ', '') + '.txt', 'r+') as f:
-                    iolist.insert(END, f.readlines()[-1][0])
-            except:
-                iolist.insert(END, 'N')
-    elif n == 'name' or n == None:
-        namelist.delete(0, END)
-        with open(opts['usernameFile']) as u:
-            names = [x.title() for x in u.readlines()]
-            names.sort()
-        with open(opts['usernameFile'], 'w') as f:
-            f.write(''.join(names))
-        for line in open(opts['usernameFile']):
-            line = line.strip().split('|')[0]
-            namelist.insert(END, line)
-    elif n == 'io' or n == None:
         select = namelist.curselection()
-        iolist.delete(select[0])
-        try:
-            with open(opts['pathTime'] + namelist.get(select[0]).replace(' ', '') + '.txt', 'r+') as f:
-                iolist.insert(select[0], f.readlines()[-1][0])
-        except:
-            iolist.insert(select, 'N')
-        iolist.see(select[0] + 1)
-        namelist.see(select[0])
-    pass
+        namelist.delete(0, END)
+        sortUsernameList()
+
+        nameIO = ''
+        typeIO = 'N'
+
+        for line in open(opts['usernameFile']):
+            nameIO = line.strip().split('|')[0]
+            try:
+                with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
+                    typeIO = f.readlines()[-1][0] #iolist.insert(END, f.readlines()[-1][0])
+            except:
+                typeIO = 'N'
+            namelist.insert(END, nameIO+' '*(35-len(nameIO))+typeIO)
+
+        if select: namelist.see(select[0])
 
 
 def ioSign(c):
-    global namelsit, iolist, iotext
+    global namelsit, iotext
     if len(namelist.curselection()) == 0:
         iotext.config(text='Nothing Selected!', fg='red')
         return
 
-    nameIO = namelist.get(namelist.curselection()[0])
+    nameIO = namelist.get(namelist.curselection()[0])[:-1]
     timeIO = time.strftime(opts['ioForm'])
     autoClocked = False
 
@@ -204,7 +186,7 @@ def ioSign(c):
     file = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+')
     file.write(c + ' | ' + timeIO + '\n')
     file.close()
-    refreshListboxes('io')
+    refreshListboxes()
     if not autoClocked:
         hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
         if c == 'i':
@@ -222,8 +204,7 @@ def confirmQuit():
     passEntry.pack(pady=2)
 
     def areYouSure():
-        if passEntry.get() == opts['adminPass']:
-            root.destroy()
+        if passEntry.get() == opts['adminPass']: root.destroy()
 
     framebutton = Frame(qtWin)
     quitit = Button(framebutton, text='Quit',  font='Courier 14 bold', fg='red', command=areYouSure)
@@ -239,15 +220,12 @@ def main():
     framelist = Frame(root)
     scrolbar = Scrollbar(framelist, orient=VERTICAL)
     namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18')
-    iolist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18', justify=CENTER)
 
-    namelist.config(width=35, height=20)
-    iolist.config(width=1, height=18)
-    scrolbar.config(command=setScroll, width=52)
+    namelist.config(width=36, height=20)
+    scrolbar.config(command=namelist.yview, width=52)
 
     scrolbar.pack(side=RIGHT, fill=Y)
     namelist.pack(side=LEFT, fill=BOTH, expand=1)
-    iolist.pack(side=LEFT, fill=BOTH, expand=1)
     framelist.pack(side=LEFT, padx=12)
 
     logo1720 = PhotoImage(file='assets/logo.gif')
