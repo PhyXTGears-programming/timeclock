@@ -25,6 +25,12 @@ def addNameDB(full,user,job=''):
   file = open(opts['usernameFile'], 'a+')
   file.write(full.title()+'|'+user.title()+'\n') #full+'|'+user+'|'+job+'\n'
   file.close()
+def sortUsernameList():
+    with open(opts['usernameFile']) as u:
+        names = [x.title() for x in u.readlines()]
+        names.sort()
+    with open(opts['usernameFile'], 'w') as f:
+        f.write(''.join(names))
 
 def calcTotalTime(n): #returns total time in seconds
   total = 0

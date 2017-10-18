@@ -11,8 +11,11 @@ import osk
 
 root = Tk()
 nuWin = None
-fullnameEntry = usernameEntry = errorLabel = vkey = None
-namelist = iolist = iotext = None
+
+# *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
+nuFullE = nuUserE = nuErrT = vkey = None
+nameL = infoT = None
+
 # root.config(bg='#000000')
 root.title('PhyxtGears1720io')
 root.geometry('800x600')  # 1024x768
@@ -36,12 +39,11 @@ open(opts['usernameFile'], 'a+').close()
 
 
 def finishNewUser():
-    global nuWin
-    global fullnameEntry, usernameEntry, errorLabel
+    global nuWin, nuFullE, nuUserE, nuErrT
     errmsg = 'no error'
 
-    user = usernameEntry.get()
-    full = fullnameEntry.get()
+    user = nuUserE.get()
+    full = nuFullE.get()
 
     if user == '' or full == '':
         errmsg = 'Err: All boxes must be filled'
@@ -51,21 +53,21 @@ def finishNewUser():
         errmsg = 'Err: Fullname already exists.'
 
     if errmsg == 'no error':
-        errorLabel.config(text='Making User\n-\nNo Error!', fg='green')
+        nuErrT.config(text='Making User\n-\nNo Error!', fg='green')
         addNameDB(full, user)  # todo: add job options
         refreshListboxes()
         nuWin.destroy()
     else:
-        errorLabel.config(text=errmsg, fg='red')
+        nuErrT.config(text=errmsg, fg='red')
 
 
 def setVK(choice):
-    global vkey, fullnameEntry, usernameEntry
+    global vkey, nuFullE, nuUserE
     # vkey.destroy()
     if choice == 1:
-        vkey.attach = fullnameEntry
+        vkey.attach = nuFullE
     elif choice == 2:
-        vkey.attach = usernameEntry
+        vkey.attach = nuUserE
 
 
 def quitNewUser():  # quit new user (dumb dank hack)
@@ -75,7 +77,7 @@ def quitNewUser():  # quit new user (dumb dank hack)
 
 def makeNewUserWindow():  # new user window
     global root, nuWin
-    global fullnameEntry, usernameEntry, errorLabel, vkey
+    global nuFullE, nuUserE, nuErrT, vkey
 
     nuWin = Toplevel(root)
     nuWin.title('Create new user')
@@ -88,18 +90,18 @@ def makeNewUserWindow():  # new user window
     Label(inputframe, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
     Label(inputframe, text='Username: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
 
-    fullnameEntry = Entry(inputframe, font='Courier 18', width=42)  # full name textbox
-    usernameEntry = Entry(inputframe, font='Courier 18', width=42)  # username  textbox
+    nuFullE = Entry(inputframe, font='Courier 18', width=42)  # full name textbox
+    nuUserE = Entry(inputframe, font='Courier 18', width=42)  # username  textbox
 
-    fullnameEntry.bind('<FocusIn>', lambda e: setVK(1))
-    usernameEntry.bind('<FocusIn>', lambda e: setVK(2))
+    nuFullE.bind('<FocusIn>', lambda e: setVK(1))
+    nuUserE.bind('<FocusIn>', lambda e: setVK(2))
 
-    fullnameEntry.grid(row=0, column=1)
-    usernameEntry.grid(row=1, column=1)
+    nuFullE.grid(row=0, column=1)
+    nuUserE.grid(row=1, column=1)
     inputframe.pack()
 
-    errorLabel = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
-    errorLabel.pack()
+    nuErrT = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
+    nuErrT.pack()
 
     finishButton = Button(butonframe, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser)  # i hacked google
     cancelButton = Button(butonframe, text='Cancel',     font='Courier 14', fg='red',  width=16, command=quitNewUser)
@@ -107,21 +109,15 @@ def makeNewUserWindow():  # new user window
     cancelButton.grid(row=0, column=0)
     butonframe.pack()
 
-    vkey = osk.vk(parent=vkeyframe, attach=fullnameEntry)  # on screen alphabet keyboard
+    vkey = osk.vk(parent=vkeyframe, attach=nuFullE)  # on screen alphabet keyboard
     vkeyframe.pack()
 
-def sortUsernameList():
-    with open(opts['usernameFile']) as u:
-        names = [x.title() for x in u.readlines()]
-        names.sort()
-    with open(opts['usernameFile'], 'w') as f:
-        f.write(''.join(names))
 
 def refreshListboxes(n=None):
-    global namelist, iotext
+    global nameL, infoT
     if n == None:
-        select = namelist.curselection()
-        namelist.delete(0, END)
+        select = nameL.curselection()
+        nameL.delete(0, END)
         sortUsernameList()
 
         nameIO = ''
@@ -134,22 +130,24 @@ def refreshListboxes(n=None):
                     typeIO = f.readlines()[-1][0] #iolist.insert(END, f.readlines()[-1][0])
             except:
                 typeIO = 'N'
-            namelist.insert(END, nameIO+' '*(35-len(nameIO))+typeIO)
+            nameL.insert(END, nameIO+' '*(35-len(nameIO))+typeIO)
 
-        if select: namelist.see(select[0])
+        if select: nameL.see(select[0])
 
 
 def ioSign(c):
-    global namelsit, iotext
-    if len(namelist.curselection()) == 0:
-        iotext.config(text='Nothing Selected!', fg='red')
+    global nameL, infoT
+    if len(nameL.curselection()) == 0:
+        infoT.config(text='Nothing Selected!', fg='red')
         return
 
-    nameIO = namelist.get(namelist.curselection()[0])[:-1]
+    nameIO = nameL.get(nameL.curselection()[0])[:-1]
     timeIO = time.strftime(opts['ioForm'])
     autoClocked = False
 
     open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+').close()  # make file if it doesn't exist
+
+    # REWRITE THIS WHOLE THING
     with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
         lines = [line.strip() for line in f]
         quitSign = False
@@ -158,26 +156,26 @@ def ioSign(c):
             nfile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+')
             nfile.write('\n'.join(lines[:-1]) + '\n')
             nfile.close()
-            iotext.config(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
+            infoT.config(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
             autoClocked = True
             # note for future annoucement system
             # have annoucements over phone system annoucing the time till autoclockout cutoff
             # "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
         elif lines and lines[-1][0] in 'ioa':
             if lines[-1][0] == 'i' and c == 'i':
-                iotext.config(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
+                infoT.config(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
                 f.close()
                 return
             elif lines[-1][0] in 'oa' and c == 'o':
                 if lines[-1][0] == 'o':
-                    iotext.config(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
+                    infoT.config(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
                 elif lines[-1][0] == 'a':
-                    iotext.config(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
+                    infoT.config(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
                 f.close()
                 return
         else:
             if not lines and c == 'o':
-                iotext.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
+                infoT.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
                 f.close()
                 return
 
@@ -190,12 +188,12 @@ def ioSign(c):
     if not autoClocked:
         hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
         if c == 'i':
-            iotext.config(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
+            infoT.config(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
         elif c == 'o':
-            iotext.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
+            infoT.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
 
 
-def confirmQuit():
+def confirmQuit(): # quit program window with passcode protection
     global root, opts
     qtWin = Toplevel(root)
     qtWin.title('Quit?')
@@ -206,43 +204,43 @@ def confirmQuit():
     def areYouSure():
         if passEntry.get() == opts['adminPass']: root.destroy()
 
-    framebutton = Frame(qtWin)
-    quitit = Button(framebutton, text='Quit',  font='Courier 14 bold', fg='red', command=areYouSure)
-    cancit = Button(framebutton, text='Cancel', font='Courier 14 bold', fg='blue', command=qtWin.destroy)
+    buttonF = Frame(qtWin)
+    quitit = Button(buttonF, text='Quit',  font='Courier 14 bold', fg='red', command=areYouSure)
+    cancit = Button(buttonF, text='Cancel', font='Courier 14 bold', fg='blue', command=qtWin.destroy)
     quitit.grid(column=0, row=0)
     cancit.grid(column=1, row=0)
-    framebutton.pack(pady=2)
+    buttonF.pack(pady=2)
     vnum = osk.vn(parent=qtWin, attach=passEntry)
 
 
 def main():
-    global namelist, iolist, iotext
-    framelist = Frame(root)
-    scrolbar = Scrollbar(framelist, orient=VERTICAL)
-    namelist = Listbox(framelist, selectmode=SINGLE, yscrollcommand=scrolbar.set, font='Courier 18')
+    # *F = frame, *S = scroll, *L = list, *B = button, *T = text
+    global nameL, infoT
+    listF = Frame(root)
+    listS = Scrollbar(listF, orient=VERTICAL)
+    nameL = Listbox(listF, selectmode=SINGLE, yscrollcommand=listS.set, font='Courier 18')
+    nameL.config(width=36, height=20)
+    listS.config(command=nameL.yview, width=52)
 
-    namelist.config(width=36, height=20)
-    scrolbar.config(command=namelist.yview, width=52)
-
-    scrolbar.pack(side=RIGHT, fill=Y)
-    namelist.pack(side=LEFT, fill=BOTH, expand=1)
-    framelist.pack(side=LEFT, padx=12)
+    listS.pack(side=RIGHT, fill=Y)
+    nameL.pack(side=LEFT, fill=BOTH, expand=1)
+    listF.pack(side=LEFT, padx=12)
 
     logo1720 = PhotoImage(file='assets/logo.gif')
     Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
     Label(root, image=logo1720).pack()
 
-    frameio = Frame(root)
-    innbutton = Button(frameio, text='IN',  font='Courier 16 bold', bg='green', fg='white', command=lambda: ioSign('i'), width=12, height=2)
-    outbutton = Button(frameio, text='OUT', font='Courier 16 bold', bg='red',  fg='white',   command=lambda: ioSign('o'), width=12, height=2)
-    iotext = Label(frameio, text='', font='Courier 16 bold', height=6, wraplength=192, justify=CENTER)
-    newbutton = Button(frameio, text='New User', font='Courier 16 bold', bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
+    ioF = Frame(root)
+    iIOB = Button(ioF, text='IN',  font='Courier 16 bold', bg='green', fg='white', command=lambda: ioSign('i'), width=12, height=2)
+    oIOB = Button(ioF, text='OUT', font='Courier 16 bold', bg='red',  fg='white',   command=lambda: ioSign('o'), width=12, height=2)
+    infoT = Label(ioF, text='', font='Courier 16 bold', height=6, wraplength=192, justify=CENTER)
+    newB = Button(ioF, text='New User', font='Courier 16 bold', bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
-    innbutton.pack(pady=4)
-    outbutton.pack(pady=4)
-    iotext.pack()
-    newbutton.pack(pady=4)
-    frameio.pack()
+    iIOB.pack(pady=4)
+    oIOB.pack(pady=4)
+    infoT.pack()
+    newB.pack(pady=4)
+    ioF.pack()
 
     Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT, padx=12)
 
