@@ -13,13 +13,12 @@ root = Tk()
 nuWin = None
 
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
-nameL = infoT = nuFullE = nuUserE = nuErrT = vkey = None
+nameL = infoT = None
 
 # root.config(bg='#000000')
 root.title('PhyxtGears1720io')
 root.geometry('800x600')  # 1024x768
-if system() != 'Windows':
-    root.attributes('-fullscreen', True)
+if system() != 'Windows': root.attributes('-fullscreen', True)
 '''
 NOTES:
   tabs for each team (FLL and FIRST)
@@ -34,49 +33,11 @@ try:
 except:
     pass
 
-open(opts['usernameFile'], 'a+').close()
-
-
-def finishNewUser():
-    global nuWin, nuFullE, nuUserE, nuErrT
-    errmsg = 'no error'
-
-    user = nuUserE.get()
-    full = nuFullE.get()
-
-    if user == '' or full == '':
-        errmsg = 'Err: All boxes must be filled'
-    elif checkNameDB(user):
-        errmsg = 'Err: Username already exists.'
-    elif checkNameDB(full):
-        errmsg = 'Err: Fullname already exists.'
-
-    if errmsg == 'no error':
-        nuErrT.config(text='Making User\n-\nNo Error!', fg='green')
-        addNameDB(full, user)  # todo: add job options
-        refreshListboxes()
-        nuWin.destroy()
-    else:
-        nuErrT.config(text=errmsg, fg='red')
-
-
-def setVK(choice):
-    global vkey, nuFullE, nuUserE
-    # vkey.destroy()
-    if choice == 1:
-        vkey.attach = nuFullE
-    elif choice == 2:
-        vkey.attach = nuUserE
-
-
-def quitNewUser():  # quit new user (dumb dank hack)
-    global nuWin
-    nuWin.destroy()
+mkfile(opts['usernameFile'])
 
 
 def makeNewUserWindow():  # new user window
     global root, nuWin
-    global nuFullE, nuUserE, nuErrT, vkey
 
     nuWin = Toplevel(root)
     nuWin.title('Create new user')
@@ -92,6 +53,9 @@ def makeNewUserWindow():  # new user window
     nuFullE = Entry(inputF, font='Courier 18', width=42)  # full name textbox
     nuUserE = Entry(inputF, font='Courier 18', width=42)  # username  textbox
 
+    def setVK(choice):
+        if   choice == 1: vkey.attach = nuFullE
+        elif choice == 2: vkey.attach = nuUserE
     nuFullE.bind('<FocusIn>', lambda e: setVK(1))
     nuUserE.bind('<FocusIn>', lambda e: setVK(2))
 
@@ -102,8 +66,22 @@ def makeNewUserWindow():  # new user window
     nuErrT = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
     nuErrT.pack()
 
+    def finishNewUser():
+        errmsg,user,full = 'None',nuUserE.get(),nuFullE.get()
+
+        if user == '' or full == '': errmsg = 'Err: All boxes must be filled'
+        elif checkNameDB(full): errmsg = 'Err: Fullname already exists.'
+        elif checkNameDB(user): errmsg = 'Err: Username already exists.'
+
+        if errmsg == 'None':
+            addNameDB(full, user)  # todo: add job options
+            refreshListboxes()
+            nuWin.destroy()
+        else:
+            nuErrT.config(text=errmsg, fg='red')
+
     finB = Button(buttnF, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser)
-    canB = Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=quitNewUser)
+    canB = Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=nuWin.destroy)
     finB.grid(row=0, column=1)
     canB.grid(row=0, column=0)
     buttnF.pack()
@@ -143,12 +121,11 @@ def ioSign(c):
     timeIO = time.strftime(opts['ioForm'])
     autoClocked = False
 
-    open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+').close()  # make file if it doesn't exist
+    mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
 
     # REWRITE THIS WHOLE THING
     with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
         lines = [line.strip() for line in f]
-        quitSign = False
         inTimeFrame = lines and lines[-1][0] == 'a' and datetime.strptime(lines[-1][4:], opts['ioForm']) < datetime.now() < datetime.now().replace(hour=4, minute=30, second=0, microsecond=0)
         if lines and c == 'o' and lines[-1][0] == 'a' and inTimeFrame:  # and datetime.now() < datetime.strptime(opts['autoClockLim'])
             nfile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+')

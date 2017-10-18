@@ -50,6 +50,8 @@ def calcTotalTime(n): #returns total time in seconds
     prev = line
   return total
 
+def mkfile(t): open(t,'a+').close()
+
 '''
 def recordIO(n,io):
   file = open(opts['path']+n+'.txt', 'a+') # create file if it doesnt exist
