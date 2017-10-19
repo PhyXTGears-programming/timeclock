@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime
+from datetime import date
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist

@@ -1,8 +1,8 @@
-import datetime
 import os
 import platform
 import time
 import tkinter as tkr
+from datetime import datetime
 from tkinter import (Button, Entry, Frame, Label, Listbox, PhotoImage,
                      Scrollbar, Tk, Toplevel)
 
@@ -132,7 +132,9 @@ def ioSign(c):
 
     readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
     lines = [line.strip() for line in readFile]
+    print(lines)
     inTimeFrame = datetime.strptime(lines[-1][4:], opts['ioForm']) < theNow < theNow.replace(hour=4, minute=30, second=0, microsecond=0)
+    print(inTimeFrame)
     if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
         # RECOVERING AUTOCLOCKOUT
         with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+') as f:
@@ -155,6 +157,7 @@ def ioSign(c):
     else:
         # NORMAL SIGN IN/OUT
         with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
+            print(c + ' | ' + timeIO + '\n')
             f.write(c + ' | ' + timeIO + '\n')
         hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
         if c == 'i':
