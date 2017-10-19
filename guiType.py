@@ -40,7 +40,7 @@ def makeNewUserWindow():  # new user window
 
 	nuWin = Toplevel(root)
 	nuWin.title('Create new user')
-	# nuWin.geometry('460x160')
+	#nuWin.geometry('460x160')
 
 	inputF = Frame(nuWin)
 	buttnF = Frame(nuWin)
@@ -70,12 +70,9 @@ def makeNewUserWindow():  # new user window
 	def finishNewUser():
 		errmsg, user, full = 'None', nuUserE.get(), nuFullE.get()
 
-		if user == '' or full == '':
-			errmsg = 'Err: All boxes must be filled'
-		elif ioServ.checkNameDB(full):
-			errmsg = 'Err: Fullname already exists.'
-		elif ioServ.checkNameDB(user):
-			errmsg = 'Err: Username already exists.'
+		if user == '' or full == '': errmsg = 'Err: All boxes must be filled'
+		elif ioServ.checkNameDB(full): errmsg = 'Err: Fullname already exists.'
+		elif ioServ.checkNameDB(user): errmsg = 'Err: Username already exists.'
 
 		if errmsg == 'None':
 			ioServ.addNameDB(full, user)  # todo: add job options
@@ -108,8 +105,8 @@ def refreshListboxes(n=None):
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
-			except:  # DO NOT USE BARE EXCEPT
-				pass
+			except:
+				typeIO = 'N'
 			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)) + typeIO)
 	elif n=='single':
 		select = nameL.curselection()[0]
@@ -121,7 +118,7 @@ def refreshListboxes(n=None):
 				typeIO = f.readlines()[-1][0]
 		except:
 			pass
-		nameL.insert(END, nameIO + typeIO)
+		nameL.insert(select, nameIO + typeIO)
 
 
 
@@ -139,7 +136,7 @@ def ioSign(c):
 
 	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
 	lines = [line.strip() for line in readFile]
-	inTimeFrame = lines and datetime.strptime(lines[-1][4:], opts['ioForm']) < theNow < theNow.replace(hour=4, minute=30, second=0, microsecond=0)
+	inTimeFrame = lines and datetime.strptime(lines[-1][5:], opts['ioForm']) < theNow < theNow.replace(hour=4, minute=30, second=0, microsecond=0)
 	else_var = False
 	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
 		# RECOVERING AUTOCLOCKOUT
