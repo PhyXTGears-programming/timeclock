@@ -132,9 +132,8 @@ def ioSign(c):
 
     readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
     lines = [line.strip() for line in readFile]
-    print(lines)
-    inTimeFrame = datetime.strptime(lines[-1][4:], opts['ioForm']) < theNow < theNow.replace(hour=4, minute=30, second=0, microsecond=0)
-    print(inTimeFrame)
+    inTimeFrame = lines and datetime.strptime(lines[-1][4:], opts['ioForm']) < theNow < theNow.replace(hour=4, minute=30, second=0, microsecond=0)
+    else_var = False
     if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
         # RECOVERING AUTOCLOCKOUT
         with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+') as f:
@@ -142,7 +141,7 @@ def ioSign(c):
         # note for future annoucement system: have annoucements over phone system annoucing the time till autoclockout cutoff
         # ie: "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
         infoT.config(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
-    elif lines and lines[-1][0] in 'ioa':
+    elif lines and lines[-1][0] == c:
         # DOUBLE SIGN IN/OUT
         if c == 'i':
             infoT.config(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
@@ -156,8 +155,8 @@ def ioSign(c):
         infoT.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
     else:
         # NORMAL SIGN IN/OUT
+        else_var = True
         with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
-            print(c + ' | ' + timeIO + '\n')
             f.write(c + ' | ' + timeIO + '\n')
         hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
         if c == 'i':
@@ -165,6 +164,11 @@ def ioSign(c):
         elif c == 'o':
             infoT.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
         # note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
+
+    if not else_var:
+        with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
+            f.write(c + ' | ' + timeIO + '\n')
+
     readFile.close()
 
     refreshListboxes()
