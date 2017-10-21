@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
@@ -5,58 +6,59 @@ from datetime import datetime
 
 
 def loadOpts():
-	opts = {}
-	for line in open('opts.txt'):  # load options
-		line = line.strip().split(' : ')
-		opts[line[0]] = line[1]
-	return opts
+    opts = {}
+    os.chdir(os.path.dirname(__file__))
+    for line in open('opts.txt'):  # load options
+        line = line.strip().split(' : ')
+        opts[line[0]] = line[1]
+    return opts
 
 
 opts = loadOpts()
 
 
 def checkNameDB(n):  # check for if a name exists already
-	for line in open(opts['usernameFile']):
-		for item in line.split("|"):
-			if item.lower().replace(' ', '') == n.lower().replace(' ', ''):
-				return True
-	return False
+    for line in open(opts['usernameFile']):
+        for item in line.split("|"):
+            if item.lower().replace(' ', '') == n.lower().replace(' ', ''):
+                return True
+    return False
 
 
 def addNameDB(full, user, job=''):  # add a new name to the list
-	file = open(opts['usernameFile'], 'a+')
-	file.write(full.title() + '|' + user.title() + '\n')  # full+'|'+user+'|'+job+'\n'
-	file.close()
+    file = open(opts['usernameFile'], 'a+')
+    file.write(full.title() + '|' + user.title() + '\n')  # full+'|'+user+'|'+job+'\n'
+    file.close()
 
 
 def sortUsernameList():  # alphebetize names
-	with open(opts['usernameFile']) as u:
-		names = [x.title() for x in u.readlines()]
-		names.sort()
-	with open(opts['usernameFile'], 'w') as f:
-		f.write(''.join(names))
+    with open(opts['usernameFile']) as u:
+        names = [x.title() for x in u.readlines()]
+        names.sort()
+    with open(opts['usernameFile'], 'w') as f:
+        f.write(''.join(names))
 
 
 def calcTotalTime(n):  # returns total time in seconds
-	total = 0
-	iLin, oLin = '', ''
-	prev = 'n'
-	for line in open(opts['pathTime'] + n + '.txt'):
-		line = line.strip()
-		lastIOA = prev[0]
-		currIOA = line[0]
+    total = 0
+    iLin, oLin = '', ''
+    prev = 'n'
+    for line in open(opts['pathTime'] + n + '.txt'):
+        line = line.strip()
+        lastIOA = prev[0]
+        currIOA = line[0]
 
-		if currIOA == 'i':
-			iLin = line[4:]
-		elif currIOA == 'o' and lastIOA != 'o' and iLin != '':
-			oLin = line[4:]
-			total = total + (datetime.strptime(oLin, opts['ioForm']) - datetime.strptime(iLin, opts['ioForm'])).total_seconds()
-		prev = line
-	return total
+        if currIOA == 'i':
+            iLin = line[4:]
+        elif currIOA == 'o' and lastIOA != 'o' and iLin != '':
+            oLin = line[4:]
+            total = total + (datetime.strptime(oLin, opts['ioForm']) - datetime.strptime(iLin, opts['ioForm'])).total_seconds()
+        prev = line
+    return total
 
 
 def mkfile(t):
-	open(t, 'a+').close()  # make files if they dont exist
+    open(t, 'a+').close()  # make files if they dont exist
 
 
 '''
