@@ -1,6 +1,7 @@
 ioForm : %H:%M:%S %d.%m.%Y
 pathTime : ./times/
 autoClockOut : 00:00:00
-autoClockLim : 03:00:00
+autoClockLim : 05:30:00
 usernameFile : usernameFile.txt
 adminPass : 17201720
+hoursLocation: enterLoationOf_timeclock-hours
