@@ -161,14 +161,14 @@ def ioSign(c):
         infoT.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
     else:
         # NORMAL SIGN IN/OUT
+        IOpath = nameIO.replace(' ', '')
         else_var = True
-        with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
+        with open(opts['pathTime'] + IOpath + '.txt', 'a+') as f:
             f.write(c + ' | ' + timeIO + '\n')
-        hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
         if c == 'i':
-            infoT.config(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
+            infoT.config(text=nameIO.split()[0] + ' signed in!' + ioServ.getTimeString(IOpath), fg='Green')
         elif c == 'o':
-            infoT.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
+            infoT.config(text=nameIO.split()[0] + ' signed out! ' + ioServ.getTimeString(IOpath), fg='Red')
         # note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
 
     if not else_var:
