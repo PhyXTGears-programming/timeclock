@@ -9,8 +9,10 @@ def loadOpts():
     opts = {}
     os.chdir(os.path.dirname(__file__))
     for line in open('opts.txt'):  # load options
-        line = line.strip().split(' : ')
-        opts[line[0]] = line[1]
+        line = line.split("#")[0].strip().strip(" ")
+        if line and line[0] != "#":
+            line = line.strip().split(' : ')
+            opts[line[0]] = line[1].split('#')[0].strip(' ')
     return opts
 
 
