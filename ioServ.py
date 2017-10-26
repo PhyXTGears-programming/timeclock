@@ -1,15 +1,36 @@
+import os
 from datetime import datetime
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
 
-
 def loadOpts():
 	opts = {}
+	os.chdir(os.path.dirname(__file__))
+	if not os.path.exists('opts.txt'): generateDefaultOpts()
 	for line in open('opts.txt'):  # load options
-		line = line.strip().split(' : ')
-		opts[line[0]] = line[1]
+		line = line.split("#")[0].strip().strip(" ") 
+		if line and line[0] != "#": 
+			line = line.strip().split(' : ') 
+			opts[line[0]] = line[1].split('#')[0].strip(' ') 
 	return opts
+
+def generateDefaultOpts():
+	print('generated opts')
+	fileString = """ 
+	ioForm : %H:%M:%S %d.%m.%Y # Leave this unless you know what you are doing, this sets the format the time is written to the text files 
+	pathTime : ./times/ # path to store times 
+	autoClockOut : 00:00:00 # time to automatically sign out everyone signed in (00:00:00 is midnight) 
+	autoClockLim : 05:00:00 # If the person signs out before this time, the auto clock out is not counted 
+	usernameFile : usernameFile.txt # file to save usernames in 
+	adminPass : 1234 # passcode used to shut down program when it is full screen 
+	hoursLocation : enterLoationOf_timeclock-hours # location of PhyXTGears-programming/timeclock library 
+	# If you leave hoursLocation the same, most time calculation functions will be disabled 
+	"""
+	os.chdir(os.path.dirname(__file__))
+	#input("Press enter to overwrite current options file with the default") 
+	with open('opts.txt', 'w') as file: file.write(fileString.strip().replace("\t", ""))
+		
 
 
 opts = loadOpts()

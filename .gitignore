@@ -1,6 +1,7 @@
-Times/
-!Times/.gitkeep
+times/
+!times/.gitkeep
 usernameFile.txt
+opts.txt
 
 ##### ---------- PYTHON GITIGNORE ---------- #####
 
