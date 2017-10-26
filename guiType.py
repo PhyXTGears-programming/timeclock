@@ -119,6 +119,7 @@ def refreshListboxes(n=None):
 		except:
 			pass
 		nameL.insert(select, nameIO + typeIO)
+		nameL.see(select+1)
 
 
 
