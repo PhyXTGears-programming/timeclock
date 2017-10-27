@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+import numpy as np
+import matplotlib.pyplot as plt
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
@@ -79,6 +81,25 @@ def calcTotalTime(n):  # returns total time in seconds
 def mkfile(t):
 	open(t, 'a+').close()  # make files if they dont exist
 
+
+def generateBarGraph():
+    names = []
+    posit = []
+    times = []
+    for root, dirs, filenames in os.walk('times'):
+        for f in filenames:
+            names += [f[:-4]]
+            times += [calcTotalTime(f[:-4].replace(' ',''))/60/60]
+            #print("Total Secs: " + str(totalTime))
+            #print(f.split(".")[0] + ": " + formatTimeOL(totalTime))
+            #print(f.split(".")[0] + ":\n" + formatTime(totalTime))
+            #print("\n")
+    xposi = np.arange(len(names))
+    plt.bar(xposi,times, align='center',alpha=0.5)
+    plt.xticks(xposi,names)
+    plt.ylabel('Time (in hours)')
+    plt.title('Timeclock Times!')
+    plt.show()
 
 '''
 def recordIO(n,io):

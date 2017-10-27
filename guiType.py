@@ -230,6 +230,7 @@ def main():
 	ioF.pack()
 
 	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT, padx=12)
+	Button(text='GRAPH',font='Courier 16 bold', height=1, fg='orange', command=ioServ.generateBarGraph).pack(side=RIGHT, padx=12)
 
 	refreshListboxes()
 
