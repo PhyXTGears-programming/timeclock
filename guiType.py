@@ -1,6 +1,7 @@
 import os
 import platform
 import time
+import importlib
 from datetime import datetime
 from tkinter import *
 
@@ -230,7 +231,12 @@ def main():
 	ioF.pack()
 
 	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT, padx=12)
-	Button(text='GRAPH',font='Courier 16 bold', height=1, fg='orange', command=ioServ.generateBarGraph).pack(side=RIGHT, padx=12)
+
+	try:
+		importlib.import_module('matplotlib')
+		Button(text='GRAPH',font='Courier 16 bold', height=1, fg='orange', command=ioServ.generateBarGraph).pack(side=RIGHT, padx=12)
+	except ImportError:
+		print("matplotlib couldn't be imported.")
 
 	refreshListboxes()
 

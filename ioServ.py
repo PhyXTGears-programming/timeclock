@@ -1,7 +1,8 @@
 import os
+import re
+import importlib
 from datetime import datetime
-import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
@@ -80,24 +81,39 @@ def mkfile(t):
 	open(t, 'a+').close()  # make files if they dont exist
 
 
-def generateBarGraph():
-    names = []
-    posit = []
-    times = []
-    for root, dirs, filenames in os.walk('times'):
-        for f in filenames:
-            names += [f[:-4]]
-            times += [calcTotalTime(f[:-4].replace(' ',''))/60/60]
-            #print("Total Secs: " + str(totalTime))
-            #print(f.split(".")[0] + ": " + formatTimeOL(totalTime))
-            #print(f.split(".")[0] + ":\n" + formatTime(totalTime))
-            #print("\n")
-    xposi = np.arange(len(names))
-    plt.bar(xposi,times, align='center',alpha=0.5)
-    plt.xticks(xposi,names)
-    plt.ylabel('Time (in hours)')
-    plt.title('Timeclock Times!')
-    plt.show()
+try:
+	plt = importlib.import_module('matplotlib.pyplot')
+	def generateBarGraph():
+		def camel_case_split(identifier): # https://stackoverflow.com/questions/29916065/how-to-do-camelcase-split-in-python
+			matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', identifier)
+			return [m.group(0) for m in matches]
+
+		#bargraph = plt.bar(0, 10,0.8, None, 'edge')
+
+		names = []
+		posit = []
+		times = []
+
+		for root, dirs, filenames in os.walk('times'):
+			for l in filenames:
+				name = camel_case_split(l[:-4])
+				lastname = ''
+				if len(name) > 1 and name[1]: lastname = name[1][0]
+				names += [name[0]+lastname]
+				times += [calcTotalTime(''.join(name))/60/60]
+				#print("Total Secs: " + str(totalTime))
+				#print(f.split(".")[0] + ": " + formatTimeOL(totalTime))
+				#print(f.split(".")[0] + ":\n" + formatTime(totalTime))
+				#print("\n")
+
+		xposi = list(range(len(names)))
+		plt.bar(xposi,times, align='center',alpha=0.5)
+		plt.xticks(xposi,names)
+		plt.ylabel('Time (in hours)')
+		plt.title('Timeclock Times!')
+		plt.show()
+except ImportError:
+	print("matplotlib couldn't be imported.")
 
 '''
 def recordIO(n,io):
