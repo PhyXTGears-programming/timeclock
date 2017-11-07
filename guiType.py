@@ -126,22 +126,26 @@ def refreshListboxes(n=None):
 
 
 def ioSign(c):
+
 	global nameL, infoT
 	if len(nameL.curselection()) == 0:
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
 	nameIO = nameL.get(nameL.curselection()[0])[:-1]
 	timeIO = time.strftime(opts['ioForm'])
+	open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+').close()
 	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
 	lines = [line.strip() for line in readFile]
 
-	theNow = datetime.now()
-	theIOA = datetime.strptime(lines[-1][5:], opts['ioForm'])
+	if lines:
+		theNow = datetime.now()
+		theIOA = datetime.strptime(lines[-1][5:], opts['ioForm'])
 	autoClocked = False
 
 	ioServ.mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
 
 	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=4, minute=30, second=0, microsecond=0) + timedelta(days=1))#theNow.replace(hour=4, minute=30, second=0, microsecond=0)
+
 	else_var = False
 	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
 		# RECOVERING AUTOCLOCKOUT
@@ -150,7 +154,7 @@ def ioSign(c):
 		# note for future annoucement system: have annoucements over phone system annoucing the time till autoclockout cutoff
 		# ie: "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
 		alertWindow(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
-	elif lines and lines[-1][0] == c or (lines[-1][0]=='a' and c=='o'):
+	elif lines and (lines[-1][0] == c or (lines[-1][0]=='a' and c=='o')):
 		# DOUBLE SIGN IN/OUT
 		if c == 'i':
 			alertWindow(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
