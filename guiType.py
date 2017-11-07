@@ -148,7 +148,7 @@ def ioSign(c):
 		# note for future annoucement system: have annoucements over phone system annoucing the time till autoclockout cutoff
 		# ie: "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
 		alertWindow(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
-	elif lines and lines[-1][0] == c:
+	elif lines and lines[-1][0] == c or (lines[-1][0]=='a' and c=='o'):
 		# DOUBLE SIGN IN/OUT
 		if c == 'i':
 			alertWindow(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
