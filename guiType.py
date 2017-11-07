@@ -2,7 +2,7 @@ import os
 import platform
 import time
 import importlib
-from datetime import datetime
+from datetime import datetime,timedelta
 from tkinter import *
 
 import ioServ
@@ -130,16 +130,18 @@ def ioSign(c):
 	if len(nameL.curselection()) == 0:
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
-	theNow = datetime.now()
 	nameIO = nameL.get(nameL.curselection()[0])[:-1]
 	timeIO = time.strftime(opts['ioForm'])
+	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
+	lines = [line.strip() for line in readFile]
+
+	theNow = datetime.now()
+	theIOA = datetime.strptime(lines[-1][5:], opts['ioForm'])
 	autoClocked = False
 
 	ioServ.mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
 
-	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
-	lines = [line.strip() for line in readFile]
-	inTimeFrame = lines and datetime.strptime(lines[-1][5:], opts['ioForm']) < theNow < theNow.replace(hour=4, minute=30, second=0, microsecond=0)
+	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=4, minute=30, second=0, microsecond=0) + timedelta(days=1))#theNow.replace(hour=4, minute=30, second=0, microsecond=0)
 	else_var = False
 	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
 		# RECOVERING AUTOCLOCKOUT
