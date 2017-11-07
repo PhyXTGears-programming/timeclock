@@ -12,7 +12,8 @@ root = Tk()
 nuWin = None
 
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
-nameL = infoT = None
+nameL = infoT = logoImgs = logoL = None
+logoCurrent = -1 # start on 0, since updateLogo adds 1
 
 #root.config(bg='#000000')
 root.title('PhyxtGears1720io')
@@ -200,10 +201,17 @@ def confirmQuit():  # quit program window with passcode protection
 	buttonF.pack(pady=2)
 	vnum = osk.vn(parent=qtWin, attach=passEntry)
 
+def updateLogo():
+	global logoImgs, logoL, logoCurrent
+	logoCurrent += 1
+	if logoCurrent >= len(logoImgs): logoCurrent = 0
+	logoL.config(image=logoImgs[logoCurrent])
+	root.after(5000,updateLogo)
+
 
 def main():
 	# *F = frame, *S = scroll, *L = list, *B = button, *T = text
-	global nameL, infoT
+	global nameL, infoT, logoImgs, logoL
 	listF = Frame(root)
 	listS = Scrollbar(listF, orient=VERTICAL)
 	nameL = Listbox(listF, selectmode=SINGLE, yscrollcommand=listS.set, font='Courier 18')
@@ -214,9 +222,10 @@ def main():
 	nameL.pack(side=LEFT, fill=BOTH, expand=1)
 	listF.pack(side=LEFT, padx=12)
 
-	logo1720 = PhotoImage(file='assets/logo.gif')
+	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483.gif'),PhotoImage(file='assets/34416-2.gif')]
 	Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
-	Label(root, image=logo1720).pack()
+	logoL = Label(root, image=logoImgs[0]); logoL.pack()
+	updateLogo()
 
 	ioF = Frame(root)
 	iIOB = Button(ioF, text='IN',  font='Courier 16 bold', bg='green', fg='white', command=lambda: ioSign('i'), width=12, height=2)
