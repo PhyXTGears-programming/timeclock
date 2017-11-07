@@ -128,7 +128,7 @@ def refreshListboxes(n=None):
 def ioSign(c):
 	global nameL, infoT
 	if len(nameL.curselection()) == 0:
-		infoT.config(text='Nothing Selected!', fg='orange')
+		alertWindow(text='Nothing Selected!', fg='orange')
 		return
 	theNow = datetime.now()
 	nameIO = nameL.get(nameL.curselection()[0])[:-1]
@@ -147,19 +147,19 @@ def ioSign(c):
 			f.write('\n'.join(lines[:-1]) + '\n' + c + ' | ' + timeIO + '\n')
 		# note for future annoucement system: have annoucements over phone system annoucing the time till autoclockout cutoff
 		# ie: "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
-		infoT.config(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
+		alertWindow(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
 	elif lines and lines[-1][0] == c:
 		# DOUBLE SIGN IN/OUT
 		if c == 'i':
-			infoT.config(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
+			alertWindow(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
 		elif c == 'o':
 			if lines[-1][0] == 'o':
-				infoT.config(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
+				alertWindow(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
 			elif lines[-1][0] == 'a':
-				infoT.config(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
+				alertWindow(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
 	elif not lines and c == 'o':
 		# NEVER SIGNED IN BEFORE
-		infoT.config(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
+		alertWindow(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
 	else:
 		# NORMAL SIGN IN/OUT
 		else_var = True
@@ -167,9 +167,9 @@ def ioSign(c):
 			f.write(c + ' | ' + timeIO + '\n')
 		hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
 		if c == 'i':
-			infoT.config(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
+			alertWindow(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
 		elif c == 'o':
-			infoT.config(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
+			alertWindow(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
 		# note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
 
 	if False and not else_var:  # disable extra signios until we can agree its needed.
@@ -179,6 +179,20 @@ def ioSign(c):
 	readFile.close()
 
 	refreshListboxes('single')
+
+def alertWindow(text='',fg='orange',font='Courier 14 bold'):
+	wind = Toplevel(root)
+	wind.geometry('320x140')
+	text = Label(wind, text=text,fg=fg,font=font,height=6,wraplength=300,justify=CENTER)
+	butn = Button(wind, text='OK',bg='orange',fg='white',font='Courier 14 bold',command=lambda: wind.destroy(),width=4,height=1)
+
+	text.place(x=160,y=50,anchor=CENTER)
+	butn.place(x=160,y=110,anchor=CENTER)
+
+	wind.after(3000, wind.destroy)
+	# odd bug, if the window is closed before the window is closed automatically
+	# then the next window only lasts for the remainder of the last window.
+
 
 
 def confirmQuit():  # quit program window with passcode protection
