@@ -1,37 +1,41 @@
+import importlib
 import os
 import re
-import importlib
 from datetime import datetime
-#import matplotlib.pyplot as plt
+
+# import matplotlib.pyplot as plt
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
 
+
 def loadOpts():
 	opts = {}
 	os.chdir(os.path.dirname(__file__))
-	if not os.path.exists('opts.txt'): generateDefaultOpts()
+	if not os.path.exists('opts.txt'):
+		generateDefaultOpts()
 	for line in open('opts.txt'):  # load options
-		line = line.split("#")[0].strip().strip(" ") 
-		if line and line[0] != "#": 
-			line = line.strip().split(' : ') 
-			opts[line[0]] = line[1].split('#')[0].strip(' ') 
+		line = line.split("#")[0].strip().strip(" ")
+		if line and line[0] != "#":
+			line = line.strip().split(' : ')
+			opts[line[0]] = line[1].split('#')[0].strip(' ')
 	return opts
+
 
 def generateDefaultOpts():
 	print('generated opts')
-	fileString = """ 
-	ioForm : %H:%M:%S %d.%m.%Y # Leave this unless you know what you are doing, this sets the format the time is written to the text files 
-	pathTime : ./times/ # path to store times 
-	autoClockOut : 00:00:00 # time to automatically sign out everyone signed in (00:00:00 is midnight) 
-	autoClockLim : 05:00:00 # If the person signs out before this time, the auto clock out is not counted 
-	usernameFile : usernameFile.txt # file to save usernames in 
+	fileString = """
+	ioForm : %H:%M:%S %d.%m.%Y # Leave this unless you know what you are doing, this sets the format the time is written to the text files
+	pathTime : ./times/ # path to store times
+	autoClockOut : 00:00:00 # time to automatically sign out everyone signed in (00:00:00 is midnight)
+	autoClockLim : 05:00:00 # If the person signs out before this time, the auto clock out is not counted
+	usernameFile : usernameFile.txt # file to save usernames in
 	adminPass : 1234 # passcode used to shut down program when it is full screen
 	"""
 	os.chdir(os.path.dirname(__file__))
-	#input("Press enter to overwrite current options file with the default") 
-	with open('opts.txt', 'w') as file: file.write(fileString.strip().replace("\t", ""))
-		
+	# input("Press enter to overwrite current options file with the default")
+	with open('opts.txt', 'w') as file:
+		file.write(fileString.strip().replace("\t", ""))
 
 
 opts = loadOpts()
@@ -59,22 +63,27 @@ def sortUsernameList():  # alphebetize names
 		f.write(''.join(names))
 
 
-def calcTotalTime(n):  # returns total time in seconds
-	total = 0
-	iLin, oLin = '', ''
-	prev = 'n'
-	for line in open(opts['pathTime'] + n + '.txt'):
-		line = line.strip()
-		lastIOA = prev[0]
-		currIOA = line[0]
-
-		if currIOA == 'i':
-			iLin = line[4:]
-		elif currIOA == 'o' and lastIOA != 'o' and iLin != '':
-			oLin = line[4:]
-			total = total + (datetime.strptime(oLin, opts['ioForm']) - datetime.strptime(iLin, opts['ioForm'])).total_seconds()
-		prev = line
-	return total
+def calcTotalTime(n):
+	with open(opts['pathTime'] + n + '.txt', 'r') as userFile:
+		totalTime = 0
+		lastState = "n"
+		lastTime = datetime.now()
+		for currentLine in userFile:
+			currentLine = currentLine.strip()
+			if currentLine:
+				time_str = currentLine[4:]
+				state = currentLine[0]
+				time = datetime.strptime(time_str, opts['ioForm'])
+				if state == "i":
+					lastTime = time
+				elif state == "o":
+					if lastState == "i":
+						totalTime += (time - lastTime).total_seconds()
+			else:
+				state = "n"
+			lastState = state
+			lastTime = time
+		return totalTime
 
 
 def mkfile(t):
@@ -83,12 +92,13 @@ def mkfile(t):
 
 try:
 	plt = importlib.import_module('matplotlib.pyplot')
+
 	def generateBarGraph():
-		def camel_case_split(identifier): # https://stackoverflow.com/questions/29916065/how-to-do-camelcase-split-in-python
+		def camel_case_split(identifier):  # https://stackoverflow.com/questions/29916065/how-to-do-camelcase-split-in-python
 			matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', identifier)
 			return [m.group(0) for m in matches]
 
-		#bargraph = plt.bar(0, 10,0.8, None, 'edge')
+		# bargraph = plt.bar(0, 10,0.8, None, 'edge')
 
 		names = []
 		posit = []
@@ -98,17 +108,18 @@ try:
 			for l in filenames:
 				name = camel_case_split(l[:-4])
 				lastname = ''
-				if len(name) > 1 and name[1]: lastname = name[1][0]
-				names += [name[0]+lastname]
-				times += [calcTotalTime(''.join(name))/60/60]
-				#print("Total Secs: " + str(totalTime))
-				#print(f.split(".")[0] + ": " + formatTimeOL(totalTime))
-				#print(f.split(".")[0] + ":\n" + formatTime(totalTime))
-				#print("\n")
+				if len(name) > 1 and name[1]:
+					lastname = name[1][0]
+				names += [name[0] + lastname]
+				times += [calcTotalTime(''.join(name)) / 60 / 60]
+				# print("Total Secs: " + str(totalTime))
+				# print(f.split(".")[0] + ": " + formatTimeOL(totalTime))
+				# print(f.split(".")[0] + ":\n" + formatTime(totalTime))
+				# print("\n")
 
 		xposi = list(range(len(names)))
-		plt.bar(xposi,times, align='center',alpha=0.5)
-		plt.xticks(xposi,names)
+		plt.bar(xposi, times, align='center', alpha=0.5)
+		plt.xticks(xposi, names)
 		plt.ylabel('Time (in hours)')
 		plt.title('Timeclock Times!')
 		plt.show()
