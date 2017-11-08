@@ -200,17 +200,14 @@ def ioSign(c):
 	refreshListboxes('single')
 
 def alertWindow(text='',fg='orange',font='Courier 14 bold'):
-	wind = Toplevel(root)
-	wind.geometry('320x140')
-	text = Label(wind, text=text,fg=fg,font=font,height=6,wraplength=300,justify=CENTER)
-	butn = Button(wind, text='OK',bg='orange',fg='white',font='Courier 14 bold',command=lambda: wind.destroy(),width=4,height=1)
+	wind = Toplevel(root) # new window
+	wind.geometry('320x120') # set resolution
+	wind.overrideredirect(1) # make window borderless
 
-	text.place(x=160,y=50,anchor=CENTER)
-	butn.place(x=160,y=110,anchor=CENTER)
+	# add text to window
+	Label(wind, text=text,fg=fg,font=font,height=6,wraplength=300,justify=CENTER).place(x=160,y=60,anchor=CENTER)
 
-	wind.after(3000, wind.destroy)
-	# odd bug, if the window is closed before the window is closed automatically
-	# then the next window only lasts for the remainder of the last window.
+	wind.after(3000, wind.destroy) # exit window after 3 seconds
 
 
 
