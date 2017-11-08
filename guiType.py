@@ -46,6 +46,7 @@ def makeNewUserWindow():  # new user window
 
 	inputF = Frame(nuWin)
 	buttnF = Frame(nuWin)
+	jobF = Frame(nuWin)
 	vkeyF = Frame(nuWin, pady=8)
 
 	Label(inputF, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
@@ -69,6 +70,12 @@ def makeNewUserWindow():  # new user window
 	nuErrT = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
 	nuErrT.pack()
 
+	jobOption = ['Student','Mentor']
+	jobChoice = IntVar(); jobChoice.set(0)
+	Radiobutton(jobF,text='Student',font='Courier 14 bold', variable=jobChoice,value=0).grid(row=0,column=0)
+	Radiobutton(jobF,text='Mentor', font='Courier 14 bold', variable=jobChoice,value=1).grid(row=0,column=1)
+	jobF.pack()
+
 	def finishNewUser():
 		errmsg, user, full = 'None', nuUserE.get(), nuFullE.get()
 
@@ -77,7 +84,7 @@ def makeNewUserWindow():  # new user window
 		elif ioServ.checkNameDB(user): errmsg = 'Err: Username already exists.'
 
 		if errmsg == 'None':
-			ioServ.addNameDB(full, user)  # todo: add job options
+			ioServ.addNameDB(full, user.lower(), jobOption[jobChoice.get()])  # todo: add job options
 			refreshListboxes()
 			nuWin.destroy()
 		else:
@@ -171,7 +178,7 @@ def ioSign(c):
 		else_var = True
 		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
 			f.write(c + ' | ' + timeIO + '\n')
-		hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 60 / 60, 2))
+		hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
 		if c == 'i':
 			alertWindow(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
 		elif c == 'o':

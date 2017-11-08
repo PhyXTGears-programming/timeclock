@@ -1,6 +1,7 @@
 import importlib
 import os
 import re
+import csv
 from datetime import datetime
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
@@ -47,15 +48,31 @@ def checkNameDB(n):  # check for if a name exists already
 	return False
 
 
-def addNameDB(full, user, job=''):  # add a new name to the list
+def addNameDB(full, user, job='none'):  # add a new name to the list
 	file = open(opts['usernameFile'], 'a+')
-	file.write(full.title() + '|' + user.title() + '\n')  # full+'|'+user+'|'+job+'\n'
+	file.write(full.title() + '|' + user.lower() + '|' + job + '\n')
 	file.close()
 
 
+def findCapitals(s):
+	letters = ''
+	for i in s:
+		if i.isupper(): letters += i
+	return letters
+
 def sortUsernameList():  # alphebetize names
 	with open(opts['usernameFile']) as u:
-		names = [x.title() for x in u.readlines()]
+		names = []
+		for l in u.readlines():
+			l = l.strip().split('|')
+			l[0] = l[0].title() # full name
+			if len(l)>=2: # user key
+				l[1] = l[1].lower()
+			else:
+				l += [findCapitals(l[0]).lower()]
+			if not len(l)>=3: l += ['Student'] # if no job listed
+
+			names += ['|'.join(l)+'\n']
 		names.sort()
 	with open(opts['usernameFile'], 'w') as f:
 		f.write(''.join(names))
