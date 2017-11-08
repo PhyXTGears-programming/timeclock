@@ -79,6 +79,7 @@ def sortUsernameList():  # alphebetize names
 
 
 def calcTotalTime(n):
+	n = n.replace(' ', '')
 	with open(opts['pathTime'] + n + '.txt', 'r') as userFile:
 		totalTime = 0
 		lastState = "n"

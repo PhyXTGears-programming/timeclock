@@ -113,21 +113,27 @@ def refreshListboxes(n=None):
 			nameIO = line.strip().split('|')[0]
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
+					timeIO = str( min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 ) )
+					timeIO = ' '*max(3-len(timeIO),0) + timeIO
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 			except:
+				timeIO = '   '
 				typeIO = 'N'
-			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)) + typeIO)
+			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)-4) + timeIO + ' ' + typeIO)
 	elif n=='single':
 		select = nameL.curselection()[0]
-		nameIO = nameL.get(select)[:-1]
+		nameIO = nameL.get(select)[:-5]
 		typeIO = 'N'
 		nameL.delete(select,select)
 		try:
 			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-				typeIO = f.readlines()[-1][0]
+				timeIO = str( min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 ) )
+				timeIO = ' '*max(3-len(timeIO),0) + timeIO
+				typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 		except:
-			pass
-		nameL.insert(select, nameIO + typeIO)
+			timeIO = '   '
+			typeIO = 'N'
+		nameL.insert(select, nameIO + timeIO + ' ' + typeIO)
 		nameL.see(select+1)
 
 
@@ -138,7 +144,7 @@ def ioSign(c):
 	if len(nameL.curselection()) == 0:
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
-	nameIO = nameL.get(nameL.curselection()[0])[:-1]
+	nameIO = nameL.get(nameL.curselection()[0])[:-5]
 	timeIO = time.strftime(opts['ioForm'])
 	open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+').close()
 	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
@@ -245,11 +251,13 @@ def main():
 	nameL.config(width=36, height=20)
 	listS.config(command=nameL.yview, width=52)
 
+	form = 'Name                         hrs ioa'
+	Label(listF, text=form, font='Courier 18 bold').pack()
 	listS.pack(side=RIGHT, fill=Y)
 	nameL.pack(side=LEFT, fill=BOTH, expand=1)
 	listF.pack(side=LEFT, padx=12)
 
-	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483.gif'),PhotoImage(file='assets/34416-2.gif')]
+	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483.gif'),PhotoImage(file='assets/34416-3.gif')]
 	Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
 	logoL = Label(root, image=logoImgs[0]); logoL.pack()
 	updateLogo()
