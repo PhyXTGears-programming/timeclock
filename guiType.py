@@ -8,7 +8,7 @@ from tkinter import *
 import ioServ
 import osk
 
-root = Tk()
+root = Tk() # main window
 nuWin = None
 
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
@@ -17,17 +17,16 @@ logoCurrent = -1 # start on 0, since updateLogo adds 1
 
 #root.config(bg='#000000')
 root.title('PhyxtGears1720io')
-root.geometry('800x600')  # 1024x768
+root.geometry('800x600')  # 1024x768 # set resolution
 if platform.system() != 'Windows' and platform.system() != 'Darwin':
 	root.attributes('-fullscreen', True)
 '''
 NOTES:
   tabs for each team (FLL and FIRST)
-  show hours in list.
   REORGANIZE IT ALL
 '''
 
-opts = ioServ.loadOpts()
+opts = ioServ.loadOpts() # load options from file
 
 try:
 	os.mkdir(opts['pathTime'])
@@ -40,14 +39,14 @@ ioServ.mkfile(opts['usernameFile'])
 def makeNewUserWindow():  # new user window
 	global root, nuWin
 
-	nuWin = Toplevel(root)
+	nuWin = Toplevel(root) # make window
 	nuWin.title('Create new user')
 	#nuWin.geometry('460x160')
 
-	inputF = Frame(nuWin)
-	buttnF = Frame(nuWin)
-	jobF = Frame(nuWin)
-	vkeyF = Frame(nuWin, pady=8)
+	inputF = Frame(nuWin) # frame for input boxes
+	buttnF = Frame(nuWin) # frame for buttons
+	jobF = Frame(nuWin) # frame for choosing between student and mentor
+	vkeyF = Frame(nuWin, pady=8) # on screen keyboard frame
 
 	Label(inputF, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
 	Label(inputF, text='Username: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
@@ -55,11 +54,9 @@ def makeNewUserWindow():  # new user window
 	nuFullE = Entry(inputF, font='Courier 18', width=42)  # full name textbox
 	nuUserE = Entry(inputF, font='Courier 18', width=42)  # username  textbox
 
-	def setVK(choice):
-		if choice == 1:
-			vkey.attach = nuFullE
-		elif choice == 2:
-			vkey.attach = nuUserE
+	def setVK(choice): # function to set which input box the virtual keyboard puts text in
+		if   choice == 1: vkey.attach = nuFullE
+		elif choice == 2: vkey.attach = nuUserE
 	nuFullE.bind('<FocusIn>', lambda e: setVK(1))
 	nuUserE.bind('<FocusIn>', lambda e: setVK(2))
 
@@ -70,13 +67,15 @@ def makeNewUserWindow():  # new user window
 	nuErrT = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
 	nuErrT.pack()
 
-	jobOption = ['Student','Mentor']
+	# the different jobs a member can have, currently only student or mentor
+	jobOption, j = ['Student','Mentor'], 0
 	jobChoice = IntVar(); jobChoice.set(0)
-	Radiobutton(jobF,text='Student',font='Courier 14 bold', variable=jobChoice,value=0).grid(row=0,column=0)
-	Radiobutton(jobF,text='Mentor', font='Courier 14 bold', variable=jobChoice,value=1).grid(row=0,column=1)
+	for job in jobOption: # generate an option for every job in jobOption
+		Radiobutton(jobF,text=job,font='Courier 14 bold', variable=jobChoice,value=j).grid(row=0,column=j)
+		j += 1
 	jobF.pack()
 
-	def finishNewUser():
+	def finishNewUser(): # perform checks on names for when the user is finished
 		errmsg, user, full = 'None', nuUserE.get(), nuFullE.get()
 
 		if user == '' or full == '': errmsg = 'Err: All boxes must be filled'
@@ -84,8 +83,9 @@ def makeNewUserWindow():  # new user window
 		elif ioServ.checkNameDB(user): errmsg = 'Err: Username already exists.'
 
 		if errmsg == 'None':
-			ioServ.addNameDB(full, user.lower(), jobOption[jobChoice.get()])  # todo: add job options
+			ioServ.addNameDB(full.title(), user.lower(), jobOption[jobChoice.get()])
 			refreshListboxes()
+			alertWindow(text='Make sure you, '+full.title()+', sign in!', fg='orange')
 			nuWin.destroy()
 		else:
 			nuErrT.config(text=errmsg, fg='red')
@@ -100,7 +100,7 @@ def makeNewUserWindow():  # new user window
 	vkeyF.pack()
 
 
-def refreshListboxes(n=None):
+def refreshListboxes(n=None): # whenever someone signs in/out or theres a new user
 	global nameL, infoT
 	if n=='all' or n==None:
 		nameL.delete(0, END)
