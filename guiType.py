@@ -248,20 +248,20 @@ def main():
 	nameL.config(width=36, height=20)
 	listS.config(command=nameL.yview, width=52)
 
-	form = 'Name                         hrs ioa'
-	Label(listF, text=form, font='Courier 18 bold').pack()
+	form = 'Name                          hrs i/o'
+	Label(listF, text=form, font='Courier 18 bold',anchor=W,justify=LEFT,width=40).pack()
 	listS.pack(side=RIGHT, fill=Y)
 	nameL.pack(side=LEFT, fill=BOTH, expand=1)
 	listF.pack(side=LEFT, padx=12)
 
-	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483.gif'),PhotoImage(file='assets/34416-3.gif')]
+	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483.gif'),PhotoImage(file='assets/34416-4.gif')]
 	Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
 	logoL = Label(root, image=logoImgs[0]); logoL.pack()
 	updateLogo()
 
 	ioF = Frame(root)
 	iIOB = Button(ioF, text='IN',  font='Courier 16 bold', bg='green', fg='white', command=lambda: ioSign('i'), width=12, height=2)
-	oIOB = Button(ioF, text='OUT', font='Courier 16 bold', bg='red',  fg='white',   command=lambda: ioSign('o'), width=12, height=2)
+	oIOB = Button(ioF, text='OUT', font='Courier 16 bold', bg='red',  fg='white',  command=lambda: ioSign('o'), width=12, height=2)
 	infoT = Label(ioF, text='', font='Courier 16 bold', height=6, wraplength=192, justify=CENTER)
 	newB = Button(ioF, text='New User', font='Courier 16 bold', bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
