@@ -11,6 +11,8 @@ import osk
 root = Tk() # main window
 nuWin = None
 
+print(hex(255))
+
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
 nameL = infoT = logoImgs = logoL = None
 logoCurrent = -1 # start on 0, since updateLogo adds 1
@@ -107,33 +109,42 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		ioServ.sortUsernameList()
 
 		nameIO = ''
+		timet = 0
 		typeIO = 'N'
+		select = 0
 
 		for line in open(opts['usernameFile']):
 			nameIO = line.strip().split('|')[0]
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-					timeIO = str( min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 ) )
-					timeIO = ' '*max(3-len(timeIO),0) + timeIO
+					timet = min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 )
+					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 			except:
 				timeIO = '   '
 				typeIO = 'N'
 			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)-4) + timeIO + ' ' + typeIO)
+			fg = '#' + ('%0*X' % (2,int(255*(1-timet/56)))) + ('%0*X' % (2,int(255*(timet/56)))) + '00'
+			nameL.itemconfig(select, {'fg' : fg})
+			timet = 0
+			select += 1
 	elif n=='single':
 		select = nameL.curselection()[0]
 		nameIO = nameL.get(select)[:-5]
+		timet = 0
 		typeIO = 'N'
 		nameL.delete(select,select)
 		try:
 			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-				timeIO = str( min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 ) )
-				timeIO = ' '*max(3-len(timeIO),0) + timeIO
+				timet = min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 )
+				timeIO = ' '*max(3-len(str(timet)),0) + str( timet)
 				typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 		except:
 			timeIO = '   '
 			typeIO = 'N'
 		nameL.insert(select, nameIO + timeIO + ' ' + typeIO)
+		fg = '#' + ('%0*X' % (2,int(255*(1-timet/56)))) + ('%0*X' % (2,int(255*(timet/56)))) + '00'
+		nameL.itemconfig(select, {'fg' : fg})
 		nameL.see(select+1)
 
 
