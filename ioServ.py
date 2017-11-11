@@ -99,6 +99,8 @@ def calcTotalTime(n):
 				state = "n"
 			lastState = state
 			lastTime = time
+		if lastState == "i":
+			totalTime += (datetime.now() - lastTime).total_seconds()
 		return totalTime
 
 
