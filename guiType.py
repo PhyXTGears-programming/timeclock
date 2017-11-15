@@ -265,7 +265,7 @@ def main():
 	nameL.pack(side=LEFT, fill=BOTH, expand=1)
 	listF.pack(side=LEFT, padx=12)
 
-	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483.gif'),PhotoImage(file='assets/34416-4.gif')]
+	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483-2.gif'),PhotoImage(file='assets/34416-4.gif')]
 	Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
 	logoL = Label(root, image=logoImgs[0]); logoL.pack()
 	updateLogo()
