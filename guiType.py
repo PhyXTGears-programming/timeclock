@@ -11,8 +11,6 @@ import osk
 root = Tk() # main window
 nuWin = None
 
-print(hex(255))
-
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
 nameL = infoT = logoImgs = logoL = None
 logoCurrent = -1 # start on 0, since updateLogo adds 1
@@ -20,6 +18,7 @@ logoCurrent = -1 # start on 0, since updateLogo adds 1
 #root.config(bg='#000000')
 root.title('PhyxtGears1720io')
 root.geometry('800x600')  # 1024x768 # set resolution
+# glblBGC = '#343d46'
 if platform.system() != 'Windows' and platform.system() != 'Darwin':
 	root.attributes('-fullscreen', True)
 '''
@@ -124,8 +123,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 				timeIO = '   '
 				typeIO = 'N'
 			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)-4) + timeIO + ' ' + typeIO)
-			fg = '#' + ('%0*X' % (2,int(255*(1-timet/56)))) + ('%0*X' % (2,int(255*(timet/56)))) + '00'
-			nameL.itemconfig(select, {'fg' : fg})
+			nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
 			timet = 0
 			select += 1
 	elif n=='single':
@@ -143,9 +141,19 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 			timeIO = '   '
 			typeIO = 'N'
 		nameL.insert(select, nameIO + timeIO + ' ' + typeIO)
-		fg = '#' + ('%0*X' % (2,int(255*(1-timet/56)))) + ('%0*X' % (2,int(255*(timet/56)))) + '00'
-		nameL.itemconfig(select, {'fg' : fg})
+		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
 		nameL.see(select+1)
+
+def hoursToColor(name):
+	timet = ioServ.calcWeekTime(name)/3600
+	fg = '#000000'
+	if timet >= 6 : # green
+		fg = '#00ff00'
+	elif 2 < timet < 6:
+		fg = '#FFAF00'
+	else:
+		fg = '#FF0000'
+	return fg
 
 
 
