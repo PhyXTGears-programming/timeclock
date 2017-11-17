@@ -71,7 +71,7 @@ def makeNewUserWindow():  # new user window
 	nuErrT.pack()
 
 	# the different jobs a member can have, currently only student or mentor
-	jobOption, j = ['Student','Mentor'], 0
+	jobOption, j = ['Student','Mentor','Adult'], 0
 	jobChoice = IntVar(); jobChoice.set(0)
 	for job in jobOption: # generate an option for every job in jobOption
 		Radiobutton(jobF,text=job,font='Courier 14 bold', variable=jobChoice,value=j).grid(row=0,column=j)
