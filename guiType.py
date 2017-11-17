@@ -9,7 +9,8 @@ import ioServ
 import osk
 
 root = Tk() # main window
-nuWin = None
+nuWin = None # new user window
+qtWin = None # quit password window
 
 # *F=frame, *S=scroll, *L=list, *B=button, *T=label, *E=entry
 nameL = infoT = logoImgs = logoL = None
@@ -39,6 +40,7 @@ ioServ.mkfile(opts['usernameFile'])
 	
 def makeNewUserWindow():  # new user window
 	global root, nuWin
+	if nuWin != None and Toplevel.winfo_exists(nuWin): return
 
 	nuWin = Toplevel(root) # make window
 	nuWin.title('Create new user')
@@ -231,7 +233,8 @@ def alertWindow(text='',fg='orange',font='Courier 14 bold'):
 
 
 def confirmQuit():  # quit program window with passcode protection
-	global root, opts
+	global root, opts, qtWin
+	if qtWin != None and Toplevel.winfo_exists(qtWin): return
 	qtWin = Toplevel(root)
 	qtWin.title('Quit?')
 	Label(qtWin, text='Enter AdminPass\nto quit.', font='Courier 16 bold').pack(pady=2)

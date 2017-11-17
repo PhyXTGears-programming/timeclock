@@ -137,8 +137,6 @@ def calcWeekTime(n):
 	except FileNotFoundError:
 		print('User '+n+"'s time not found.")
 		return 0
-print(calcWeekTime("Kkkk")/3600)
-print(calcTotalTime("Kkkk")/3600)
 
 
 def mkfile(t):
