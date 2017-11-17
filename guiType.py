@@ -145,11 +145,11 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet = ioServ.calcWeekTime(name)/3600
+	timet = ioServ.calcTotalTime(name)/3600
 	fg = '#000000'
-	if timet >= 6 : # green
+	if timet >= 54 : # green
 		fg = '#00ff00'
-	elif 2 < timet < 6:
+	elif 26 < timet < 54:
 		fg = '#FFAF00'
 	else:
 		fg = '#FF0000'
@@ -278,11 +278,12 @@ def main():
 	logoL = Label(root, image=logoImgs[0]); logoL.pack()
 	updateLogo()
 
+	f = 'Courier 16 bold'
 	ioF = Frame(root)
-	iIOB = Button(ioF, text='IN',  font='Courier 16 bold', bg='green', fg='white', command=lambda: ioSign('i'), width=12, height=2)
-	oIOB = Button(ioF, text='OUT', font='Courier 16 bold', bg='red',  fg='white',  command=lambda: ioSign('o'), width=12, height=2)
-	infoT = Label(ioF, text='', font='Courier 16 bold', height=6, wraplength=192, justify=CENTER)
-	newB = Button(ioF, text='New User', font='Courier 16 bold', bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
+	iIOB = Button(ioF, text='IN',  font=f, bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
+	oIOB = Button(ioF, text='OUT', font=f, bg='red',  fg='white', command=lambda: ioSign('o'), width=12, height=2)
+	infoT = Label(ioF, text='', font=f, height=6, wraplength=192, justify=CENTER)
+	newB = Button(ioF, text='New User', font=f, bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
 	iIOB.pack(pady=4)
 	oIOB.pack(pady=4)
@@ -291,6 +292,7 @@ def main():
 	ioF.pack()
 
 	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT, padx=12)
+	Button(text='UPDATE', font='Courier 16 bold', bg='orange',fg='white', command=lambda: refreshListboxes(), height=1).pack(side=RIGHT)
 
 	refreshListboxes()
 
