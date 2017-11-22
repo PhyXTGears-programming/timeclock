@@ -1,7 +1,4 @@
-import os
-import platform
-import time
-import importlib
+import os, time, platform, importlib
 from datetime import datetime,timedelta
 from tkinter import *
 
@@ -205,10 +202,11 @@ def ioSign(c):
 		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
 			f.write(c + ' | ' + timeIO + '\n')
 		hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
+		weekh = str(round(ioServ.calcWeekTime( nameIO.replace(' ', '')) / 3600, 2)) # calculate current week time
 		if c == 'i':
-			alertWindow(text=nameIO.split()[0] + ' signed in! ' + hours + ' hours.', fg='Green')
+			alertWindow(text=nameIO.split()[0] + ' signed in! '  + hours + ' hours.\n'+weekh+' of 8 hours.', fg='Green')
 		elif c == 'o':
-			alertWindow(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.', fg='Red')
+			alertWindow(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.\n'+weekh+' of 8 hours.', fg='Red')
 		# note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
 
 	if False and not else_var:  # disable extra signios until we can agree its needed.

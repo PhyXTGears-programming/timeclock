@@ -1,6 +1,5 @@
 # auto clock out at midnight or whatever
-import os
-import time
+import os, time
 
 from guiType import refreshListboxes
 from ioServ import loadOpts
