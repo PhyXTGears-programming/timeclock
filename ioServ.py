@@ -100,21 +100,25 @@ def calcTotalTime(n):
 					state = "n"
 				lastState = state
 				lastTime = time
-			#if lastState == 'i': totalTime += (datetime.now() - lastTime).total_seconds()
+			if lastState == 'i': totalTime += (datetime.now() - lastTime).total_seconds()
 			return totalTime
 	except FileNotFoundError:
-		print('User '+n+"'s time not found.")
+		#print('User '+n+"'s time file not found.")
 		return 0
 
 def calcWeekTime(n):
 	n = n.replace(' ','')
 	try:
 		userFile = open(opts['pathTime'] + n + '.txt', 'r')
-		totalTime = 0
-		lastState = "n"
-		lastTime = 0
+		totalTime,lastTime,lastState = 0,0,'n'
+		linesFromFile = userFile.readlines()
 
-		for currentLine in reversed(userFile.readlines()):
+		dt = datetime.now()
+		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
+
+		addCurrentTime = linesFromFile and linesFromFile[-1][0]=='i' and datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
+
+		for currentLine in reversed(linesFromFile):
 			currentLine = currentLine.strip()
 			if currentLine:
 				time_str = currentLine[4:]
@@ -129,13 +133,14 @@ def calcWeekTime(n):
 				state = "n"
 			lastState = state
 			lastTime = time
-			dt = datetime.now()
-			dt = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
-			if datetime.strptime(time_str, opts['ioForm']) < dt: return totalTime
+			if datetime.strptime(time_str, opts['ioForm']) < firstDayOfWeek: break
+
+		if addCurrentTime:
+			totalTime += (datetime.now() - datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm'])).total_seconds()
 		userFile.close()
 		return totalTime
 	except FileNotFoundError:
-		print('User '+n+"'s time not found.")
+		#print('User '+n+"'s time file not found.")
 		return 0
 
 

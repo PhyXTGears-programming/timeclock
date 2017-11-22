@@ -118,7 +118,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 			nameIO = line.strip().split('|')[0]
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-					timet = min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 )
+					timet = min( int(round(ioServ.calcTotalTime(nameIO)/3600)), 999 )
 					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 			except:
@@ -147,15 +147,14 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet = ioServ.calcTotalTime(name)/3600
-	fg = '#000000'
-	if timet >= 54 : # green
-		fg = '#00ff00'
-	elif 26 < timet < 54:
-		fg = '#FFAF00'
+	timet = round(ioServ.calcWeekTime(name)/3600)
+	if timet >= 6 :
+		return '#00ff00' # green
+	elif 2 < timet < 6:
+		return '#FFAF00' # yellow orange
 	else:
-		fg = '#FF0000'
-	return fg
+		return '#FF0000' # red
+	return '#000000'
 
 
 
