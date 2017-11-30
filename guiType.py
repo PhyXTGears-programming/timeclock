@@ -40,6 +40,7 @@ def makeNewUserWindow():  # new user window
 	if nuWin != None and Toplevel.winfo_exists(nuWin): return
 
 	nuWin = Toplevel(root) # make window
+	nuWin.attributes('-topmost',1)
 	nuWin.title('Create new user')
 	#nuWin.geometry('460x160')
 
