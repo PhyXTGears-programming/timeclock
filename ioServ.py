@@ -27,6 +27,8 @@ def generateDefaultOpts():
 	autoClockLim : 05:00:00 # If the person signs out before this time, the auto clock out is not counted
 	usernameFile : usernameFile.txt # file to save usernames in
 	adminPass : 1234 # passcode used to shut down program when it is full screen
+	buildStart : 10:30:00 06.01.2018
+	buildLeave : 23:59:59 20.02.2018
 	"""
 	os.chdir(os.path.dirname(__file__))
 	# input("Press enter to overwrite current options file with the default")
@@ -78,27 +80,36 @@ def sortUsernameList():  # alphebetize names
 def calcTotalTime(n):
 	n = n.replace(' ', '')
 	try:
-		with open(opts['pathTime'] + n + '.txt', 'r') as userFile:
-			totalTime = 0
-			lastState = "n"
-			lastTime = datetime.now()
-			for currentLine in userFile:
-				currentLine = currentLine.strip()
-				if currentLine:
-					time_str = currentLine[4:]
-					state = currentLine[0]
-					time = datetime.strptime(time_str, opts['ioForm'])
-					if state == "i":
-						lastTime = time
-					elif state == "o":
-						if lastState == "i":
-							totalTime += (time - lastTime).total_seconds()
-				else:
-					state = "n"
-				lastState = state
-				lastTime = time
-			if lastState == 'i': totalTime += (datetime.now() - lastTime).total_seconds()
-			return totalTime
+		userFile = open(opts['pathTime'] + n + '.txt', 'r')
+		linesFromFile = userFile.readlines()
+
+		dt = datetime.now()
+		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
+		addCurrentTime = linesFromFile and linesFromFile[-1][0]=='i' and datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
+
+		totalTime = 0
+		lastState = "n"
+		lastTime = 0
+
+		for currentLine in linesFromFile:
+			currentLine = currentLine.strip()
+			if currentLine:
+				time_str = currentLine[4:]
+				state = currentLine[0]
+				time = datetime.strptime(time_str, opts['ioForm'])
+				if state == "i":
+					lastTime = time
+				elif state == "o":
+					if lastState == "i":
+						totalTime += (time - lastTime).total_seconds()
+			else:
+				state = "n"
+			lastState = state
+			lastTime = time
+		if lastState == 'i' and addCurrentTime: totalTime += (datetime.now() - lastTime).total_seconds()
+
+		userFile.close()
+		return totalTime
 	except FileNotFoundError:
 		#print('User '+n+"'s time file not found.")
 		return 0
@@ -112,7 +123,6 @@ def calcWeekTime(n):
 
 		dt = datetime.now()
 		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
-
 		addCurrentTime = linesFromFile and linesFromFile[-1][0]=='i' and datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
 
 		for currentLine in reversed(linesFromFile):
@@ -139,6 +149,55 @@ def calcWeekTime(n):
 	except FileNotFoundError:
 		#print('User '+n+"'s time file not found.")
 		return 0
+
+def calcSeasonHours(n):
+	currentDate = datetime.now()
+	buildStart = datetime.strptime(opts['buildStart'], opts['ioForm'])
+	buildLeave = datetime.strptime(opts['buildLeave'], opts['ioForm'])
+
+	weeksSinceStart = max((currentDate-buildStart).days//7-1,0)
+
+	if not ( buildStart <= currentDate <= buildLeave ):
+		return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
+
+	totalTime = 0
+	lastTime = 0
+	lastState = 'n'
+
+	try:
+		userFile = open(opts['pathTime'] + n + '.txt', 'r')
+		userIOAs = userFile.readlines()
+
+		addCurrentTime = userIOAs and userIOAs[-1][0]=='i' and datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm']) > currentDate
+
+		for line in reversed(userIOAs):
+			line = line.strip()
+			if line:
+				time_str = line[4:]
+				state = line[0]
+				time = datetime.strptime(time_str, opts['ioForm'])
+				if state == "i":
+					if lastState == "o":
+						totalTime += (lastTime - time).total_seconds()
+				elif state == "o":
+					lastTime = time
+			else:
+				state = "n"
+			lastState = state
+			lastTime = time
+			if datetime.strptime(time_str, opts['ioForm']) < buildStart: break
+
+		if addCurrentTime:
+			totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
+		userFile.close()
+
+		print(n, totalTime//3600,calcTotalTime(n)//3600)
+
+		return totalTime, weeksSinceStart
+	except FileNotFoundError:
+		return 0, weeksSinceStart
+print((datetime.now() - datetime.strptime(opts['buildStart'], opts['ioForm'])).days//7-1)
+
 
 
 def mkfile(t):

@@ -145,7 +145,11 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet = round(ioServ.calcWeekTime(name)/3600)
+	timet,weekly = ioServ.calcSeasonHours(name)/3600
+
+	if weekly != 0: # in season
+		timet -= weekly*8
+
 	if timet >= 6 :
 		return '#00ff00' # green
 	elif 2 < timet < 6:
@@ -153,6 +157,8 @@ def hoursToColor(name):
 	else:
 		return '#FF0000' # red
 	return '#000000'
+
+
 
 
 
@@ -177,8 +183,11 @@ def ioSign(c):
 
 	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=4, minute=30, second=0, microsecond=0) + timedelta(days=1))#theNow.replace(hour=4, minute=30, second=0, microsecond=0)
 
+	alert
+
 	else_var = False
 	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
+		print('RECOVERING')
 		# RECOVERING AUTOCLOCKOUT
 		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+') as f:
 			f.write('\n'.join(lines[:-1]) + '\n' + c + ' | ' + timeIO + '\n')
@@ -190,10 +199,8 @@ def ioSign(c):
 		if c == 'i':
 			alertWindow(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
 		elif c == 'o':
-			if lines[-1][0] == 'o':
-				alertWindow(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
-			elif lines[-1][0] == 'a':
-				alertWindow(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
+			if lines[-1][0] == 'o':   alertWindow(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
+			elif lines[-1][0] == 'a': alertWindow(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
 	elif not lines and c == 'o':
 		# NEVER SIGNED IN BEFORE
 		alertWindow(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
