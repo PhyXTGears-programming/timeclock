@@ -151,11 +151,15 @@ def calcWeekTime(n):
 		return 0
 
 def calcSeasonHours(n):
+	n = n.replace(' ','') # filenames have no spaces
+
 	currentDate = datetime.now()
 	buildStart = datetime.strptime(opts['buildStart'], opts['ioForm'])
 	buildLeave = datetime.strptime(opts['buildLeave'], opts['ioForm'])
 
-	weeksSinceStart = max((currentDate-buildStart).days//7-1,0)
+	buildDelta = currentDate-buildStart
+
+	weeksSinceStart = max((currentDate-buildStart).days//7,0)
 
 	if not ( buildStart <= currentDate <= buildLeave ):
 		return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
@@ -177,8 +181,7 @@ def calcSeasonHours(n):
 				state = line[0]
 				time = datetime.strptime(time_str, opts['ioForm'])
 				if state == "i":
-					if lastState == "o":
-						totalTime += (lastTime - time).total_seconds()
+					if lastState == "o": totalTime += (lastTime - time).total_seconds()
 				elif state == "o":
 					lastTime = time
 			else:
@@ -191,13 +194,11 @@ def calcSeasonHours(n):
 			totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
 		userFile.close()
 
-		print(n, totalTime//3600,calcTotalTime(n)//3600)
+		#print(n, totalTime//3600,calcTotalTime(n)//3600,weeksSinceStart)
 
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart
-print((datetime.now() - datetime.strptime(opts['buildStart'], opts['ioForm'])).days//7-1)
-
 
 
 def mkfile(t):

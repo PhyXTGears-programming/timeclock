@@ -145,13 +145,14 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet,weekly = ioServ.calcSeasonHours(name)/3600
+	timet,weekly = ioServ.calcSeasonHours(name)
+	timet /= 3600
 
-	if weekly != 0: # in season
-		timet -= weekly*8
+	if weekly != 0: timet -= weekly*6 # in season
+	else: print(name,timet)
 
 	if timet >= 6 :
-		return '#00ff00' # green
+		return '#00bf00' # green
 	elif 2 < timet < 6:
 		return '#FFAF00' # yellow orange
 	else:
@@ -160,11 +161,8 @@ def hoursToColor(name):
 
 
 
-
-
 def ioSign(c):
-
-	global nameL, infoT
+	global nameL
 	if len(nameL.curselection()) == 0:
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
@@ -181,11 +179,8 @@ def ioSign(c):
 
 	ioServ.mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
 
-	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=4, minute=30, second=0, microsecond=0) + timedelta(days=1))#theNow.replace(hour=4, minute=30, second=0, microsecond=0)
+	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=4, minute=30, second=0, microsecond=0) + timedelta(days=1))
 
-	alert
-
-	else_var = False
 	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
 		print('RECOVERING')
 		# RECOVERING AUTOCLOCKOUT
@@ -216,10 +211,6 @@ def ioSign(c):
 		elif c == 'o':
 			alertWindow(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.\n'+weekh+' of 8 hours.', fg='Red')
 		# note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
-
-	if False and not else_var:  # disable extra signios until we can agree its needed.
-		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
-			f.write(c + ' | ' + timeIO + '\n')
 
 	readFile.close()
 
@@ -290,7 +281,7 @@ def main():
 	ioF = Frame(root)
 	iIOB = Button(ioF, text='IN',  font=f, bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
 	oIOB = Button(ioF, text='OUT', font=f, bg='red',  fg='white', command=lambda: ioSign('o'), width=12, height=2)
-	infoT = Label(ioF, text='', font=f, height=6, wraplength=192, justify=CENTER)
+	infoT = Label(ioF, text='', font=f, height=6, wraplength=0, justify=CENTER) # white space generator ftw
 	newB = Button(ioF, text='New User', font=f, bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
 	iIOB.pack(pady=4)
