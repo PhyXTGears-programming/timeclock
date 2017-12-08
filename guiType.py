@@ -19,11 +19,6 @@ root.geometry('800x600')  # 1024x768 # set resolution
 # glblBGC = '#343d46'
 if platform.system() != 'Windows' and platform.system() != 'Darwin':
 	root.attributes('-fullscreen', True)
-'''
-NOTES:
-  tabs for each team (FLL and FIRST)
-  REORGANIZE IT ALL
-'''
 
 opts = ioServ.loadOpts() # load options from file
 
@@ -101,6 +96,7 @@ def makeNewUserWindow():  # new user window
 	vkeyF.pack()
 
 
+
 def refreshListboxes(n=None): # whenever someone signs in/out or theres a new user
 	global nameL, infoT
 	if n=='all' or n==None:
@@ -148,7 +144,7 @@ def hoursToColor(name):
 	timet,weekly = ioServ.calcSeasonHours(name)
 	timet /= 3600
 
-	if weekly != 0: timet -= weekly*6 # in season
+	if weekly != 0: timet -= weekly*8 # in season
 
 	if timet >= 6 :
 		return '#00bf00' # green
@@ -159,6 +155,7 @@ def hoursToColor(name):
 	return '#000000'
 
 
+
 def ioSign(c):
 	global nameL
 	if len(nameL.curselection()) == 0:
@@ -166,7 +163,6 @@ def ioSign(c):
 		return
 	nameIO = nameL.get(nameL.curselection()[0])[:-5]
 	timeIO = time.strftime(opts['ioForm'])
-	open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+').close()
 	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
 	lines = [line.strip() for line in readFile]
 
@@ -177,7 +173,8 @@ def ioSign(c):
 
 	ioServ.mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
 
-	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=4, minute=30, second=0, microsecond=0) + timedelta(days=1))
+	lim = [int(x) for x in opts['autoClockLim'].split(':')]
+	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=lim[0], minute=lim[1], second=lim[2], microsecond=0) + timedelta(days=1))
 
 	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
 		print('RECOVERING')
@@ -199,7 +196,6 @@ def ioSign(c):
 		alertWindow(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
 	else:
 		# NORMAL SIGN IN/OUT
-		else_var = True
 		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
 			f.write(c + ' | ' + timeIO + '\n')
 		hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
@@ -213,6 +209,8 @@ def ioSign(c):
 	readFile.close()
 
 	refreshListboxes('single')
+
+
 
 def alertWindow(text='',fg='orange',font='Courier 14 bold'):
 	wind = Toplevel(root) # new window
@@ -253,6 +251,7 @@ def updateLogo():
 	if logoCurrent >= len(logoImgs): logoCurrent = 0
 	logoL.config(image=logoImgs[logoCurrent])
 	root.after(5000,updateLogo)
+
 
 
 def main():

@@ -17,7 +17,6 @@ def loadOpts():
 			opts[line[0]] = line[1].split('#')[0].strip(' ')
 	return opts
 
-
 def generateDefaultOpts():
 	print('generated opts')
 	fileString = """
@@ -53,17 +52,17 @@ def addNameDB(full, user, job='none'):  # add a new name to the list
 	file.close()
 
 
-def findCapitals(s):
-	letters = ''
-	for i in s:
-		if i.isupper(): letters += i
-	return letters
-
 def sortUsernameList():  # alphebetize names
+	def findCapitals(s): # for generating usernames
+		letters = ''
+		for i in s:
+			if i.isupper(): letters += i
+		return letters
+
 	with open(opts['usernameFile']) as u:
 		names = []
 		for l in u.readlines():
-			l = l.strip().split('|')
+			l = l.strip().split(' | ')
 			l[0] = l[0].title() # full name
 			if len(l)>=2: # user key
 				l[1] = l[1].lower()
@@ -71,7 +70,7 @@ def sortUsernameList():  # alphebetize names
 				l += [findCapitals(l[0]).lower()]
 			if not len(l)>=3: l += ['Student'] # if no job listed
 
-			names += ['|'.join(l)+'\n']
+			names += [' | '.join(l)+'\n']
 		names.sort()
 	with open(opts['usernameFile'], 'w') as f:
 		f.write(''.join(names))
@@ -159,10 +158,9 @@ def calcSeasonHours(n):
 
 	buildDelta = currentDate-buildStart
 
-	weeksSinceStart = max((currentDate-buildStart).days//7,0)
+	weeksSinceStart = max(buildDelta.days//7,0)
 
-	if not ( buildStart <= currentDate <= buildLeave ):
-		return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
+	if not ( buildStart <= currentDate <= buildLeave ): return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
 
 	totalTime = 0
 	lastTime = 0
@@ -190,11 +188,8 @@ def calcSeasonHours(n):
 			lastTime = time
 			if datetime.strptime(time_str, opts['ioForm']) < buildStart: break
 
-		if addCurrentTime:
-			totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
+		if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
 		userFile.close()
-
-		#print(n, totalTime//3600,calcTotalTime(n)//3600,weeksSinceStart)
 
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
