@@ -50,7 +50,7 @@ def makeNewUserWindow():  # new user window
 	vkeyF = Frame(nuWin, pady=8) # on screen keyboard frame
 
 	Label(inputF, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
-	Label(inputF, text='Username: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
+	Label(inputF, text='Initials: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
 
 	nuFullE = Entry(inputF, font='Courier 18', width=42)  # full name textbox
 	nuUserE = Entry(inputF, font='Courier 18', width=42)  # username  textbox
@@ -149,7 +149,6 @@ def hoursToColor(name):
 	timet /= 3600
 
 	if weekly != 0: timet -= weekly*6 # in season
-	else: print(name,timet)
 
 	if timet >= 6 :
 		return '#00bf00' # green
@@ -158,7 +157,6 @@ def hoursToColor(name):
 	else:
 		return '#FF0000' # red
 	return '#000000'
-
 
 
 def ioSign(c):
@@ -281,11 +279,11 @@ def main():
 	ioF = Frame(root)
 	iIOB = Button(ioF, text='IN',  font=f, bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
 	oIOB = Button(ioF, text='OUT', font=f, bg='red',  fg='white', command=lambda: ioSign('o'), width=12, height=2)
-	infoT = Label(ioF, text='', font=f, height=6, wraplength=0, justify=CENTER) # white space generator ftw
+	infoT = Label(ioF, text='', font=f, height=5, wraplength=0, justify=CENTER) # white space generator ftw
 	newB = Button(ioF, text='New User', font=f, bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
-	iIOB.pack(pady=4)
-	oIOB.pack(pady=4)
+	iIOB.pack(pady=8)
+	oIOB.pack(pady=8)
 	infoT.pack()
 	newB.pack(pady=4)
 	ioF.pack()
