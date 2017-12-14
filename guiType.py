@@ -144,6 +144,8 @@ def hoursToColor(name):
 	timet,weekly = ioServ.calcSeasonHours(name)
 	timet /= 3600
 
+	print(name, timet//1,(timet-weekly*8)//1)
+	# CHANGE THIS TO USE PER DAY OR PER HOUR CALCULATION SO THAT PEOPLE DONT HAVE BAD COLORING
 	if weekly != 0: timet -= weekly*8 # in season
 
 	if timet >= 6 :
@@ -163,8 +165,9 @@ def ioSign(c):
 		return
 	nameIO = nameL.get(nameL.curselection()[0])[:-5]
 	timeIO = time.strftime(opts['ioForm'])
-	readFile = open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+')
-	lines = [line.strip() for line in readFile]
+	lines = []
+	open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', '+a').close()
+	with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', '+r') as f: lines = [line.strip() for line in f]
 
 	if lines:
 		theNow = datetime.now()
@@ -205,8 +208,6 @@ def ioSign(c):
 		elif c == 'o':
 			alertWindow(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.\n'+weekh+' of 8 hours.', fg='Red')
 		# note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
-
-	readFile.close()
 
 	refreshListboxes('single')
 
