@@ -158,7 +158,7 @@ def calcSeasonHours(n):
 
 	buildDelta = currentDate-buildStart
 
-	weeksSinceStart = max(buildDelta.days-1,0)
+	weeksSinceStart = max(buildDelta.days,0)
 
 	if not ( buildStart <= currentDate <= buildLeave ): return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
 
@@ -194,8 +194,8 @@ def calcSeasonHours(n):
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart
-print('Days Since Start :', ( datetime.now()-datetime.strptime(opts['buildStart'], opts['ioForm']) ).days)
-print('Weeks Since Start:', ( datetime.now()-datetime.strptime(opts['buildStart'], opts['ioForm']) ).days//7)
+#print('Days Since Start :', ( datetime.now()-datetime.strptime(opts['buildStart'], opts['ioForm']) ).days)
+#print('Weeks Since Start:', ( datetime.now()-datetime.strptime(opts['buildStart'], opts['ioForm']) ).days//7)
 
 
 def mkfile(t):

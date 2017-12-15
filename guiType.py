@@ -144,11 +144,12 @@ def hoursToColor(name):
 	timet,days = ioServ.calcSeasonHours(name)
 	timet /= 3600
 	#days //= 7
-	days -= 7
 
-	print(name, timet//1,(timet-days*8/7)//1)
+	#print(name, timet//1,days,(timet-days*8/7)//1)
 	# CHANGE THIS TO USE PER DAY OR PER HOUR CALCULATION SO THAT PEOPLE DONT HAVE BAD COLORING
-	if days != 0: timet -= days*8/7 # in season
+	if days != 0:
+		days -= 7
+		timet -= days*8/7 # in season
 
 	if timet >= 6 :
 		return '#00bf00' # green
