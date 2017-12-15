@@ -158,7 +158,7 @@ def calcSeasonHours(n):
 
 	buildDelta = currentDate-buildStart
 
-	weeksSinceStart = max(buildDelta.days//7-1,0)
+	weeksSinceStart = max(buildDelta.days-1,0)
 
 	if not ( buildStart <= currentDate <= buildLeave ): return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
 
@@ -186,7 +186,7 @@ def calcSeasonHours(n):
 			lastState = state
 			lastTime = time
 			if datetime.strptime(time_str, opts['ioForm']) < buildStart:
-				print(n+"'s done ", totalTime)
+				#print(n+"'s done ", totalTime)
 				break
 
 		if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()

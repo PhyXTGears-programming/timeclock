@@ -112,7 +112,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 			nameIO = line.strip().split('|')[0]
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-					timet = min( int(round(ioServ.calcTotalTime(nameIO)/3600)), 999 )
+					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 			except:
@@ -130,8 +130,8 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.delete(select,select)
 		try:
 			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-				timet = min( int(round(ioServ.calcTotalTime(nameIO)/3600,0)), 999 )
-				timeIO = ' '*max(3-len(str(timet)),0) + str( timet)
+				timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
+				timeIO = ' '*max(3-len(str(timet)),0) + str(timet)
 				typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 		except:
 			timeIO = '   '
@@ -141,16 +141,18 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet,weekly = ioServ.calcSeasonHours(name)
+	timet,days = ioServ.calcSeasonHours(name)
 	timet /= 3600
+	#days //= 7
+	days -= 7
 
-	print(name, timet//1,(timet-weekly*8)//1)
+	print(name, timet//1,(timet-days*8/7)//1)
 	# CHANGE THIS TO USE PER DAY OR PER HOUR CALCULATION SO THAT PEOPLE DONT HAVE BAD COLORING
-	if weekly != 0: timet -= weekly*8 # in season
+	if days != 0: timet -= days*8/7 # in season
 
 	if timet >= 6 :
 		return '#00bf00' # green
-	elif 2 < timet < 6:
+	elif 2 <= timet < 6:
 		return '#FFAF00' # yellow orange
 	else:
 		return '#FF0000' # red
