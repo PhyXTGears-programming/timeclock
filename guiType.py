@@ -1,4 +1,6 @@
-import os, time, platform, importlib
+import os, time
+from time import strftime
+from platform import system as platformsystem
 from datetime import datetime,timedelta
 from tkinter import *
 
@@ -17,7 +19,7 @@ logoCurrent = -1 # start on 0, since updateLogo adds 1
 root.title('PhyxtGears1720io')
 root.geometry('800x600')  # 1024x768 # set resolution
 # glblBGC = '#343d46'
-if platform.system() != 'Windows' and platform.system() != 'Darwin':
+if platformsystem() != 'Windows' and platformsystem() != 'Darwin':
 	root.attributes('-fullscreen', True)
 
 opts = ioServ.loadOpts() # load options from file
@@ -141,13 +143,10 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet,days = ioServ.calcSeasonHours(name)
+	timet,days = ioServ.calcSeasonTime(name)
 	timet /= 3600
-	#days //= 7
 
-	#print(name, timet//1,days,(timet-days*8/7)//1)
-	# CHANGE THIS TO USE PER DAY OR PER HOUR CALCULATION SO THAT PEOPLE DONT HAVE BAD COLORING
-	if days != 0:
+	if days > 0:
 		days -= 7
 		timet -= days*8/7 # in season
 
@@ -166,51 +165,9 @@ def ioSign(c):
 	if len(nameL.curselection()) == 0:
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
-	nameIO = nameL.get(nameL.curselection()[0])[:-5]
-	timeIO = time.strftime(opts['ioForm'])
-	lines = []
-	open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', '+a').close()
-	with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', '+r') as f: lines = [line.strip() for line in f]
 
-	if lines:
-		theNow = datetime.now()
-		theIOA = datetime.strptime(lines[-1][5:], opts['ioForm'])
-	autoClocked = False
-
-	ioServ.mkfile(opts['pathTime'] + nameIO.replace(' ', '') + '.txt')  # make file if it doesn't exist
-
-	lim = [int(x) for x in opts['autoClockLim'].split(':')]
-	inTimeFrame = lines and theIOA < theNow < (theIOA.replace(hour=lim[0], minute=lim[1], second=lim[2], microsecond=0) + timedelta(days=1))
-
-	if lines and lines[-1][0] == 'a' and c == 'o' and inTimeFrame:
-		print('RECOVERING')
-		# RECOVERING AUTOCLOCKOUT
-		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'w+') as f:
-			f.write('\n'.join(lines[:-1]) + '\n' + c + ' | ' + timeIO + '\n')
-		# note for future annoucement system: have annoucements over phone system annoucing the time till autoclockout cutoff
-		# ie: "it is 4:00am, 1 hour till autoclockout cutoff. please be sure to sign out and sign back in to get the hours."
-		alertWindow(text=nameIO.split()[0] + ' signed out proper!', fg='Green')
-	elif lines and (lines[-1][0] == c or (lines[-1][0]=='a' and c=='o')):
-		# DOUBLE SIGN IN/OUT
-		if c == 'i':
-			alertWindow(text=nameIO.split()[0] + ' is already signed in!', fg='orange')
-		elif c == 'o':
-			if lines[-1][0] == 'o':   alertWindow(text=nameIO.split()[0] + ' is already signed out!', fg='orange')
-			elif lines[-1][0] == 'a': alertWindow(text=nameIO.split()[0] + ' was auto-signed out!', fg='orange')
-	elif not lines and c == 'o':
-		# NEVER SIGNED IN BEFORE
-		alertWindow(text=nameIO.split()[0] + ' has never signed in!', fg='orange')
-	else:
-		# NORMAL SIGN IN/OUT
-		with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'a+') as f:
-			f.write(c + ' | ' + timeIO + '\n')
-		hours = str(round(ioServ.calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
-		weekh = str(round(ioServ.calcWeekTime( nameIO.replace(' ', '')) / 3600, 2)) # calculate current week time
-		if c == 'i':
-			alertWindow(text=nameIO.split()[0] + ' signed in! '  + hours + ' hours.\n'+weekh+' of 8 hours.', fg='Green')
-		elif c == 'o':
-			alertWindow(text=nameIO.split()[0] + ' signed out! ' + hours + ' hours.\n'+weekh+' of 8 hours.', fg='Red')
-		# note for out signio: even if there is an issue one signout, show an error but still log the out. this was robby's idea.
+	msg,color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-5],c)
+	alertWindow(text=msg, fg=color)
 
 	refreshListboxes('single')
 

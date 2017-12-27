@@ -1,13 +1,11 @@
 from threading import Thread
 
-import autoClockout
-import guiType
-#from touchtone import *
+from guiType import main as guiMain
+from autoClockout import main as autoClockoutMain
 
-#playTone('0123456789ABCD#*')
 
-autoclockout = Thread(target=autoClockout.main, daemon=True)  # autoclockout
+autoclockout = Thread(target=autoClockoutMain, daemon=True)  # autoclockout
 autoclockout.start()
-guiType.main()
+guiMain()
 
 autoclockout.join(0)

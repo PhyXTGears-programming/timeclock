@@ -1,4 +1,5 @@
-import os, re, csv, importlib
+import os
+from time import strftime
 from datetime import datetime,timedelta
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
@@ -20,15 +21,17 @@ def loadOpts():
 def generateDefaultOpts():
 	print('generated opts')
 	fileString = """
-	ioForm : %H:%M:%S %d.%m.%Y
-	pathTime : ./times/
-	autoClockOut : 00:00:00
-	autoClockLim : 05:00:00
-	usernameFile : usernameFile.txt
-	adminPass : 1234
-	buildStart : 10:30:00 06.01.2018
-	buildLeave : 23:59:59 20.02.2018
-	"""
+
+ioForm : %H:%M:%S %d.%m.%Y
+pathTime : ./times/
+autoClockOut : 00:00:00
+autoClockLim : 05:00:00
+usernameFile : usernameFile.txt
+adminPass : 1234
+buildStart : 10:30:00 06.01.2018
+buildLeave : 23:59:59 20.02.2018
+
+"""
 	os.chdir(os.path.dirname(__file__))
 	# input("Press enter to overwrite current options file with the default")
 	with open('opts.txt', 'w') as file:
@@ -36,6 +39,62 @@ def generateDefaultOpts():
 
 
 opts = loadOpts()
+
+
+def signIO(n,c):
+	nameIO = n
+	timeIO = strftime(opts['ioForm'])
+	pathIO = opts['pathTime'] + nameIO.replace(' ', '') + '.txt'
+
+	msg, color = 'Nothing', 'black'
+
+	open(pathIO, '+a').close()  # make file if it doesn't exist
+	with open(pathIO, '+r') as f: lines = [line.strip() for line in f]
+
+	inTimeFrame = False
+	if lines:
+		lim = [int(x) for x in opts['autoClockLim'].split(':')]
+
+		theNow = datetime.now()
+		theIOA = datetime.strptime(lines[-1][5:], opts['ioForm'])
+		theLIM = theIOA.replace(hour=lim[0], minute=lim[1], second=lim[2], microsecond=0) + timedelta(days=1)
+
+		inTimeFrame = theIOA < theNow < theLIM
+
+
+	name1st = nameIO.split()[0] # first name
+	if lines and lines[-1][0]=='a' and c=='o' and inTimeFrame:
+		## RECOVERING AUTOCLOCKOUT ##
+		with open(pathIO, 'w+') as f: f.write('\n'.join(lines[:-1]) + '\n' + c + ' | ' + timeIO + '\n')
+		msg,color = name1st+' signed out proper!', 'green'
+	elif lines and lines[-1][0]=='a' and c=='i' and inTimeFrame:
+		## SIGNING IN WHEN SEMI CLOCKED OUT ##
+		msg,color = 'Did you mean to sign out to recover hours, '+name1st+'?', 'orange'
+
+	elif lines and (lines[-1][0] == c or (lines[-1][0]=='a' and c=='o')):
+		## DOUBLE SIGN IN/OUT ##
+		color = 'orange'
+		if c == 'i':
+			msg = name1st+' is already signed in!'
+		elif c == 'o':
+			if lines[-1][0] == 'o': msg = name1st+' is already signed out!'
+			elif lines[-1][0]=='a': msg = name1st+' was auto-signed out!'
+
+	elif not lines and c=='o':
+		## NEVER SIGNED IN BEFOR ##
+		msg,color = name1st+' has never signed in!', 'orange'
+
+	else:
+		## NORMAL SIGN IN ##
+		with open(pathIO, 'a+') as f: f.write(c + ' | ' + timeIO + '\n')
+		hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
+		weekh = str(round(calcWeekTime( nameIO.replace(' ', '')) / 3600, 2)) # calculate current week time
+		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
+		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
+
+	
+	return msg,color
+
 
 
 def checkNameDB(n):  # check for if a name exists already
@@ -133,13 +192,12 @@ def calcWeekTime(n):
 				if state == "i":
 					if lastState == "o":
 						totalTime += (lastTime - time).total_seconds()
-				elif state == "o":
-					lastTime = time
+				lastState = state
+				lastTime = time
 			else:
 				state = "n"
-			lastState = state
-			lastTime = time
-			if datetime.strptime(time_str, opts['ioForm']) < firstDayOfWeek: break
+
+			if currentLine and datetime.strptime(time_str, opts['ioForm']) < firstDayOfWeek: break
 
 		if addCurrentTime:
 			totalTime += (datetime.now() - datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm'])).total_seconds()
@@ -149,7 +207,7 @@ def calcWeekTime(n):
 		#print('User '+n+"'s time file not found.")
 		return 0
 
-def calcSeasonHours(n):
+def calcSeasonTime(n):
 	n = n.replace(' ','') # filenames have no spaces
 
 	currentDate = datetime.now()
@@ -194,8 +252,6 @@ def calcSeasonHours(n):
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart
-#print('Days Since Start :', ( datetime.now()-datetime.strptime(opts['buildStart'], opts['ioForm']) ).days)
-#print('Weeks Since Start:', ( datetime.now()-datetime.strptime(opts['buildStart'], opts['ioForm']) ).days//7)
 
 
 def mkfile(t):
