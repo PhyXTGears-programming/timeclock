@@ -67,6 +67,7 @@ def signIO(n,c):
 		## RECOVERING AUTOCLOCKOUT ##
 		with open(pathIO, 'w+') as f: f.write('\n'.join(lines[:-1]) + '\n' + c + ' | ' + timeIO + '\n')
 		msg,color = name1st+' signed out proper!', 'green'
+		return msg,color
 	elif lines and lines[-1][0]=='a' and c=='i' and inTimeFrame:
 		## SIGNING IN WHEN SEMI CLOCKED OUT ##
 		msg,color = 'Did you mean to sign out to recover hours, '+name1st+'?', 'orange'
@@ -86,12 +87,12 @@ def signIO(n,c):
 
 	else:
 		## NORMAL SIGN IN ##
-		with open(pathIO, 'a+') as f: f.write(c + ' | ' + timeIO + '\n')
 		hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
 		weekh = str(round(calcWeekTime( nameIO.replace(' ', '')) / 3600, 2)) # calculate current week time
 		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
 		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
-
+	
+	with open(pathIO, 'a+') as f: f.write(c + ' | ' + timeIO + '\n')
 	
 	return msg,color
 
@@ -157,9 +158,8 @@ def calcTotalTime(n):
 				time = datetime.strptime(time_str, opts['ioForm'])
 				if state == "i":
 					lastTime = time
-				elif state == "o":
-					if lastState == "i":
-						totalTime += (time - lastTime).total_seconds()
+				elif state == "o" and lastState == "i":
+					totalTime += (time - lastTime).total_seconds()
 			else:
 				state = "n"
 			lastState = state
