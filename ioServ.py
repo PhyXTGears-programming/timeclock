@@ -158,9 +158,8 @@ def calcTotalTime(n):
 				time = datetime.strptime(time_str, opts['ioForm'])
 				if state == "i":
 					lastTime = time
-				elif state == "o":
-					if lastState == "i":
-						totalTime += (time - lastTime).total_seconds()
+				elif state == "o" and lastState == "i":
+					totalTime += (time - lastTime).total_seconds()
 			else:
 				state = "n"
 			lastState = state
