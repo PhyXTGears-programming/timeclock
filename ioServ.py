@@ -82,9 +82,9 @@ def signIO(n,c):
 			elif lines[-1][0]=='a': msg = name1st+' was auto-signed out!'
 
 	elif not lines and c=='o':
-		## NEVER SIGNED IN BEFOR ##
+		## NEVER SIGNED IN BEFORE ##
 		msg,color = name1st+' has never signed in!', 'orange'
-
+		return msg,color
 	else:
 		## NORMAL SIGN IN ##
 		hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
@@ -106,9 +106,9 @@ def checkNameDB(n):  # check for if a name exists already
 	return False
 
 
-def addNameDB(full, user, job='none'):  # add a new name to the list
+def addNameDB(full, user, title=None, job=None):  # add a new name to the list
 	file = open(opts['usernameFile'], 'a+')
-	file.write(full.title() + '|' + user.lower() + '|' + job + '\n')
+	file.write(' | '.join([full.title(),user.lower(),title,job]) + '\n')
 	file.close()
 
 
@@ -122,13 +122,16 @@ def sortUsernameList():  # alphebetize names
 	with open(opts['usernameFile']) as u:
 		names = []
 		for l in u.readlines():
-			l = l.strip().split(' | ')
+			l = l[:-1]
+			print(l.split(' | '))
+			l = l.split(' | ')
 			l[0] = l[0].title() # full name
 			if len(l)>=2: # user key
 				l[1] = l[1].lower()
 			else:
 				l += [findCapitals(l[0]).lower()]
-			if not len(l)>=3: l += ['Student'] # if no job listed
+			if not len(l)>=3 and l[2] != '': l += ['none'] # if no title listed
+			if not len(l)>=4 and l[3] != '': l += ['none'] # if no job listed
 
 			names += [' | '.join(l)+'\n']
 		names.sort()

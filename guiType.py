@@ -76,9 +76,9 @@ def makeNewUserWindow():  # new user window
 	def finishNewUser(): # perform checks on names for when the user is finished
 		errmsg, user, full = 'None', nuUserE.get(), nuFullE.get()
 
-		if user == '' or full == '': errmsg = 'Err: All boxes must be filled'
-		elif ioServ.checkNameDB(full): errmsg = 'Err: Fullname already exists.'
-		elif ioServ.checkNameDB(user): errmsg = 'Err: Username already exists.'
+		if user == '' or full == '': errmsg = 'Error: All boxes must be filled'
+		elif ioServ.checkNameDB(full): errmsg = 'Error: Fullname already exists.'
+		elif ioServ.checkNameDB(user): errmsg = 'Error: Username already exists.'
 
 		if errmsg == 'None':
 			ioServ.addNameDB(full.title(), user.lower(), jobOption[jobChoice.get()])
@@ -88,10 +88,8 @@ def makeNewUserWindow():  # new user window
 		else:
 			nuErrT.config(text=errmsg, fg='red')
 
-	finB = Button(buttnF, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser)
-	canB = Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=nuWin.destroy)
-	finB.grid(row=0, column=1)
-	canB.grid(row=0, column=0)
+	Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=nuWin.destroy).grid(row=0, column=0)
+	Button(buttnF, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser).grid(row=0, column=1)
 	buttnF.pack()
 
 	vkey = osk.vk(parent=vkeyF, attach=nuFullE)  # on screen alphabet keyboard
@@ -111,16 +109,16 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		select = 0
 
 		for line in open(opts['usernameFile']):
-			nameIO = line.strip().split('|')[0]
+			nameIO = line.strip().split(' | ')[0]
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
 					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
-			except:
+			except FileNotFoundError:
 				timeIO = '   '
 				typeIO = 'N'
-			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)-4) + timeIO + ' ' + typeIO)
+			nameL.insert(END, nameIO + ' ' * (34 - len(nameIO)-4) + timeIO + '  ' + typeIO)
 			nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
 			timet = 0
 			select += 1
@@ -135,7 +133,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 				timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 				timeIO = ' '*max(3-len(str(timet)),0) + str(timet)
 				typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
-		except:
+		except FileNotFoundError:
 			timeIO = '   '
 			typeIO = 'N'
 		nameL.insert(select, nameIO + timeIO + ' ' + typeIO)
