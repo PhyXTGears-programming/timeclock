@@ -130,8 +130,8 @@ def sortUsernameList():  # alphebetize names
 				l[1] = l[1].lower()
 			else:
 				l += [findCapitals(l[0]).lower()]
-			if not len(l)>=3 and l[2] != '': l += ['none'] # if no title listed
-			if not len(l)>=4 and l[3] != '': l += ['none'] # if no job listed
+			if not len(l)>=3 or l[2] != '': l += ['none'] # if no title listed
+			if not len(l)>=4 or l[3] != '': l += ['none'] # if no job listed
 
 			names += [' | '.join(l)+'\n']
 		names.sort()
@@ -252,6 +252,7 @@ def calcSeasonTime(n):
 
 		if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
 
+		print(n, totalTime, weeksSinceStart)
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart

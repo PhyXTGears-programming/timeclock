@@ -112,7 +112,11 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 			nameIO = line.strip().split(' | ')[0]
 			try:
 				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
+					timet = 0
+					if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
+						timet = min( int(ioServ.calcSeasonTime(nameIO)[0]//3600), 999 )
+					else:
+						timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
 					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
 			except FileNotFoundError:
@@ -147,6 +151,7 @@ def hoursToColor(name):
 	if days > 0:
 		days -= 7
 		timet -= days*8/7 # in season
+	print(name, timet, days)
 
 	if timet >= 6 :
 		return '#00bf00' # green
