@@ -1,6 +1,7 @@
 import os
 from time import strftime
 from datetime import datetime,timedelta
+from math import floor
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
@@ -87,8 +88,14 @@ def signIO(n,c):
 		return msg,color
 	else:
 		## NORMAL SIGN IN ##
-		hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
-		weekh = str(round(calcWeekTime( nameIO.replace(' ', '')) / 3600, 2)) # calculate current week time
+		hrs = 0
+		if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
+			hrs = calcSeasonTime(nameIO.replace(' ', ''))[0]
+		else:
+			hrs = calcTotalTime(nameIO.replace(' ', ''))
+
+		hours = str(floor(hrs / 3600 /100)*100) # calculate total time in seconds then convert to hours (rounded 2 dec places)
+		weekh = str(floor(calcWeekTime( nameIO.replace(' ', '')) / 3600 /100)*100) # calculate current week time
 		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
 		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
 	
@@ -252,7 +259,7 @@ def calcSeasonTime(n):
 
 		if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
 
-		print(n, totalTime, weeksSinceStart)
+		#print(n, totalTime, weeksSinceStart)
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart
