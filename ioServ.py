@@ -113,7 +113,7 @@ def checkNameDB(n):  # check for if a name exists already
 	return False
 
 
-def addNameDB(full, user, title=None, job=None):  # add a new name to the list
+def addNameDB(full, user, title='None', job='None'):  # add a new name to the list
 	file = open(opts['usernameFile'], 'a+')
 	file.write(' | '.join([full.title(),user.lower(),title,job]) + '\n')
 	file.close()
@@ -140,7 +140,7 @@ def sortUsernameList():  # alphebetize names
 			if len(l)<3 or l[2] == '': l += ['none'] # if no title listed
 			if len(l)<4 or l[3] == '': l += ['none'] # if no job listed
 
-			names += [' | '.join(l[:3])+'\n']
+			names += [' | '.join(l[:4])+'\n']
 		names.sort()
 	with open(opts['usernameFile'], 'w') as f:
 		f.write(''.join(names))
