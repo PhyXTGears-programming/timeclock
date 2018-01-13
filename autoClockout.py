@@ -11,7 +11,6 @@ opts = loadOpts()
 def main():
 	while True:
 		if strftime("%H:%M") == opts['autoClockOut'][:-3]:
-			print('IT BEGINS')
 			for item in listdir(path=opts['pathTime']):
 				io = []
 				with open(opts['pathTime'] + item) as i: io = i.readlines()

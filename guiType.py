@@ -15,10 +15,10 @@ qtWin = None # quit password window
 nameL = infoT = logoImgs = logoL = None
 logoCurrent = -1 # start on 0, since updateLogo adds 1
 
-#root.config(bg='#000000')
 root.title('PhyxtGears1720io')
 root.geometry('800x600')  # 1024x768 # set resolution
-# glblBGC = '#343d46'
+glblBGC = '#343d46'
+root.config(bg=glblBGC)
 if platformsystem() != 'Windows' and platformsystem() != 'Darwin':
 	root.attributes('-fullscreen', True)
 
@@ -76,9 +76,9 @@ def makeNewUserWindow():  # new user window
 	def finishNewUser(): # perform checks on names for when the user is finished
 		errmsg, user, full = 'None', nuUserE.get(), nuFullE.get()
 
-		if user == '' or full == '': errmsg = 'Err: All boxes must be filled'
-		elif ioServ.checkNameDB(full): errmsg = 'Err: Fullname already exists.'
-		elif ioServ.checkNameDB(user): errmsg = 'Err: Username already exists.'
+		if user == '' or full == '': errmsg = 'Error: All boxes must be filled'
+		elif ioServ.checkNameDB(full): errmsg = 'Error: Fullname already exists.'
+		elif ioServ.checkNameDB(user): errmsg = 'Error: Username already exists.'
 
 		if errmsg == 'None':
 			ioServ.addNameDB(full.title(), user.lower(), jobOption[jobChoice.get()])
@@ -88,10 +88,8 @@ def makeNewUserWindow():  # new user window
 		else:
 			nuErrT.config(text=errmsg, fg='red')
 
-	finB = Button(buttnF, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser)
-	canB = Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=nuWin.destroy)
-	finB.grid(row=0, column=1)
-	canB.grid(row=0, column=0)
+	Button(buttnF, text='Cancel',      font='Courier 14', fg='red',  width=16, command=nuWin.destroy).grid(row=0, column=0)
+	Button(buttnF, text='Create User', font='Courier 14', fg='blue', width=16, command=finishNewUser).grid(row=0, column=1)
 	buttnF.pack()
 
 	vkey = osk.vk(parent=vkeyF, attach=nuFullE)  # on screen alphabet keyboard
@@ -101,45 +99,45 @@ def makeNewUserWindow():  # new user window
 
 def refreshListboxes(n=None): # whenever someone signs in/out or theres a new user
 	global nameL, infoT
+
+	def __addtolistbox(nameIO,select):
+		try:
+			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r') as f:
+				if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
+					timet = min( int(ioServ.calcSeasonTime(nameIO)[0]//3600), 999 )
+				else:
+					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
+				timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
+				try:
+					typeIO = f.readlines()[-1][0]
+				except IndexError:
+					typeIO = 'N'
+		except FileNotFoundError:
+			print("couldnt find "+nameIO+"'s file")
+			timeIO = '   '
+			typeIO = 'N'
+		nameL.insert(select, nameIO + ' ' * (34 - len(nameIO)-4) + timeIO + '  ' + typeIO)
+		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
+
+
 	if n=='all' or n==None:
 		nameL.delete(0, END)
 		ioServ.sortUsernameList()
 
 		nameIO = ''
-		timet = 0
-		typeIO = 'N'
 		select = 0
 
 		for line in open(opts['usernameFile']):
-			nameIO = line.strip().split('|')[0]
-			try:
-				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
-					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
-					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
-			except:
-				timeIO = '   '
-				typeIO = 'N'
-			nameL.insert(END, nameIO + ' ' * (35 - len(nameIO)-4) + timeIO + ' ' + typeIO)
-			nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
-			timet = 0
+			nameIO = line.strip().split(' | ')[0]
+			print(nameIO)
+			__addtolistbox(nameIO, select)
 			select += 1
+
 	elif n=='single':
 		select = nameL.curselection()[0]
-		nameIO = nameL.get(select)[:-5]
-		timet = 0
-		typeIO = 'N'
+		nameIO = nameL.get(select)[:-6].strip()
 		nameL.delete(select,select)
-		try:
-			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-				timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
-				timeIO = ' '*max(3-len(str(timet)),0) + str(timet)
-				typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
-		except:
-			timeIO = '   '
-			typeIO = 'N'
-		nameL.insert(select, nameIO + timeIO + ' ' + typeIO)
-		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
+		__addtolistbox(nameIO, select)
 		nameL.see(select+1)
 
 def hoursToColor(name):
@@ -155,7 +153,7 @@ def hoursToColor(name):
 	elif 2 <= timet < 6:
 		return '#FFAF00' # yellow orange
 	else:
-		return '#FF0000' # red
+		return '#FF4444' # red
 	return '#000000'
 
 
@@ -218,28 +216,28 @@ def updateLogo():
 def main():
 	# *F = frame, *S = scroll, *L = list, *B = button, *T = text
 	global nameL, infoT, logoImgs, logoL
-	listF = Frame(root)
+	listF = Frame(root, bg=glblBGC)
 	listS = Scrollbar(listF, orient=VERTICAL)
-	nameL = Listbox(listF, selectmode=SINGLE, yscrollcommand=listS.set, font='Courier 18')
+	nameL = Listbox(listF, selectmode=SINGLE, yscrollcommand=listS.set, font='Courier 18 bold', bg=glblBGC)
 	nameL.config(width=36, height=20)
 	listS.config(command=nameL.yview, width=52)
 
 	form = 'Name                          hrs i/o'
-	Label(listF, text=form, font='Courier 18 bold',anchor=W,justify=LEFT,width=40).pack()
+	Label(listF, text=form, font='Courier 18 bold',anchor=W,justify=LEFT,width=40, fg='white',bg=glblBGC).pack()
 	listS.pack(side=RIGHT, fill=Y)
 	nameL.pack(side=LEFT, fill=BOTH, expand=1)
 	listF.pack(side=LEFT, padx=12)
 
 	logoImgs = [PhotoImage(file='assets/1720.gif'),PhotoImage(file='assets/30483-2.gif'),PhotoImage(file='assets/34416-4.gif')]
-	Label(root, text='PhyxtGears1720io', font='Courier 12').pack(pady=4)
-	logoL = Label(root, image=logoImgs[0]); logoL.pack()
+	Label(root, text='PhyxtGears1720io', font='Courier 12', fg='white',bg=glblBGC).pack(pady=4)
+	logoL = Label(root, image=logoImgs[0], bg=glblBGC); logoL.pack()
 	updateLogo()
 
 	f = 'Courier 16 bold'
-	ioF = Frame(root)
+	ioF = Frame(root, bg=glblBGC)
 	iIOB = Button(ioF, text='IN',  font=f, bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
 	oIOB = Button(ioF, text='OUT', font=f, bg='red',  fg='white', command=lambda: ioSign('o'), width=12, height=2)
-	infoT = Label(ioF, text='', font=f, height=5, wraplength=0, justify=CENTER) # white space generator ftw
+	infoT = Label(ioF, text='', font=f, height=5, wraplength=0, justify=CENTER, bg=glblBGC) # white space generator ftw
 	newB = Button(ioF, text='New User', font=f, bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
 	iIOB.pack(pady=8)
@@ -248,8 +246,8 @@ def main():
 	newB.pack(pady=4)
 	ioF.pack()
 
-	Button(text='QUIT', font='Courier 16 bold', height=1, fg='red', command=confirmQuit).pack(side=RIGHT, padx=12)
-	Button(text='UPDATE', font='Courier 16 bold', bg='orange',fg='white', command=lambda: refreshListboxes(), height=1).pack(side=RIGHT)
+	Button(text='QUIT', font='Courier 16 bold',  bg='#44515e', fg='#ff6666', command=confirmQuit).pack(side=RIGHT, padx=12)
+	Button(text='UPDATE', font='Courier 16 bold', bg='#44515e',fg='orange', command=lambda: refreshListboxes(), height=1).pack(side=RIGHT)
 
 	refreshListboxes()
 

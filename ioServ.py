@@ -1,6 +1,7 @@
 import os
 from time import strftime
 from datetime import datetime,timedelta
+from math import floor
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
@@ -82,13 +83,19 @@ def signIO(n,c):
 			elif lines[-1][0]=='a': msg = name1st+' was auto-signed out!'
 
 	elif not lines and c=='o':
-		## NEVER SIGNED IN BEFOR ##
+		## NEVER SIGNED IN BEFORE ##
 		msg,color = name1st+' has never signed in!', 'orange'
-
+		return msg,color
 	else:
 		## NORMAL SIGN IN ##
-		hours = str(round(calcTotalTime(nameIO.replace(' ', '')) / 3600, 2)) # calculate total time in seconds then convert to hours (rounded 2 dec places)
-		weekh = str(round(calcWeekTime( nameIO.replace(' ', '')) / 3600, 2)) # calculate current week time
+		hrs = 0
+		if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
+			hrs = calcSeasonTime(nameIO.replace(' ', ''))[0]
+		else:
+			hrs = calcTotalTime(nameIO.replace(' ', ''))
+
+		hours = str(floor(hrs / 3600 /100)*100) # calculate total time in seconds then convert to hours (rounded 2 dec places)
+		weekh = str(floor(calcWeekTime( nameIO.replace(' ', '')) / 3600 /100)*100) # calculate current week time
 		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
 		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
 	
@@ -106,9 +113,9 @@ def checkNameDB(n):  # check for if a name exists already
 	return False
 
 
-def addNameDB(full, user, job='none'):  # add a new name to the list
+def addNameDB(full, user, title=None, job=None):  # add a new name to the list
 	file = open(opts['usernameFile'], 'a+')
-	file.write(full.title() + '|' + user.lower() + '|' + job + '\n')
+	file.write(' | '.join([full.title(),user.lower(),title,job]) + '\n')
 	file.close()
 
 
@@ -122,13 +129,16 @@ def sortUsernameList():  # alphebetize names
 	with open(opts['usernameFile']) as u:
 		names = []
 		for l in u.readlines():
-			l = l.strip().split(' | ')
+			l = l[:-1]
+			print(l.split(' | '))
+			l = l.split(' | ')
 			l[0] = l[0].title() # full name
 			if len(l)>=2: # user key
 				l[1] = l[1].lower()
 			else:
 				l += [findCapitals(l[0]).lower()]
-			if not len(l)>=3: l += ['Student'] # if no job listed
+			if not len(l)>=3 or l[2] != '': l += ['none'] # if no title listed
+			if not len(l)>=4 or l[3] != '': l += ['none'] # if no job listed
 
 			names += [' | '.join(l)+'\n']
 		names.sort()
@@ -249,6 +259,7 @@ def calcSeasonTime(n):
 
 		if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
 
+		#print(n, totalTime, weeksSinceStart)
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart
