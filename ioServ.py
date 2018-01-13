@@ -137,10 +137,10 @@ def sortUsernameList():  # alphebetize names
 				l[1] = l[1].lower()
 			else:
 				l += [findCapitals(l[0]).lower()]
-			if not len(l)>=3 or l[2] != '': l += ['none'] # if no title listed
-			if not len(l)>=4 or l[3] != '': l += ['none'] # if no job listed
+			if len(l)<3 or l[2] == '': l += ['none'] # if no title listed
+			if len(l)<4 or l[3] == '': l += ['none'] # if no job listed
 
-			names += [' | '.join(l)+'\n']
+			names += [' | '.join(l[:3])+'\n']
 		names.sort()
 	with open(opts['usernameFile'], 'w') as f:
 		f.write(''.join(names))
