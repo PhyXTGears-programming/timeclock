@@ -111,14 +111,17 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		for line in open(opts['usernameFile']):
 			nameIO = line.strip().split(' | ')[0]
 			try:
-				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
+				with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r') as f:
 					timet = 0
 					if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
 						timet = min( int(ioServ.calcSeasonTime(nameIO)[0]//3600), 999 )
 					else:
 						timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 					timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
-					typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
+					try:
+						typeIO = f.readlines()[-1][0]
+					except IndexError:
+						typeIO = 'N'
 			except FileNotFoundError:
 				timeIO = '   '
 				typeIO = 'N'
@@ -128,19 +131,25 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 			select += 1
 	elif n=='single':
 		select = nameL.curselection()[0]
-		nameIO = nameL.get(select)[:-5]
+		nameIO = nameL.get(select)[:-6]
 		timet = 0
 		typeIO = 'N'
 		nameL.delete(select,select)
 		try:
-			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r+') as f:
-				timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
+			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r') as f:
+				if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
+					timet = min( int(ioServ.calcSeasonTime(nameIO)[0]//3600), 999 )
+				else:
+					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 				timeIO = ' '*max(3-len(str(timet)),0) + str(timet)
-				typeIO = f.readlines()[-1][0]  #iolist.insert(END, f.readlines()[-1][0])
+				try:
+					typeIO = f.readlines()[-1][0]
+				except IndexError:
+					typeIO = 'N'
 		except FileNotFoundError:
 			timeIO = '   '
 			typeIO = 'N'
-		nameL.insert(select, nameIO + timeIO + ' ' + typeIO)
+		nameL.insert(select, nameIO + timeIO + '  ' + typeIO)
 		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
 		nameL.see(select+1)
 
