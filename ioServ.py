@@ -91,11 +91,12 @@ def signIO(n,c):
 		hrs = 0
 		if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
 			hrs = calcSeasonTime(nameIO.replace(' ', ''))[0]
+			print('in season, '+nameIO, hrs)
 		else:
 			hrs = calcTotalTime(nameIO.replace(' ', ''))
 
-		hours = str(floor(hrs / 3600 /100)*100) # calculate total time in seconds then convert to hours (rounded 2 dec places)
-		weekh = str(floor(calcWeekTime( nameIO.replace(' ', '')) / 3600 /100)*100) # calculate current week time
+		hours = str(floor(hrs / 3600 *100)/100) # calculate total time in seconds then convert to hours (rounded 2 dec places)
+		weekh = str(floor(calcWeekTime( nameIO.replace(' ', '')) / 3600 *100)/100) # calculate current week time
 		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
 		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
 	
