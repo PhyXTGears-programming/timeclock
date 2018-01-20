@@ -1,6 +1,7 @@
 import os, time
 from time import strftime
 from platform import system as platformsystem
+from math import floor
 from datetime import datetime,timedelta
 from tkinter import *
 
@@ -24,15 +25,20 @@ if platformsystem() != 'Windows' and platformsystem() != 'Darwin':
 
 opts = ioServ.loadOpts() # load options from file
 
-try:
-	os.mkdir(opts['pathTime'])
-except:
-	pass
+try: os.mkdir(opts['pathTime'])
+except FileExistsError: pass # but its a dir not a file
 
 ioServ.mkfile(opts['usernameFile'])
 
 
-allusers = {'Student':[]}
+allusers = {'all':[]}
+for i in opts['posTitle']: allusers[i] = []
+for name in open(opts['usernameFile']):
+	name = name.split(" | ")
+	allusers['all'].append(name[0])
+	allusers[name[2]].append(name[0])
+#print(allusers)
+
 
 	
 def makeNewUserWindow():  # new user window
@@ -132,10 +138,12 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 				except IndexError:
 					typeIO = 'N'
 		except FileNotFoundError:
-			print("couldnt find "+nameIO+"'s file")
+			#print("couldnt find "+nameIO+"'s file")
 			timeIO = '   '
 			typeIO = 'N'
-		nameL.insert(select, nameIO + ' ' * (34 - len(nameIO)-4) + timeIO + '  ' + typeIO)
+		weektime = floor(min(ioServ.calcWeekTime(nameIO)//3600,8))
+		#print(nameIO, ioServ.calcWeekTime(nameIO)/3600)
+		nameL.insert(select, nameIO + ' ' * (26 - len(nameIO)-4)+ ('.'*weektime + ' '*(8-weektime)) + timeIO + '  ' + typeIO)
 		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
 
 
@@ -146,10 +154,10 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameIO = ''
 		select = 0
 
-		for line in open(opts['usernameFile']):
-			nameIO = line.strip().split(' | ')[0]
-			print(nameIO)
-			__addtolistbox(nameIO, select)
+		for name in allusers['all']:
+			#nameIO = line.strip().split(' | ')[0]
+			#print(nameIO)
+			__addtolistbox(name, select)
 			select += 1
 
 	elif n=='single':

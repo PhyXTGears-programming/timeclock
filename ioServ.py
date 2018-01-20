@@ -19,7 +19,7 @@ def loadOpts():
 			line[1] = line[1].split('#')[0]
 			opts[line[0]] = line[1].strip(' ')
 			if ',' in line[1]: opts[line[0]] = line[1].split(',')
-	print(opts)
+	#print(opts)
 	return opts
 
 def generateDefaultOpts():
@@ -96,7 +96,7 @@ def signIO(n,c):
 		hrs = 0
 		if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
 			hrs = calcSeasonTime(nameIO.replace(' ', ''))[0]
-			print('in season, '+nameIO, hrs)
+			#print('in season, '+nameIO, hrs)
 		else:
 			hrs = calcTotalTime(nameIO.replace(' ', ''))
 
@@ -136,7 +136,7 @@ def sortUsernameList():  # alphebetize names
 		names = []
 		for l in u.readlines():
 			l = l[:-1]
-			print(l.split(' | '))
+			#print(l.split(' | '))
 			l = l.split(' | ')
 			l[0] = l[0].title() # full name
 			if len(l)>=2: # user key
@@ -269,6 +269,16 @@ def calcSeasonTime(n):
 		return totalTime, weeksSinceStart
 	except FileNotFoundError:
 		return 0, weeksSinceStart
+
+def calcTimeframeHours(n, datemax):
+	totalTime = 0
+	lastTime = 0
+	lastState = 'n'
+
+	try:
+		pass
+	except FileNotFoundError:
+		pass
 
 
 def mkfile(t):
