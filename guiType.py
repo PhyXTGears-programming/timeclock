@@ -17,7 +17,7 @@ nameL = infoT = logoImgs = logoL = None
 logoCurrent = -1 # start on 0, since updateLogo adds 1
 
 root.title('PhyxtGears1720io')
-root.geometry('800x600')  # 1024x768 # set resolution
+root.geometry('1024x768')  # 1024x768 # set resolution
 glblBGC = '#343d46'
 root.config(bg=glblBGC)
 if platformsystem() != 'Windows' and platformsystem() != 'Darwin':
@@ -143,7 +143,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 			typeIO = 'N'
 		weektime = floor(min(ioServ.calcWeekTime(nameIO)//3600,8))
 		#print(nameIO, ioServ.calcWeekTime(nameIO)/3600)
-		nameL.insert(select, nameIO + ' ' * (26 - len(nameIO)-4)+ ('.'*weektime + ' '*(8-weektime)) + timeIO + '  ' + typeIO)
+		nameL.insert(select, nameIO + ' ' * (30 - len(nameIO)-4)+ ('.'*weektime + ' '*(8-weektime)) + '  ' + timeIO + '  ' + typeIO)
 		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
 
 
@@ -162,7 +162,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 
 	elif n=='single':
 		select = nameL.curselection()[0]
-		nameIO = nameL.get(select)[:-14].strip()
+		nameIO = nameL.get(select)[:-18].strip()
 		nameL.delete(select,select)
 		__addtolistbox(nameIO, select)
 		nameL.see(select+1)
@@ -175,7 +175,9 @@ def hoursToColor(name):
 		days -= 7
 		timet -= days*8/7 # in season
 
-	if timet >= 6 :
+	if timet >= 54: # light gray, done with hours
+		return '#e0e0e0'
+	elif timet >= 6:
 		return '#00bf00' # green
 	elif 2 <= timet < 6:
 		return '#FFAF00' # yellow orange
@@ -191,7 +193,7 @@ def ioSign(c):
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
 
-	msg,color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-14],c)
+	msg,color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-18],c)
 	alertWindow(text=msg, fg=color)
 
 	refreshListboxes('single')
@@ -245,12 +247,12 @@ def main():
 	global nameL, infoT, logoImgs, logoL
 	listF = Frame(root, bg=glblBGC)
 	listS = Scrollbar(listF, orient=VERTICAL)
-	nameL = Listbox(listF, selectmode=SINGLE, yscrollcommand=listS.set, font='Courier 18 bold', bg=glblBGC)
-	nameL.config(width=36, height=20)
+	nameL = Listbox(listF, selectmode=SINGLE, yscrollcommand=listS.set, font='Courier 22 bold', bg=glblBGC)
+	nameL.config(width=42, height=20)
 	listS.config(command=nameL.yview, width=52)
 
-	form = 'Name                          hrs i/o'
-	Label(listF, text=form, font='Courier 18 bold',anchor=W,justify=LEFT,width=40, fg='white',bg=glblBGC).pack()
+	form = 'Name' +' '*32+ 'hrs i/o'
+	Label(listF, text=form, font='Courier 22 bold',anchor=W,justify=LEFT, fg='white',bg=glblBGC).pack(anchor=W)
 	listS.pack(side=RIGHT, fill=Y)
 	nameL.pack(side=LEFT, fill=BOTH, expand=1)
 	listF.pack(side=LEFT, padx=12)
@@ -260,7 +262,7 @@ def main():
 	logoL = Label(root, image=logoImgs[0], bg=glblBGC); logoL.pack()
 	updateLogo()
 
-	f = 'Courier 16 bold'
+	f = 'Courier 20 bold'
 	ioF = Frame(root, bg=glblBGC)
 	iIOB = Button(ioF, text='IN',  font=f, bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
 	oIOB = Button(ioF, text='OUT', font=f, bg='red',  fg='white', command=lambda: ioSign('o'), width=12, height=2)
@@ -273,8 +275,8 @@ def main():
 	newB.pack(pady=4)
 	ioF.pack()
 
-	Button(text='QUIT', font='Courier 16 bold',  bg='#44515e', fg='#ff6666', command=confirmQuit).pack(side=RIGHT, padx=12)
-	Button(text='UPDATE', font='Courier 16 bold', bg='#44515e',fg='orange', command=lambda: refreshListboxes(), height=1).pack(side=RIGHT)
+	Button(text='QUIT',   font=f, bg='#44515e', fg='#ff6666', command=confirmQuit).pack(side=RIGHT, padx=12)
+	Button(text='UPDATE', font=f, bg='#44515e', fg='orange',  command=lambda: refreshListboxes(), height=1).pack(side=RIGHT)
 
 	refreshListboxes()
 
