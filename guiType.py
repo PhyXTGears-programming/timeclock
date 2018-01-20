@@ -99,6 +99,7 @@ def makeNewUserWindow():  # new user window
 			for i in jobsChoice:
 				if i.get()==1: jobsChosen += [jobsOption[v]]
 				v+= 1
+			if not jobsChosen: jobsChosen = ['none']
 			ioServ.addNameDB(full.title(), user.lower(), titleOption[titleChoice.get()], ','.join(jobsChosen))
 			refreshListboxes()
 			alertWindow(text='Make sure you, '+full.title()+', sign in!', fg='orange')
