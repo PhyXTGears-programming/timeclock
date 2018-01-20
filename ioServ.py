@@ -16,7 +16,10 @@ def loadOpts():
 		line = line.split("#")[0].strip().strip(" ")
 		if line and line[0] != "#":
 			line = line.strip().split(' : ')
-			opts[line[0]] = line[1].split('#')[0].strip(' ')
+			line[1] = line[1].split('#')[0]
+			opts[line[0]] = line[1].strip(' ')
+			if ',' in line[1]: opts[line[0]] = line[1].split(',')
+	print(opts)
 	return opts
 
 def generateDefaultOpts():
@@ -26,11 +29,13 @@ def generateDefaultOpts():
 ioForm : %H:%M:%S %d.%m.%Y
 pathTime : ./times/
 autoClockOut : 00:00:00
-autoClockLim : 05:00:00
+autoClockLim : 04:30:00
 usernameFile : usernameFile.txt
 adminPass : 1234
 buildStart : 10:30:00 06.01.2018
 buildLeave : 23:59:59 20.02.2018
+posTitle : Student,Mentor,Adult
+posJobs : Programmer,Mechanic,Media
 
 """
 	os.chdir(os.path.dirname(__file__))
@@ -268,3 +273,10 @@ def calcSeasonTime(n):
 
 def mkfile(t):
 	open(t, 'a+').close()  # make files if they dont exist
+
+
+def loadUsers():
+	allusers = {}
+	for line in open(opts['usernameFile'], 'r+'):
+		l = line.split(' | ') # name | username | title | jobs
+		allusers[l[2]] = (allusers[l[2]] or []) + []

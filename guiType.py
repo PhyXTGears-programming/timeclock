@@ -31,6 +31,9 @@ except:
 
 ioServ.mkfile(opts['usernameFile'])
 
+
+allusers = {'Student':[]}
+
 	
 def makeNewUserWindow():  # new user window
 	global root, nuWin
@@ -43,7 +46,8 @@ def makeNewUserWindow():  # new user window
 
 	inputF = Frame(nuWin) # frame for input boxes
 	buttnF = Frame(nuWin) # frame for buttons
-	jobF = Frame(nuWin) # frame for choosing between student and mentor
+	titleF = Frame(nuWin) # frame for choosing between student mentor or adult
+	jobsF  = Frame(nuWin) # frame for choosing the jobs you have
 	vkeyF = Frame(nuWin, pady=8) # on screen keyboard frame
 
 	Label(inputF, text='Fullname: ', font='Courier 14').grid(sticky=E, padx=2, pady=2)
@@ -65,13 +69,23 @@ def makeNewUserWindow():  # new user window
 	nuErrT = Label(nuWin, font='Courier 14', text='', fg='red')  # if theres an error with the name (ie name exists or not a real name) show on screen
 	nuErrT.pack()
 
-	# the different jobs a member can have, currently only student or mentor
-	jobOption, j = ['Student','Mentor','Adult'], 0
-	jobChoice = IntVar(); jobChoice.set(0)
-	for job in jobOption: # generate an option for every job in jobOption
-		Radiobutton(jobF,text=job,font='Courier 14 bold', variable=jobChoice,value=j).grid(row=0,column=j)
+	# the different titles a member can have, like student mentor or adult
+	titleOption, j = opts['posTitle'], 0
+	titleChoice = IntVar(); titleChoice.set(0)
+	for title in titleOption: # generate an option for every title in titleOption
+		Radiobutton(titleF,text=title,font='Courier 14 bold', variable=titleChoice,value=j).grid(row=0,column=j)
 		j += 1
-	jobF.pack()
+	titleF.pack()
+
+	#the different jobs a member can have, like programmer, mechanic, and/or media
+	jobsOption, j = opts['posJobs'], 0
+	jobsChoice = []
+	for jobs in jobsOption: # generate an option for every jobs in jobsOption
+		jobsChoice += [IntVar()]; jobsChoice[j].set(0)
+		Checkbutton(jobsF,text=jobs,font='Courier 14 bold', variable=jobsChoice[j]).grid(row=0,column=j)
+		j += 1
+	jobsF.pack()
+
 
 	def finishNewUser(): # perform checks on names for when the user is finished
 		errmsg, user, full = 'None', nuUserE.get(), nuFullE.get()
@@ -81,7 +95,11 @@ def makeNewUserWindow():  # new user window
 		elif ioServ.checkNameDB(user): errmsg = 'Error: Username already exists.'
 
 		if errmsg == 'None':
-			ioServ.addNameDB(full.title(), user.lower(), jobOption[jobChoice.get()])
+			jobsChosen,v = [],0
+			for i in jobsChoice:
+				if i.get()==1: jobsChosen += [jobsOption[v]]
+				v+= 1
+			ioServ.addNameDB(full.title(), user.lower(), titleOption[titleChoice.get()], ','.join(jobsChosen))
 			refreshListboxes()
 			alertWindow(text='Make sure you, '+full.title()+', sign in!', fg='orange')
 			nuWin.destroy()
