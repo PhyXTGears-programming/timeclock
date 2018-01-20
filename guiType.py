@@ -162,7 +162,7 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 
 	elif n=='single':
 		select = nameL.curselection()[0]
-		nameIO = nameL.get(select)[:-6].strip()
+		nameIO = nameL.get(select)[:-14].strip()
 		nameL.delete(select,select)
 		__addtolistbox(nameIO, select)
 		nameL.see(select+1)
@@ -191,7 +191,7 @@ def ioSign(c):
 		alertWindow(text='Nothing Selected!', fg='orange')
 		return
 
-	msg,color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-5],c)
+	msg,color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-14],c)
 	alertWindow(text=msg, fg=color)
 
 	refreshListboxes('single')
