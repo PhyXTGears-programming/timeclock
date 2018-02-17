@@ -31,13 +31,18 @@ except FileExistsError: pass # but its a dir not a file
 ioServ.mkfile(opts['usernameFile'])
 
 
-allusers = {'all':[]}
+allusers = {'all':[],'info':{}}
+jobusers = {'none':[]}
 for i in opts['posTitle']: allusers[i] = []
+for i in opts['posJobs']:  jobusers[i] = []
+
 for name in open(opts['usernameFile']):
-	name = name.split(" | ")
+	name = name.strip().split(" | ")
 	allusers['all'].append(name[0])
 	allusers[name[2]].append(name[0])
-#print(allusers)
+	for x in name[3].split(","):
+		jobusers[x.strip()].append(name[0])
+	allusers["info"][name[0]] = {"initials":name[1],"title":name[2],"jobs":name[3]}
 
 
 	
@@ -121,7 +126,6 @@ def makeNewUserWindow():  # new user window
 	vkeyF.pack()
 
 
-
 def refreshListboxes(n=None): # whenever someone signs in/out or theres a new user
 	global nameL, infoT
 
@@ -145,6 +149,22 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		#print(nameIO, ioServ.calcWeekTime(nameIO)/3600)
 		nameL.insert(select, nameIO + ' ' * (30 - len(nameIO)-4)+ ('.'*weektime + ' '*(8-weektime)) + '  ' + timeIO + '  ' + typeIO)
 		nameL.itemconfig(select, {'fg' : hoursToColor(nameIO)})
+
+
+	ioServ.sortUsernameList()
+
+	allusers = {'all':[],'info':{}}
+	jobusers = {'none':[]}
+	for i in opts['posTitle']: allusers[i] = []
+	for i in opts['posJobs']:  jobusers[i] = []
+
+	for name in open(opts['usernameFile']):
+		name = name.strip().split(" | ")
+		allusers['all'].append(name[0])
+		allusers[name[2]].append(name[0])
+		for x in name[3].split(","):
+			jobusers[x.strip()].append(name[0])
+		allusers["info"][name[0]] = {"initials":name[1],"title":name[2],"jobs":name[3]}
 
 
 	if n=='all' or n==None:
@@ -191,7 +211,7 @@ def hoursToColor(name):
 def ioSign(c):
 	global nameL
 	if len(nameL.curselection()) == 0:
-		alertWindow(text='Nothing Selected!', fg='orange')
+		alertWindow(text='No name selected!', fg='orange')
 		return
 
 	msg,color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-18],c)
@@ -263,17 +283,17 @@ def main():
 	logoL = Label(root, image=logoImgs[0], bg=glblBGC); logoL.pack()
 	updateLogo()
 
-	f = 'Courier 20 bold'
+	f = 'Courier 22 bold'
 	ioF = Frame(root, bg=glblBGC)
-	iIOB = Button(ioF, text='IN',  font=f, bg='green',fg='white', command=lambda: ioSign('i'), width=12, height=2)
-	oIOB = Button(ioF, text='OUT', font=f, bg='red',  fg='white', command=lambda: ioSign('o'), width=12, height=2)
+	iIOB = Button(ioF, text='IN',  font=f, bg='green', fg='white', command=lambda:ioSign('i'), width=12, height=2)
+	oIOB = Button(ioF, text='OUT', font=f, bg='red',   fg='white', command=lambda:ioSign('o'), width=12, height=2)
 	infoT = Label(ioF, text='', font=f, height=5, wraplength=0, justify=CENTER, bg=glblBGC) # white space generator ftw
-	newB = Button(ioF, text='New User', font=f, bg='blue', fg='white', command=makeNewUserWindow, width=12, height=2)
+	newB = Button(ioF, text='New User', font=f, bg= 'blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
 	iIOB.pack(pady=8)
 	oIOB.pack(pady=8)
 	infoT.pack()
-	newB.pack(pady=4)
+	newB.pack()
 	ioF.pack()
 
 	Button(text='QUIT',   font=f, bg='#44515e', fg='#ff6666', command=confirmQuit).pack(side=RIGHT, padx=12)
