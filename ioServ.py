@@ -177,12 +177,13 @@ def calcTotalTime(n):
 				time = datetime.strptime(time_str, opts['ioForm'])
 				if state == "i":
 					lastTime = time
-				elif state == "o" and lastState == "i":
-					totalTime += (time - lastTime).total_seconds()
+					lastState = state
+				elif state == "o":
+					if lastState=="i": totalTime += (time - lastTime).total_seconds()
+					lastTime = time
+					lastState = state
 			else:
 				state = "n"
-			lastState = state
-			lastTime = time
 		if lastState == 'i' and addCurrentTime: totalTime += (datetime.now() - lastTime).total_seconds()
 
 		userFile.close()
@@ -211,10 +212,14 @@ def calcWeekTime(n):
 				if state == "i":
 					if lastState == "o":
 						totalTime += (lastTime - time).total_seconds()
-				lastState = state
-				lastTime = time
+					lastTime = time
+					lastState = state
+				if state == "o":
+					lastTime = time
+					lastState = state
 			else:
 				state = "n"
+				lastState = state
 
 			if currentLine and datetime.strptime(time_str, opts['ioForm']) < firstDayOfWeek: break
 
@@ -258,12 +263,14 @@ def calcSeasonTime(n):
 				time = datetime.strptime(time_str, opts['ioForm'])
 				if state == "i":
 					if lastState == "o": totalTime += (lastTime - time).total_seconds()
+					lastTime = time
+					lastState = state
 				elif state == "o":
 					lastTime = time
+					lastState = state
 			else:
 				state = "n"
-			lastState = state
-			lastTime = time
+				lastState = state
 			if datetime.strptime(time_str, opts['ioForm']) < buildStart:
 				#print(n+"'s done ", totalTime)
 				break
