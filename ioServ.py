@@ -244,7 +244,9 @@ def calcSeasonTime(n):
 	try:
 		with open(opts['pathTime'] + n + '.txt', 'r') as f: userIOAs = f.readlines()
 
-		addCurrentTime = userIOAs and userIOAs[-1][0]=='i' and datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm']) > currentDate
+		dt = datetime.now()
+		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
+		addCurrentTime = userIOAs and userIOAs[-1][0]=='i' and datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
 
 		for line in reversed(userIOAs):
 			line = line.strip()
