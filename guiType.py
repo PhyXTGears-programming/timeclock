@@ -191,7 +191,7 @@ def hoursToColor(name):
 	timet,days = ioServ.calcSeasonTime(name)
 	timet /= 3600
 
-	if timet >= 54: # light gray, done with hours
+	if timet >= 52: # light gray, done with hours
 		return '#e0e0e0'
 
 	if days > 0:
