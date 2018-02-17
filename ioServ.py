@@ -86,6 +86,7 @@ def signIO(n,c):
 		elif c == 'o':
 			if lines[-1][0] == 'o': msg = name1st+' is already signed out!'
 			elif lines[-1][0]=='a': msg = name1st+' was auto-signed out!'
+		return msg,color
 
 	elif not lines and c=='o':
 		## NEVER SIGNED IN BEFORE ##
