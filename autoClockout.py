@@ -22,7 +22,7 @@ def main():
 				if io: io = io[-1].split(' | ')
 				else: continue
 
-				if io[0] == 'i':
+				if io[0] == 'i' or io[0] == "!":
 					io[0] = 'a'
 					with open(opts['pathTime']+item, 'a') as i: i.write(' | '.join(io))
 			refreshListboxes()

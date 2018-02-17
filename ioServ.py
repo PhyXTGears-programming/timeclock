@@ -78,15 +78,17 @@ def signIO(n,c):
 		## SIGNING IN WHEN SEMI CLOCKED OUT ##
 		msg,color = 'Did you mean to sign out to recover hours, '+name1st+'?', 'orange'
 
-	elif lines and (lines[-1][0] == c or (lines[-1][0]=='a' and c=='o')):
+	elif lines and ((lines[-1][0] in "i!" and c=="i") or (lines[-1][0] in "o@" and c=="o") or (lines[-1][0]=='a' and c=='o' and not inTimeFrame)):
 		## DOUBLE SIGN IN/OUT ##
 		color = 'orange'
 		if c == 'i':
 			msg = name1st+' is already signed in!'
+			c = "!"
 		elif c == 'o':
-			if lines[-1][0] == 'o': msg = name1st+' is already signed out!'
+			if lines[-1][0] in 'o@': msg = name1st+' is already signed out!'
 			elif lines[-1][0]=='a': msg = name1st+' was auto-signed out!'
-		return msg,color
+			c = "@"
+		#return msg,color
 
 	elif not lines and c=='o':
 		## NEVER SIGNED IN BEFORE ##
