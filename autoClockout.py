@@ -10,7 +10,12 @@ opts = loadOpts()
 
 def main():
 	while True:
-		if strftime("%H:%M") == opts['autoClockOut'][:-3]:
+		currenttime = strftime("%H:%M:%S")
+
+		if currenttime == strftime("%H:00:00"):
+			refreshListboxes()
+
+		if currenttime == opts['autoClockOut']:
 			for item in listdir(path=opts['pathTime']):
 				io = []
 				with open(opts['pathTime'] + item) as i: io = i.readlines()
@@ -21,6 +26,7 @@ def main():
 					io[0] = 'a'
 					with open(opts['pathTime']+item, 'a') as i: i.write(' | '.join(io))
 			refreshListboxes()
+
 			sleep(1)
 		sleep(60-int(strftime('%S')))
 
