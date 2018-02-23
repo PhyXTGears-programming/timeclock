@@ -132,8 +132,13 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 	def __addtolistbox(nameIO,select):
 		try:
 			with open(opts['pathTime'] + nameIO.replace(' ', '') + '.txt', 'r') as f:
-				if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
-					timet = min( int(ioServ.calcSeasonTime(nameIO)[0]//3600), 999 )
+				inSeason = False
+				timet = 0
+				for season in opts["seasons"]:
+					v = ioServ.calcSeasonTime(nameIO, season)
+					inSeason, timet = v[0],v[1]
+					timet = min( int(timet//3600), 999 )
+					if inSeason: break
 				else:
 					timet = min( int(ioServ.calcTotalTime(nameIO)//3600), 999 )
 				timeIO = ' '*max(3-len(str(timet)),0) + str( timet )
@@ -188,22 +193,28 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 		nameL.see(select+1)
 
 def hoursToColor(name):
-	timet,days = ioServ.calcSeasonTime(name)
+	inSeason = False
+	timet = 0
+	days = 0
+	for season in opts["seasons"]:
+		inSeason, timet, days = ioServ.calcSeasonTime(name, season)
+		if inSeason: break
+	else:
+		timet, days = ioServ.calcWeekTime(name),0
+
 	timet /= 3600
 
 	if timet >= 52: # light gray, done with hours
 		return '#e0e0e0'
 
-	if days > 0:
+	if days > 7:
 		days -= 7
 		timet -= days*8/7 # in season
 
-	if timet >= 6:
-		return '#00bf00' # green
-	elif 2 <= timet < 6:
-		return '#FFAF00' # yellow orange
-	else:
-		return '#FF4444' # red
+	if timet >= 6.0: return '#00bf00' # green
+	elif timet >= 2: return '#FFAF00' # yellow orange
+	else: return '#FF4444' # red
+
 	return '#000000'
 
 
@@ -287,7 +298,14 @@ def main():
 	ioF = Frame(root, bg=glblBGC)
 	iIOB = Button(ioF, text='IN',  font=f, bg='green', fg='white', command=lambda:ioSign('i'), width=12, height=2)
 	oIOB = Button(ioF, text='OUT', font=f, bg='red',   fg='white', command=lambda:ioSign('o'), width=12, height=2)
-	infoT = Label(ioF, text='', font=f, height=5, wraplength=0, justify=CENTER, bg=glblBGC) # white space generator ftw
+
+	whatSeason = "Off"
+	for season in opts["seasons"]:
+		if datetime.strptime(opts[season+'Start'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts[season+'Leave'],opts['ioForm']):
+			whatSeason = season
+			break
+	infoT = Label(ioF, text="Currently\nin\n"+whatSeason+"\nSeason", fg="white", font=f, height=5, wraplength=200, justify=CENTER, bg=glblBGC) # white space generator ftw
+
 	newB = Button(ioF, text='New User', font=f, bg= 'blue', fg='white', command=makeNewUserWindow, width=12, height=2)
 
 	iIOB.pack(pady=8)
