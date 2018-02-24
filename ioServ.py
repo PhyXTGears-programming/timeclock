@@ -35,8 +35,11 @@ adminPass : 1234
 seasons : Build,Competition
 BuildStart : 10:30:00 06.01.2018
 BuildLeave : 23:59:59 20.02.2018
+BuildHrs/Wk : 8
+BuildHrsRqd : 54
 CompetitionStart : 00:00:00 21.02.2018
 CompetitionLeave : 23:59:59 14.04.2018
+CompetitionHrs/Wk : 6
 posTitle : Student,Mentor,Adult
 posJobs : Programmer,Mechanic,Media
 
@@ -100,16 +103,27 @@ def signIO(n,c):
 	else:
 		## NORMAL SIGN IN ##
 		hrs = 0
-		if datetime.strptime(opts['BuildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['BuildLeave'],opts['ioForm']):
-			hrs = calcSeasonTime(nameIO.replace(' ', ''))[0]
-			#print('in season, '+nameIO, hrs)
+		inSeason = False
+		currentSeason = "Off"
+		timet = 0
+		for season in opts["seasons"]:
+			v = calcSeasonTime(nameIO, season)
+			inSeason, timet = v[0],v[1]
+			timet = min( int(timet//3600), 999 )
+			currentSeason = season
+			if inSeason: break
 		else:
-			hrs = calcTotalTime(nameIO.replace(' ', ''))
+			currentSeason = "Off"
+			timet = min( int(calcTotalTime(nameIO)//3600), 999 )
+
+		limit = "8"
+		if currentSeason+"Hrs/Wk" in opts:
+			limit = str(opts[currentSeason+"Hrs/Wk"])
 
 		hours = str(floor(hrs / 3600 *100)/100) # calculate total time in seconds then convert to hours (rounded 2 dec places)
 		weekh = str(floor(calcWeekTime( nameIO.replace(' ', '')) / 3600 *100)/100) # calculate current week time
-		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
-		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
+		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of '+limit+' hours.', 'Green'
+		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of '+limit+' hours.', 'Red'
 	
 	with open(pathIO, 'a+') as f: f.write(c + ' | ' + timeIO + '\n')
 	

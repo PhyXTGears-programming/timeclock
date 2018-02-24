@@ -194,25 +194,33 @@ def refreshListboxes(n=None): # whenever someone signs in/out or theres a new us
 
 def hoursToColor(name):
 	inSeason = False
+	currentSeason = "Off"
 	timet = 0
 	days = 0
 	for season in opts["seasons"]:
 		inSeason, timet, days = ioServ.calcSeasonTime(name, season)
+		currentSeason = season
 		if inSeason: break
 	else:
+		currentSeason = "Off"
 		timet, days = ioServ.calcWeekTime(name),0
 
 	timet /= 3600
+	print(name, currentSeason)
 
-	if timet >= 52: # light gray, done with hours
-		return '#e0e0e0'
+	if (currentSeason+"HrsRqd" in opts) and timet >= int(opts[currentSeason+"HrsRqd"]):
+		return '#e0e0e0' # light gray, done with hours
 
 	if days > 7:
 		days -= 7
 		timet -= days*8/7 # in season
 
-	if timet >= 6.0: return '#00bf00' # green
-	elif timet >= 2: return '#FFAF00' # yellow orange
+	limit = 8
+	if currentSeason+"Hrs/Wk" in opts:
+		limit = int(opts[currentSeason+"Hrs/Wk"])
+
+	if timet >= limit: return '#00bf00' # green
+	elif timet >= limit//3: return '#FFAF00' # yellow orange
 	else: return '#FF4444' # red
 
 	return '#000000'
