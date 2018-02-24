@@ -176,9 +176,14 @@ def calcTotalTime(n):
 	return calcUserTime(n)
 
 def calcWeekTime(n):
-	dt = datetime.now()
-	firstDayOfWeek = (dt - timedelta(days=dt.weekday()) - timedelta(days=1)).strftime(opts['ioForm']) # last sunday
-	lastDayOfWeek =  (dt - timedelta(days=dt.weekday()) + timedelta(days=7)).strftime(opts['ioForm']) # next sunday
+	dt = datetime.now().replace(hour=0,minute=0,second=0,microsecond=0)
+	firstDayOfWeek = (dt - timedelta(days=dt.isoweekday())) # last sunday
+	lastDayOfWeek =  (firstDayOfWeek + timedelta(days=7)) # next sunday
+
+	firstDayOfWeek = firstDayOfWeek.strftime(opts['ioForm'])
+	lastDayOfWeek = lastDayOfWeek.strftime(opts['ioForm'])
+
+	print(firstDayOfWeek,lastDayOfWeek)
 
 	return calcUserTime(n, startIO=firstDayOfWeek,endIO=lastDayOfWeek)
 
