@@ -105,44 +105,56 @@ class vk(tk.Frame):
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
                         if k == 'Bksp':
-                            tk.Button(self.row1, text=k, font=f, width=self.keysize * 2, command=c).grid(row=0, column=i)
+                            tk.Button(
+                                self.row1, text=k, font=f, width=self.keysize * 2, command=c).grid(row=0, column=i)
                         else:
-                            tk.Button(self.row1, text=k, font=f, width=self.keysize, command=c).grid(row=0, column=i)
+                            tk.Button(self.row1, text=k, font=f, width=self.keysize, command=c).grid(
+                                row=0, column=i)
                         i += 1
                 elif row == 'row2':
                     i = 2
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
                         if k == 'Sym':
-                            tk.Button(self.row2, text=k, font=f, width=int(self.keysize * 1.5), command=c).grid(row=0, column=i)
+                            tk.Button(self.row2, text=k, font=f, width=int(
+                                self.keysize * 1.5), command=c).grid(row=0, column=i)
                         elif k == 'abc':
-                            tk.Button(self.row2, text=k, font=f, width=int(self.keysize * 1.5), command=c).grid(row=0, column=i)
+                            tk.Button(self.row2, text=k, font=f, width=int(
+                                self.keysize * 1.5), command=c).grid(row=0, column=i)
                         else:
-                            tk.Button(self.row2, text=k, font=f, width=self.keysize, command=c).grid(row=0, column=i)
+                            tk.Button(self.row2, text=k, font=f, width=self.keysize, command=c).grid(
+                                row=0, column=i)
                         i += 1
                 elif row == 'row3':
                     i = 2
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
                         if k == 'ABC':
-                            tk.Button(self.row3, text=k, font=f, width=int(self.keysize * 1.5), command=c).grid(row=0, column=i)
+                            tk.Button(self.row3, text=k, font=f, width=int(
+                                self.keysize * 1.5), command=c).grid(row=0, column=i)
                         elif k == 'abc':
-                            tk.Button(self.row3, text=k, font=f, width=int(self.keysize * 1.5), command=c).grid(row=0, column=i)
+                            tk.Button(self.row3, text=k, font=f, width=int(
+                                self.keysize * 1.5), command=c).grid(row=0, column=i)
                         elif k == 'ENTER':
-                            tk.Button(self.row3, text=k, font=f, width=int(self.keysize * 2.5), command=c).grid(row=0, column=i)
+                            tk.Button(self.row3, text=k, font=f, width=int(
+                                self.keysize * 2.5), command=c).grid(row=0, column=i)
                         else:
-                            tk.Button(self.row3, text=k, font=f, width=self.keysize, command=c).grid(row=0, column=i)
+                            tk.Button(self.row3, text=k, font=f, width=self.keysize, command=c).grid(
+                                row=0, column=i)
                         i += 1
                 else:
                     i = 3
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
                         if k == '[ space ]':
-                            tk.Button(self.row4, text='   ', font=f, width=self.keysize * 6, command=c).grid(row=0, column=i)
+                            tk.Button(self.row4, text='   ', font=f,
+                                      width=self.keysize * 6, command=c).grid(row=0, column=i)
                         elif k == 'BACK':
-                            tk.Button(self.row4, text=k, font=f, width=self.keysize * 2, command=c).grid(row=0, column=i)
+                            tk.Button(
+                                self.row4, text=k, font=f, width=self.keysize * 2, command=c).grid(row=0, column=i)
                         else:
-                            tk.Button(self.row4, text=k, font=f, width=self.keysize, command=c).grid(row=0, column=i)
+                            tk.Button(self.row4, text=k, font=f, width=self.keysize, command=c).grid(
+                                row=0, column=i)
                         i += 1
 
     def _attach_key_press(self, k):
@@ -187,7 +199,8 @@ class vn(tk.Frame):
             i = 0
             for key in row:
                 c = lambda key=key: self.addKP(key)
-                tk.Button(rows[n], text=key, font=f, command=c, width=3).grid(column=i, row=0)
+                tk.Button(rows[n], text=key, font=f, command=c,
+                          width=3).grid(column=i, row=0)
                 i += 1
             rows[n].grid(column=0, row=n)
 
