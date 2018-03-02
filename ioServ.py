@@ -200,7 +200,7 @@ def calcWeekTime(n):
     firstDayOfWeek = firstDayOfWeek.strftime(opts['ioForm'])
     lastDayOfWeek = lastDayOfWeek.strftime(opts['ioForm'])
 
-    print(firstDayOfWeek, lastDayOfWeek)
+    #print(firstDayOfWeek, lastDayOfWeek)
 
     return calcUserTime(n, startIO=firstDayOfWeek, endIO=lastDayOfWeek)
 
@@ -304,11 +304,28 @@ def calcSlackTimeString():
 
     for line in open(opts['usernameFile'], "r+"):
         name = line.strip().split(" | ")[0]
+        print(name)
         names += [name]
         # print(name)
         longestname = max(len(name), longestname)
         times[name] = calcTotalTime(name) // 3600
-        seasontimes[name] = calcSeasonTime(name)[0] // 3600
+        #seasontimes[name] = calcSeasonTime(name)[0] // 3600
+
+        inSeason = False
+        currentSeason = "Off"
+        timet = 0
+        days = 0
+        for season in opts["seasons"]:
+            inSeason, seasontimes[name], days = calcSeasonTime(name, season)
+            currentSeason = season
+            if inSeason:
+                break
+        else:
+            currentSeason = "Off"
+            seasontimes[name], days = calcWeekTime(name), 0
+
+        times[name] =  int(times[name])
+        seasontimes[name] = int(seasontimes[name] // 3600)
 
     topstr = "Name" + " " * (longestname - 4) + " - Season - Total\n\n"
 
@@ -318,4 +335,4 @@ def calcSlackTimeString():
         topstr += name + " " * (longestname - len(name)) + " - " + " " * (5 - len(seasontime)) + str(
             seasontimes[name]) + "  - " + " " * (5 - len(totaltime)) + str(times[name]) + "\n"
 
-    return topstr
+    return "```" + topstr + "```"

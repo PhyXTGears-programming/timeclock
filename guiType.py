@@ -2,7 +2,8 @@ import os
 from datetime import datetime
 from math import floor
 from platform import system as platformsystem
-from tkinter import Tk
+from tkinter import *
+#Button, Entry, Frame, IntVar, Label, Tk, Toplevel, Listbox, Scrollbar, Radiobutton, Checkbutton, PhotoImage
 
 import ioServ
 import osk
@@ -232,7 +233,7 @@ def hoursToColor(name):
         timet, days = ioServ.calcWeekTime(name), 0
 
     timet /= 3600
-    print(name, currentSeason)
+    #print(name, currentSeason)
 
     if (currentSeason + "HrsRqd" in opts) and timet >= int(opts[currentSeason + "HrsRqd"]):
         return '#e0e0e0'  # light gray, done with hours

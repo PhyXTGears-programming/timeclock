@@ -1,9 +1,25 @@
 # auto clock out at midnight or whatever
-from os import listdir
+from os import listdir, environ
 from time import sleep, strftime
 
 from guiType import refreshListboxes
-from ioServ import loadOpts
+from ioServ import loadOpts, calcSlackTimeString
+
+try:
+    from slacker import Slacker
+    slackapiExists = True
+except ImportError:
+    slackapiExists = False
+
+slacktokExists = "SLACKAPITOKEN" in environ
+if slackapiExists and slacktokExists:
+    slackapi = Slacker(environ["SLACKAPITOKEN"])
+else:
+    if not slackapiExists:
+        print("Can't find 'Slacker' SlackAPI Python module")
+    elif not slacktokExists:
+        print("Slack API token not found, please define it in your environment as $SLACKAPITOKEN")
+
 
 opts = loadOpts()
 
@@ -14,6 +30,11 @@ def main():
 
         if currenttime == strftime("%H:00:00"):
             refreshListboxes()
+
+        if strftime("%w") == "0" and currenttime == "00:00:00" and slackapiExists:
+            print("sending to slack!")
+            timeString = calcSlackTimeString()
+            slackapi.chat.post_message("#programming_timeclock", timeString, as_user=True)
 
         if currenttime == opts['autoClockOut']:
             for item in listdir(path=opts['pathTime']):
