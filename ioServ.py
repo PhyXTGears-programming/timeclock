@@ -205,8 +205,8 @@ def calcWeekTime(n):
     return calcUserTime(n, startIO=firstDayOfWeek, endIO=lastDayOfWeek)
 
 
-def calcSeasonTime(name, season):
-    if not (datetime.strptime(opts[season + 'Start'], opts['ioForm']) <= datetime.now() <= datetime.strptime(opts[season + 'Leave'], opts['ioForm'])):
+def calcSeasonTime(name, season, ignoreCheck=False):
+    if not ignoreCheck and not (datetime.strptime(opts[season + 'Start'], opts['ioForm']) <= datetime.now() <= datetime.strptime(opts[season + 'Leave'], opts['ioForm'])):
         return False, 0, 0
 
     currentDate = datetime.now()
@@ -283,6 +283,15 @@ def calcUserTime(name, startIO=None, endIO=None):
             totalTime += (currentDate - lastTime).total_seconds()
 
     return totalTime
+
+
+def calcUserData(name):
+    userdata = name + "'s TimeData\n"
+    userdata += "Total Time: " + str(calcUserTime(name)//3600)
+    for season in opts["seasons"]:
+        userdata += "\n" + season + " Time: " + str(calcSeasonTime(name, season, ignoreCheck=True)[1]//3600)
+
+    return userdata
 
 
 def mkfile(t): open(t, 'a+').close()  # make files if they dont exist

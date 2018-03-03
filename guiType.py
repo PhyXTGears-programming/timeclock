@@ -262,10 +262,20 @@ def ioSign(c):
         alertWindow(text='No name selected!', fg='orange')
         return
 
-    msg, color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-18], c)
+    msg, color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-18].strip(), c)
     alertWindow(text=msg, fg=color)
 
     refreshListboxes('single')
+
+
+def showTimeData():
+    global nameL
+    if len(nameL.curselection()) == 0:
+        alertWindow(text='No name selected!', fg='orange')
+        return
+
+    msg, color = ioServ.calcUserData(nameL.get(nameL.curselection()[0])[:-18].strip()), "orange"
+    alertWindow(text=msg, fg=color)
 
 
 def alertWindow(text='', fg='orange', font='Courier 14 bold'):
@@ -353,15 +363,18 @@ def main():
             whatSeason = season
             break
     infoT = Label(ioF, text="Currently\nin\n" + whatSeason + "\nSeason", fg="white", font=f,
-                  height=5, wraplength=200, justify=CENTER, bg=glblBGC)  # white space generator ftw
+                  height=4, wraplength=200, justify=CENTER, bg=glblBGC)  # white space generator ftw
 
     newB = Button(ioF, text='New User', font=f, bg='blue',
                   fg='white', command=makeNewUserWindow, width=12, height=2)
+    infB = Button(ioF, text="Info", font=f, bg="orange",fg="white",
+                    command=showTimeData, width=12,height=1)
 
     iIOB.pack(pady=8)
     oIOB.pack(pady=8)
     infoT.pack()
     newB.pack()
+    infB.pack(pady=8)
     ioF.pack()
 
     Button(text='QUIT', font=f, bg='#44515e', fg='#ff6666',
