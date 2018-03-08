@@ -261,6 +261,11 @@ def calcSeasonTime(n):
 				time_str = line[4:]
 				state = line[0]
 				time = datetime.strptime(time_str, opts['ioForm'])
+
+				if datetime.strptime(time_str, opts['ioForm']) > buildLeave:
+					print("continuing! on "+n+"'s line", line)
+					continue
+
 				if state == "i":
 					if lastState == "o": totalTime += (lastTime - time).total_seconds()
 					lastTime = time
@@ -269,13 +274,12 @@ def calcSeasonTime(n):
 					lastTime = time
 					lastState = state
 			else:
-				state = "n"
-				lastState = state
+				pass
 			if datetime.strptime(time_str, opts['ioForm']) < buildStart:
 				#print(n+"'s done ", totalTime)
 				break
 
-		if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
+		#if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
 
 		#print(n, totalTime, weeksSinceStart)
 		return totalTime, weeksSinceStart
