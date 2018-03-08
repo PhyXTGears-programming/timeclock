@@ -27,7 +27,6 @@ def loadOpts():
 def generateDefaultOpts():
     print('generated opts')
     fileString = """
-
 ioForm : %H:%M:%S %d.%m.%Y
 pathTime : ./times/
 autoClockOut : 00:00:00
@@ -35,7 +34,7 @@ autoClockLim : 04:30:00
 usernameFile : usernameFile.txt
 adminPass : 1234
 seasons : Build,Competition
-BuildStart : 10:30:00 06.01.2018
+BuildStart : 00:00:00 06.01.2018
 BuildLeave : 23:59:59 20.02.2018
 BuildHrs/Wk : 8
 BuildHrsRqd : 54
