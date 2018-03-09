@@ -279,6 +279,7 @@ def showTimeData():
 
 
 def alertWindow(text='', fg='orange', font='Courier 14 bold'):
+    '''
     wind = Toplevel(root)  # new window
     wind.geometry('320x120')  # set resolution
     wind.overrideredirect(1)  # make window borderless
@@ -288,6 +289,7 @@ def alertWindow(text='', fg='orange', font='Courier 14 bold'):
           justify=CENTER).place(x=160, y=60, anchor=CENTER)
 
     wind.after(3000, wind.destroy)  # exit window after 3 seconds
+    '''
 
 
 def confirmQuit():  # quit program window with passcode protection
