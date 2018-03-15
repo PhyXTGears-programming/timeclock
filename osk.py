@@ -4,7 +4,7 @@ import tkinter as tk
 
 class vk(tk.Frame):
     # --- A frame for the keyboard(s) itself --- #
-    def __init__(self, parent, attach, keysize=4, enterAction=''):
+    def __init__(self, parent, attach, keysize=4, enterAction=""):
         tk.Frame.__init__(self, takefocus=0)
 
         self.attach = attach
@@ -41,7 +41,7 @@ class vk(tk.Frame):
         self.row4_Alpha.grid(row=4)
 
         # --- Symbols and numerals sub-keyboard --- #
-        '''
+        """
     self.Symbol_Frame = tk.Frame(parent)
     self.Symbol_Frame.grid(row=0, column=0, sticky="nsew")
 
@@ -54,7 +54,7 @@ class vk(tk.Frame):
     self.row2_Symbol.grid(row=2)
     self.row3_Symbol.grid(row=3)
     self.row4_Symbol.grid(row=4)
-    '''
+    """
 
         # --- Initialize all sub-keyboards --- #
         self.keyState = 1
@@ -66,16 +66,16 @@ class vk(tk.Frame):
 
     def init_keys(self):
         self.alpha = {
-            'row1': ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-            'row2': ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-            'row3': ['ABC', 'z', 'x', 'c', 'v', 'b', 'n', 'm'],
-            'row4': ['-', '[ space ]', '<==']
+            "row1": ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+            "row2": ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+            "row3": ["ABC", "z", "x", "c", "v", "b", "n", "m"],
+            "row4": ["-", "[ space ]", "<=="]
         }
         self.Alpha = {
-            'row1': ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-            'row2': ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-            'row3': ['abc', 'Z', 'X', 'C', 'V', 'B', 'N', 'M'],
-            'row4': ['-', '[ space ]', '<==']
+            "row1": ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+            "row2": ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+            "row3": ["abc", "Z", "X", "C", "V", "B", "N", "M"],
+            "row4": ["-", "[ space ]", "<=="]
         }
 
         for i in range(1, 3):
@@ -91,51 +91,51 @@ class vk(tk.Frame):
                 self.row2 = self.row2_Alpha
                 self.row3 = self.row3_Alpha
                 self.row4 = self.row4_Alpha
-            '''elif i == 3:
+            """elif i == 3:
         self.keyStyle = self.Symbol
         self.row1 = self.row1_Symbol
         self.row2 = self.row2_Symbol
         self.row3 = self.row3_Symbol
-        self.row4 = self.row4_Symbol'''
+        self.row4 = self.row4_Symbol"""
 
             for row in self.keyStyle.keys():  # iterate over dictionary of rows
-                f = 'Courier 16'
-                if row == 'row1':  # TO-DO: re-write this method
+                f = "Courier 16"
+                if row == "row1":  # TO-DO: re-write this method
                     i = 1  # for readability and functionality
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
-                        if k == 'Bksp':
+                        if k == "Bksp":
                             tk.Button(
                                 self.row1, text=k, font=f, width=self.keysize * 2, command=c).grid(row=0, column=i)
                         else:
                             tk.Button(self.row1, text=k, font=f, width=self.keysize, command=c).grid(
                                 row=0, column=i)
                         i += 1
-                elif row == 'row2':
+                elif row == "row2":
                     i = 2
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
-                        if k == 'Sym':
+                        if k == "Sym":
                             tk.Button(self.row2, text=k, font=f, width=int(
                                 self.keysize * 1.5), command=c).grid(row=0, column=i)
-                        elif k == 'abc':
+                        elif k == "abc":
                             tk.Button(self.row2, text=k, font=f, width=int(
                                 self.keysize * 1.5), command=c).grid(row=0, column=i)
                         else:
                             tk.Button(self.row2, text=k, font=f, width=self.keysize, command=c).grid(
                                 row=0, column=i)
                         i += 1
-                elif row == 'row3':
+                elif row == "row3":
                     i = 2
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
-                        if k == 'ABC':
+                        if k == "ABC":
                             tk.Button(self.row3, text=k, font=f, width=int(
                                 self.keysize * 1.5), command=c).grid(row=0, column=i)
-                        elif k == 'abc':
+                        elif k == "abc":
                             tk.Button(self.row3, text=k, font=f, width=int(
                                 self.keysize * 1.5), command=c).grid(row=0, column=i)
-                        elif k == 'ENTER':
+                        elif k == "ENTER":
                             tk.Button(self.row3, text=k, font=f, width=int(
                                 self.keysize * 2.5), command=c).grid(row=0, column=i)
                         else:
@@ -146,10 +146,10 @@ class vk(tk.Frame):
                     i = 3
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)
-                        if k == '[ space ]':
-                            tk.Button(self.row4, text='   ', font=f,
+                        if k == "[ space ]":
+                            tk.Button(self.row4, text="   ", font=f,
                                       width=self.keysize * 6, command=c).grid(row=0, column=i)
-                        elif k == 'BACK':
+                        elif k == "BACK":
                             tk.Button(
                                 self.row4, text=k, font=f, width=self.keysize * 2, command=c).grid(row=0, column=i)
                         else:
@@ -158,16 +158,16 @@ class vk(tk.Frame):
                         i += 1
 
     def _attach_key_press(self, k):
-        if k == 'abc':
+        if k == "abc":
             self.alpha_Frame.tkraise()
-        elif k == 'ABC':
+        elif k == "ABC":
             self.Alpha_Frame.tkraise()
-        elif k == '<==':
+        elif k == "<==":
             self.remaining = self.attach.get()[:-1]
             self.attach.delete(0, tk.END)
             self.attach.insert(0, self.remaining)
-        elif k == '[ space ]':
-            self.attach.insert(tk.END, ' ')
+        elif k == "[ space ]":
+            self.attach.insert(tk.END, " ")
         else:
             self.attach.insert(tk.END, k)
 
@@ -186,12 +186,12 @@ class vn(tk.Frame):
 
     def init_keys(self):
         self.numpad = [
-            ['9', '8', '7'],
-            ['6', '5', '4'],
-            ['3', '2', '1'],
-            ['<', '0', '_'],
+            ["9", "8", "7"],
+            ["6", "5", "4"],
+            ["3", "2", "1"],
+            ["<", "0", "_"],
         ]
-        f = 'Courier 14'
+        f = "Courier 14"
         rows = []
         for row in self.numpad:
             n = len(rows)
@@ -205,11 +205,11 @@ class vn(tk.Frame):
             rows[n].grid(column=0, row=n)
 
     def addKP(self, k):
-        if k == '<':
+        if k == "<":
             self.remaining = self.attach.get()[:-1]
             self.attach.delete(0, tk.END)
             self.attach.insert(0, self.remaining)
-        elif k == '_':
-            self.attach.insert(tk.END, ' ')
+        elif k == "_":
+            self.attach.insert(tk.END, " ")
         else:
             self.attach.insert(tk.END, k)
