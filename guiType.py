@@ -63,7 +63,7 @@ def makeNewUserWindow():  # new user window
 	inputF = Frame(nuWin)  # frame for input boxes
 	buttnF = Frame(nuWin)  # frame for buttons
 	titleF = Frame(nuWin)  # frame for choosing between student mentor or adult
-	jobsF = Frame(nuWin)  # frame for choosing the jobs you have
+	jobsF = Frame(nuWin)   # frame for choosing the jobs you have
 	vkeyF = Frame(nuWin, pady=8)  # on screen keyboard frame
 
 	Label(inputF, text="Fullname: ", font="Courier 14").grid(
@@ -205,8 +205,6 @@ def refreshListboxes(n=None):  # whenever someone signs in/out or theres a new u
 		select = 0
 
 		for name in allusers["all"]:
-			#nameIO = line.strip().split(" | ")[0]
-			# print(nameIO)
 			__addtolistbox(name, select)
 			select += 1
 
@@ -233,7 +231,6 @@ def hoursToColor(name):
 		timet, days = ioServ.calcWeekTime(name), 0
 
 	timet /= 3600
-	#print(name, currentSeason)
 
 	if (currentSeason + "HrsRqd" in opts) and timet >= int(opts[currentSeason + "HrsRqd"]):
 		return "#e0e0e0"  # light gray, done with hours
@@ -263,7 +260,6 @@ def ioSign(c):
 		return
 
 	msg, color = ioServ.signIO(nameL.get(nameL.curselection()[0])[:-18].strip(), c)
-	#alertWindow(text=msg, fg=color)
 
 	refreshListboxes("single")
 

@@ -40,22 +40,6 @@ class vk(tk.Frame):
         self.row3_Alpha.grid(row=3)
         self.row4_Alpha.grid(row=4)
 
-        # --- Symbols and numerals sub-keyboard --- #
-        """
-    self.Symbol_Frame = tk.Frame(parent)
-    self.Symbol_Frame.grid(row=0, column=0, sticky="nsew")
-
-    self.row1_Symbol = tk.Frame(self.Symbol_Frame)
-    self.row2_Symbol = tk.Frame(self.Symbol_Frame)
-    self.row3_Symbol = tk.Frame(self.Symbol_Frame)
-    self.row4_Symbol = tk.Frame(self.Symbol_Frame)
-
-    self.row1_Symbol.grid(row=1)
-    self.row2_Symbol.grid(row=2)
-    self.row3_Symbol.grid(row=3)
-    self.row4_Symbol.grid(row=4)
-    """
-
         # --- Initialize all sub-keyboards --- #
         self.keyState = 1
         self.init_keys()
@@ -91,16 +75,10 @@ class vk(tk.Frame):
                 self.row2 = self.row2_Alpha
                 self.row3 = self.row3_Alpha
                 self.row4 = self.row4_Alpha
-            """elif i == 3:
-        self.keyStyle = self.Symbol
-        self.row1 = self.row1_Symbol
-        self.row2 = self.row2_Symbol
-        self.row3 = self.row3_Symbol
-        self.row4 = self.row4_Symbol"""
 
             for row in self.keyStyle.keys():  # iterate over dictionary of rows
                 f = "Courier 16"
-                if row == "row1":  # TO-DO: re-write this method
+                if row == "row1":
                     i = 1  # for readability and functionality
                     for k in self.keyStyle[row]:
                         c = lambda k=k: self._attach_key_press(k)

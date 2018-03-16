@@ -16,7 +16,7 @@ if slackapiExists and slacktokExists:
     slackapi = Slacker(environ["SLACKAPITOKEN"])
 else:
     if not slackapiExists:
-        print("Can"t find "Slacker" SlackAPI Python module")
+        print("Can't find \"Slacker\" SlackAPI Python module")
     elif not slacktokExists:
         print("Slack API token not found, please define it in your environment as $SLACKAPITOKEN")
 

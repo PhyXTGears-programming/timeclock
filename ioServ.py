@@ -20,7 +20,6 @@ def loadOpts():
             opts[line[0]] = line[1].strip(" ")
             if "," in line[1]:
                 opts[line[0]] = line[1].split(",")
-    # print(opts)
     return opts
 
 
@@ -46,7 +45,6 @@ posJobs : Programmer,Mechanic,Media
 
 """
     os.chdir(os.path.dirname(__file__))
-    # input("Press enter to overwrite current options file with the default")
     with open("opts.txt", "w") as file:
         file.write(fileString.strip().replace("\t", ""))
 
@@ -168,9 +166,7 @@ def sortUsernameList():  # alphebetize names
     with open(opts["usernameFile"]) as u:
         names = []
         for l in u.readlines():
-            l = l[:-1]
-            #print(l.split(" | "))
-            l = l.split(" | ")
+            l = l.strip().split(" | ")
             l[0] = l[0].title()  # full name
             if len(l) >= 2:  # user key
                 l[1] = l[1].lower()
@@ -198,8 +194,6 @@ def calcWeekTime(n):
 
     firstDayOfWeek = firstDayOfWeek.strftime(opts["ioForm"])
     lastDayOfWeek = lastDayOfWeek.strftime(opts["ioForm"])
-
-    #print(firstDayOfWeek, lastDayOfWeek)
 
     return calcUserTime(n, startIO=firstDayOfWeek, endIO=lastDayOfWeek)
 
@@ -230,7 +224,7 @@ def calcUserTime(name, startIO=None, endIO=None):
     try:
         open(filename, "r").close()
     except FileNotFoundError:
-        print(name + ""s file was not found!")
+        print(name + "'s file was not found!")
         return 0
 
     # should the times be between specific dates?
@@ -285,7 +279,7 @@ def calcUserTime(name, startIO=None, endIO=None):
 
 
 def calcUserData(name):
-    userdata = name + ""s TimeData\n"
+    userdata = name + "'s TimeData\n"
     userdata += "Total Time: " + str(calcUserTime(name)//3600)
     for season in opts["seasons"]:
         userdata += "\n" + season + " Time: " + str(calcSeasonTime(name, season, ignoreCheck=True)[1]//3600)
@@ -314,10 +308,8 @@ def calcSlackTimeString():
         name = line.strip().split(" | ")[0]
         print(name)
         names += [name]
-        # print(name)
         longestname = max(len(name), longestname)
         times[name] = calcTotalTime(name) // 3600
-        #seasontimes[name] = calcSeasonTime(name)[0] // 3600
 
         inSeason = False
         currentSeason = "Off"
