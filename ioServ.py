@@ -299,20 +299,18 @@ def loadUsers():
 
 def calcSlackTimeString():
     names = []
-    times = {}
     seasontimes = {}
 
     longestname = 0
+    currentSeason = "Off"
 
     for line in open(opts["usernameFile"], "r+"):
         name = line.strip().split(" | ")[0]
         print(name)
         names += [name]
         longestname = max(len(name), longestname)
-        times[name] = calcTotalTime(name) // 3600
 
         inSeason = False
-        currentSeason = "Off"
         timet = 0
         days = 0
         for season in opts["seasons"]:
@@ -324,15 +322,13 @@ def calcSlackTimeString():
             currentSeason = "Off"
             seasontimes[name], days = calcWeekTime(name), 0
 
-        times[name] =  int(times[name])
         seasontimes[name] = int(seasontimes[name] // 3600)
 
-    topstr = "Name" + " " * (longestname - 4) + " - Season - Total\n\n"
+    topstr = "Name" + " " * (longestname - 4) + " - Season (" + currentSeason + ")\n\n"
 
     for name in names:
         totaltime = str(times[name])
         seasontime = str(seasontimes[name])
-        topstr += name + " " * (longestname - len(name)) + " - " + " " * (5 - len(seasontime)) + str(
-            seasontimes[name]) + "  - " + " " * (5 - len(totaltime)) + str(times[name]) + "\n"
+        topstr += name + " " * (longestname - len(name)) + " - " + " " * (5 - len(seasontime)) + str(seasontimes[name]) + "\n"
 
     return "```" + topstr + "```"
