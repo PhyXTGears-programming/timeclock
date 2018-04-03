@@ -13,12 +13,12 @@ def loadOpts():
     if not os.path.exists("opts.txt"):
         generateDefaultOpts()
     for line in open("opts.txt"):  # load options
-        line = line.split("#")[0].strip().strip(" ")
+        line = line.strip().strip(" ")
         if line and line[0] != "#":
             line = line.strip().split(" : ")
             line[1] = line[1].split("#")[0]
             opts[line[0]] = line[1].strip(" ")
-            if "," in line[1]:
+            if "," in line[1] or line[0]=="seasons":
                 opts[line[0]] = line[1].split(",")
     return opts
 
