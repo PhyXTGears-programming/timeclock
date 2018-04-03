@@ -285,7 +285,7 @@ def calcUserData(name):
             if opts[season + "Start"] and opts[season + "Leave"]:
                 userdata += "\n" + season + " Time: " + str(calcSeasonTime(name, season, ignoreCheck=True)[1]//3600)
         except KeyError:
-            print("Season \""+season"\" does not exist in opts.txt! Please give it a "+season"Start and "+season+"Leave time value!")
+            print("Season \""+season+"\" does not exist in opts.txt! Please give it a "+season+"Start and "+season+"Leave time value!")
 
     return userdata
 
