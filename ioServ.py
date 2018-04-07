@@ -1,308 +1,337 @@
 import os
-from time import strftime
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from math import floor
+from time import strftime
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
-# open(opts['name.txt'], 'a').close() # create name file if it doesnt exist
+# open(opts["name.txt"], "a").close() # create name file if it doesnt exist
 
 
 def loadOpts():
-	opts = {}
-	os.chdir(os.path.dirname(__file__))
-	if not os.path.exists('opts.txt'):
-		generateDefaultOpts()
-	for line in open('opts.txt'):  # load options
-		line = line.split("#")[0].strip().strip(" ")
-		if line and line[0] != "#":
-			line = line.strip().split(' : ')
-			line[1] = line[1].split('#')[0]
-			opts[line[0]] = line[1].strip(' ')
-			if ',' in line[1]: opts[line[0]] = line[1].split(',')
-	#print(opts)
-	return opts
+    opts = {}
+    os.chdir(os.path.dirname(__file__))
+    if not os.path.exists("opts.txt"):
+        generateDefaultOpts()
+    for line in open("opts.txt"):  # load options
+        line = line.strip().strip(" ")
+        if line and line[0] != "#":
+            line = line.strip().split(" : ")
+            line[1] = line[1].split("#")[0]
+            opts[line[0]] = line[1].strip(" ")
+            if "," in line[1] or line[0]=="seasons":
+                opts[line[0]] = line[1].split(",")
+    return opts
+
 
 def generateDefaultOpts():
-	print('generated opts')
-	fileString = """
-
-ioForm : %H:%M:%S %d.%m.%Y
-pathTime : ./times/
-autoClockOut : 00:00:00
-autoClockLim : 04:30:00
-usernameFile : usernameFile.txt
-adminPass : 1234
-buildStart : 10:30:00 06.01.2018
-buildLeave : 23:59:59 20.02.2018
-posTitle : Student,Mentor,Adult
-posJobs : Programmer,Mechanic,Media
-
-"""
-	os.chdir(os.path.dirname(__file__))
-	# input("Press enter to overwrite current options file with the default")
-	with open('opts.txt', 'w') as file:
-		file.write(fileString.strip().replace("\t", ""))
+    print("generated opts")
+    fileString = """
+    ioForm : %H:%M:%S %d.%m.%Y
+    pathTime : ./times/
+    autoClockOut : 00:00:00
+    autoClockLim : 04:30:00
+    usernameFile : usernameFile.txt
+    adminPass : 1234
+    seasons : Build,Competition
+    BuildStart : 00:00:00 06.01.2018
+    BuildLeave : 23:59:59 20.02.2018
+    BuildHrs/Wk : 8
+    BuildHrsRqd : 54
+    CompetitionStart : 00:00:00 21.02.2018
+    CompetitionLeave : 23:59:59 14.04.2018
+    CompetitionHrs/Wk : 6
+    posTitle : Student,Mentor,Adult
+    posJobs : Programmer,Mechanic,Media
+    """
+    os.chdir(os.path.dirname(__file__))
+    with open("opts.txt", "w") as file:
+        file.write(fileString.strip().replace("\t", ""))
 
 
 opts = loadOpts()
 
 
-def signIO(n,c):
-	nameIO = n
-	timeIO = strftime(opts['ioForm'])
-	pathIO = opts['pathTime'] + nameIO.replace(' ', '') + '.txt'
+def signIO(n, c):
+    nameIO = n
+    timeIO = strftime(opts["ioForm"])
+    pathIO = opts["pathTime"] + nameIO.replace(" ", "") + ".txt"
 
-	msg, color = 'Nothing', 'black'
+    msg, color = "Nothing", "black"
 
-	open(pathIO, '+a').close()  # make file if it doesn't exist
-	with open(pathIO, '+r') as f: lines = [line.strip() for line in f]
+    open(pathIO, "+a").close()  # make file if it doesn"t exist
+    with open(pathIO, "+r") as f:
+        lines = [line.strip() for line in f]
 
-	inTimeFrame = False
-	if lines:
-		lim = [int(x) for x in opts['autoClockLim'].split(':')]
+    inTimeFrame = False
+    if lines:
+        lim = [int(x) for x in opts["autoClockLim"].split(":")]
 
-		theNow = datetime.now()
-		theIOA = datetime.strptime(lines[-1][5:], opts['ioForm'])
-		theLIM = theIOA.replace(hour=lim[0], minute=lim[1], second=lim[2], microsecond=0) + timedelta(days=1)
+        theNow = datetime.now()
+        theIOA = datetime.strptime(lines[-1][5:], opts["ioForm"])
+        theLIM = theIOA.replace(
+            hour=lim[0], minute=lim[1], second=lim[2], microsecond=0) + timedelta(days=1)
 
-		inTimeFrame = theIOA < theNow < theLIM
+        inTimeFrame = theIOA < theNow < theLIM
 
+    name1st = nameIO.split()[0]  # first name
+    if lines and lines[-1][0] == "a" and c == "o" and inTimeFrame:
+        ## RECOVERING AUTOCLOCKOUT ##
+        with open(pathIO, "w+") as f:
+            f.write("\n".join(lines[:-1]) + "\n" + c + " | " + timeIO + "\n")
+        msg, color = name1st + " signed out proper!", "green"
+        return msg, color
+    elif lines and lines[-1][0] == "a" and c == "i" and inTimeFrame:
+        ## SIGNING IN WHEN SEMI CLOCKED OUT ##
+        msg, color = "Did you mean to sign out to recover hours, " + name1st + "?", "orange"
 
-	name1st = nameIO.split()[0] # first name
-	if lines and lines[-1][0]=='a' and c=='o' and inTimeFrame:
-		## RECOVERING AUTOCLOCKOUT ##
-		with open(pathIO, 'w+') as f: f.write('\n'.join(lines[:-1]) + '\n' + c + ' | ' + timeIO + '\n')
-		msg,color = name1st+' signed out proper!', 'green'
-		return msg,color
-	elif lines and lines[-1][0]=='a' and c=='i' and inTimeFrame:
-		## SIGNING IN WHEN SEMI CLOCKED OUT ##
-		msg,color = 'Did you mean to sign out to recover hours, '+name1st+'?', 'orange'
+    elif lines and ((lines[-1][0] in "i!" and c == "i") or (lines[-1][0] in "o@" and c == "o") or (lines[-1][0] == "a" and c == "o" and not inTimeFrame)):
+        ## DOUBLE SIGN IN/OUT ##
+        color = "orange"
+        if c == "i":
+            msg = name1st + " is already signed in!"
+            c = "!"
+        elif c == "o":
+            if lines[-1][0] in "o@":
+                msg = name1st + " is already signed out!"
+            elif lines[-1][0] == "a":
+                msg = name1st + " was auto-signed out!"
+            c = "@"
+        # return msg,color
 
-	elif lines and ((lines[-1][0] in "i!" and c=="i") or (lines[-1][0] in "o@" and c=="o") or (lines[-1][0]=='a' and c=='o' and not inTimeFrame)):
-		## DOUBLE SIGN IN/OUT ##
-		color = 'orange'
-		if c == 'i':
-			msg = name1st+' is already signed in!'
-			c = "!"
-		elif c == 'o':
-			if lines[-1][0] in 'o@': msg = name1st+' is already signed out!'
-			elif lines[-1][0]=='a': msg = name1st+' was auto-signed out!'
-			c = "@"
-		#return msg,color
+    elif not lines and c == "o":
+        ## NEVER SIGNED IN BEFORE ##
+        msg, color = name1st + " has never signed in!", "orange"
+        return msg, color
+    else:
+        ## NORMAL SIGN IN ##
+        hrs = 0
+        inSeason = False
+        currentSeason = "Off"
+        timet = 0
+        for season in opts["seasons"]:
+            v = calcSeasonTime(nameIO, season)
+            inSeason, timet = v[0], v[1]
+            timet = min(int(timet // 3600), 999)
+            currentSeason = season
+            if inSeason:
+                break
+        else:
+            currentSeason = "Off"
+            timet = min(int(calcTotalTime(nameIO) // 3600), 999)
 
-	elif not lines and c=='o':
-		## NEVER SIGNED IN BEFORE ##
-		msg,color = name1st+' has never signed in!', 'orange'
-		return msg,color
-	else:
-		## NORMAL SIGN IN ##
-		hrs = 0
-		if datetime.strptime(opts['buildStart'],opts['ioForm']) <= datetime.now() <= datetime.strptime(opts['buildLeave'],opts['ioForm']):
-			hrs = calcSeasonTime(nameIO.replace(' ', ''))[0]
-			#print('in season, '+nameIO, hrs)
-		else:
-			hrs = calcTotalTime(nameIO.replace(' ', ''))
+        limit = "8"
+        if currentSeason + "Hrs/Wk" in opts:
+            limit = str(opts[currentSeason + "Hrs/Wk"])
 
-		hours = str(floor(hrs / 3600 *100)/100) # calculate total time in seconds then convert to hours (rounded 2 dec places)
-		weekh = str(floor(calcWeekTime( nameIO.replace(' ', '')) / 3600 *100)/100) # calculate current week time
-		if c == 'i':   msg,color = name1st+' signed in! ' +hours+' hours.\n'+weekh+' of 8 hours.', 'Green'
-		elif c == 'o': msg,color = name1st+' signed out! '+hours+' hours.\n'+weekh+' of 8 hours.', 'Red'
-	
-	with open(pathIO, 'a+') as f: f.write(c + ' | ' + timeIO + '\n')
-	
-	return msg,color
+        # calculate total time in seconds then convert to hours (rounded 2 dec places)
+        hours = str(floor(hrs / 3600 * 100) / 100)
+        weekh = str(floor(calcWeekTime(nameIO.replace(" ", "")) /
+                          3600 * 100) / 100)  # calculate current week time
+        if c == "i":
+            msg, color = name1st + " signed in! " + hours + \
+                " hours.\n" + weekh + " of " + limit + " hours.", "Green"
+        elif c == "o":
+            msg, color = name1st + " signed out! " + hours + \
+                " hours.\n" + weekh + " of " + limit + " hours.", "Red"
 
+    with open(pathIO, "a+") as f:
+        f.write(c + " | " + timeIO + "\n")
+
+    return msg, color
 
 
 def checkNameDB(n):  # check for if a name exists already
-	for line in open(opts['usernameFile']):
-		for item in line.split("|"):
-			if item.lower().replace(' ', '') == n.lower().replace(' ', ''):
-				return True
-	return False
+    for line in open(opts["usernameFile"]):
+        for item in line.split("|"):
+            if item.lower().replace(" ", "") == n.lower().replace(" ", ""):
+                return True
+    return False
 
 
-def addNameDB(full, user, title='None', job='None'):  # add a new name to the list
-	file = open(opts['usernameFile'], 'a+')
-	file.write(' | '.join([full.title(),user.lower(),title,job]) + '\n')
-	file.close()
+def addNameDB(full, user, title="None", job="None"):  # add a new name to the list
+    file = open(opts["usernameFile"], "a+")
+    file.write(" | ".join([full.title(), user.lower(), title, job]) + "\n")
+    file.close()
 
 
 def sortUsernameList():  # alphebetize names
-	def findCapitals(s): # for generating usernames
-		letters = ''
-		for i in s:
-			if i.isupper(): letters += i
-		return letters
+    def findCapitals(s):  # for generating usernames
+        letters = ""
+        for i in s:
+            if i.isupper():
+                letters += i
+        return letters
 
-	with open(opts['usernameFile']) as u:
-		names = []
-		for l in u.readlines():
-			l = l[:-1]
-			#print(l.split(' | '))
-			l = l.split(' | ')
-			l[0] = l[0].title() # full name
-			if len(l)>=2: # user key
-				l[1] = l[1].lower()
-			else:
-				l += [findCapitals(l[0]).lower()]
-			if len(l)<3 or l[2] == '': l += ['none'] # if no title listed
-			if len(l)<4 or l[3] == '': l += ['none'] # if no job listed
+    with open(opts["usernameFile"]) as u:
+        names = []
+        for l in u.readlines():
+            l = l.strip().split(" | ")
+            l[0] = l[0].title()  # full name
+            if len(l) >= 2:  # user key
+                l[1] = l[1].lower()
+            else:
+                l += [findCapitals(l[0]).lower()]
+            if len(l) < 3 or l[2] == "":
+                l += ["none"]  # if no title listed
+            if len(l) < 4 or l[3] == "":
+                l += ["none"]  # if no job listed
 
-			names += [' | '.join(l[:4])+'\n']
-		names.sort()
-	with open(opts['usernameFile'], 'w') as f:
-		f.write(''.join(names))
+            names += [" | ".join(l[:4]) + "\n"]
+        names.sort()
+    with open(opts["usernameFile"], "w") as f:
+        f.write("".join(names))
 
 
 def calcTotalTime(n):
-	n = n.replace(' ', '')
-	try:
-		userFile = open(opts['pathTime'] + n + '.txt', 'r')
-		linesFromFile = userFile.readlines()
+    return calcUserTime(n)
 
-		dt = datetime.now()
-		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
-		addCurrentTime = linesFromFile and linesFromFile[-1][0]=='i' and datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
-
-		totalTime = 0
-		lastState = "n"
-		lastTime = 0
-
-		for currentLine in linesFromFile:
-			currentLine = currentLine.strip()
-			if currentLine:
-				time_str = currentLine[4:]
-				state = currentLine[0]
-				time = datetime.strptime(time_str, opts['ioForm'])
-				if state == "i":
-					lastTime = time
-					lastState = state
-				elif state == "o":
-					if lastState=="i": totalTime += (time - lastTime).total_seconds()
-					lastTime = time
-					lastState = state
-			else:
-				state = "n"
-		if lastState == 'i' and addCurrentTime: totalTime += (datetime.now() - lastTime).total_seconds()
-
-		userFile.close()
-		return totalTime
-	except FileNotFoundError:
-		#print('User '+n+"'s time file not found.")
-		return 0
 
 def calcWeekTime(n):
-	n = n.replace(' ','')
-	try:
-		userFile = open(opts['pathTime'] + n + '.txt', 'r')
-		totalTime,lastTime,lastState = 0,0,'n'
-		linesFromFile = userFile.readlines()
+    dt = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    firstDayOfWeek = (dt - timedelta(days=dt.isoweekday()))  # last sunday
+    lastDayOfWeek = (firstDayOfWeek + timedelta(days=7))  # next sunday
 
-		dt = datetime.now()
-		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
-		addCurrentTime = linesFromFile and linesFromFile[-1][0]=='i' and datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
+    firstDayOfWeek = firstDayOfWeek.strftime(opts["ioForm"])
+    lastDayOfWeek = lastDayOfWeek.strftime(opts["ioForm"])
 
-		for currentLine in reversed(linesFromFile):
-			currentLine = currentLine.strip()
-			if currentLine:
-				time_str = currentLine[4:]
-				state = currentLine[0]
-				time = datetime.strptime(time_str, opts['ioForm'])
-				if state == "i":
-					if lastState == "o":
-						totalTime += (lastTime - time).total_seconds()
-					lastTime = time
-					lastState = state
-				if state == "o":
-					lastTime = time
-					lastState = state
-			else:
-				state = "n"
-				lastState = state
-
-			if currentLine and datetime.strptime(time_str, opts['ioForm']) < firstDayOfWeek: break
-
-		if addCurrentTime:
-			totalTime += (datetime.now() - datetime.strptime(linesFromFile[-1][4:].strip(), opts['ioForm'])).total_seconds()
-		userFile.close()
-		return totalTime
-	except FileNotFoundError:
-		#print('User '+n+"'s time file not found.")
-		return 0
-
-def calcSeasonTime(n):
-	n = n.replace(' ','') # filenames have no spaces
-
-	currentDate = datetime.now()
-	buildStart = datetime.strptime(opts['buildStart'], opts['ioForm'])
-	buildLeave = datetime.strptime(opts['buildLeave'], opts['ioForm'])
-
-	buildDelta = currentDate-buildStart
-
-	weeksSinceStart = max(buildDelta.days,0)
-
-	if not ( buildStart <= currentDate <= buildLeave ): return calcWeekTime(n),0 # if not in build season, just give the total hours for this week
-
-	totalTime = 0
-	lastTime = 0
-	lastState = 'n'
-
-	try:
-		with open(opts['pathTime'] + n + '.txt', 'r') as f: userIOAs = f.readlines()
-
-		dt = datetime.now()
-		firstDayOfWeek = dt - timedelta(days=dt.weekday()) - timedelta(days=1)
-		addCurrentTime = userIOAs and userIOAs[-1][0]=='i' and datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm']) > firstDayOfWeek
-
-		for line in reversed(userIOAs):
-			line = line.strip()
-			if line:
-				time_str = line[4:]
-				state = line[0]
-				time = datetime.strptime(time_str, opts['ioForm'])
-
-				if datetime.strptime(time_str, opts['ioForm']) > buildLeave:
-					print("continuing! on "+n+"'s line", line)
-					continue
-
-				if state == "i":
-					if lastState == "o": totalTime += (lastTime - time).total_seconds()
-					lastTime = time
-					lastState = state
-				elif state == "o":
-					lastTime = time
-					lastState = state
-			else:
-				pass
-			if datetime.strptime(time_str, opts['ioForm']) < buildStart:
-				#print(n+"'s done ", totalTime)
-				break
-
-		#if addCurrentTime: totalTime += (currentDate - datetime.strptime(userIOAs[-1][4:].strip(), opts['ioForm'])).total_seconds()
-
-		#print(n, totalTime, weeksSinceStart)
-		return totalTime, weeksSinceStart
-	except FileNotFoundError:
-		return 0, weeksSinceStart
-
-def calcTimeframeHours(n, datemax):
-	totalTime = 0
-	lastTime = 0
-	lastState = 'n'
-
-	try:
-		pass
-	except FileNotFoundError:
-		pass
+    return calcUserTime(n, startIO=firstDayOfWeek, endIO=lastDayOfWeek)
 
 
-def mkfile(t):
-	open(t, 'a+').close()  # make files if they dont exist
+def calcSeasonTime(name, season, ignoreCheck=False):
+    if not ignoreCheck and not (datetime.strptime(opts[season + "Start"], opts["ioForm"]) <= datetime.now() <= datetime.strptime(opts[season + "Leave"], opts["ioForm"])):
+        return False, 0, 0
+
+    currentDate = datetime.now()
+    buildStart = datetime.strptime(opts[season + "Start"], opts["ioForm"])
+    buildLeave = datetime.strptime(opts[season + "Leave"], opts["ioForm"])
+
+    buildDelta = currentDate - buildStart
+
+    daysSinceStart = max(buildDelta.days, 0)
+
+    totalTime = calcUserTime(
+        name, startIO=opts[season + "Start"], endIO=opts[season + "Leave"])
+
+    return True, totalTime, daysSinceStart
+
+
+def calcUserTime(name, startIO=None, endIO=None):
+    filename = opts["pathTime"] + name.strip().replace(" ", "") + \
+        ".txt"  # generate filename
+
+    # ensure the file exists
+    try:
+        open(filename, "r").close()
+    except FileNotFoundError:
+        print(name + "'s file was not found!")
+        return 0
+
+    # should the times be between specific dates?
+    checkTimes = False
+    if startIO != None and endIO == None:
+        raise ValueError("startIO defined, but endIO not defined")
+    if startIO == None and endIO != None:
+        raise ValueError("endIO defined, but startIO not defined")
+    if startIO != None and endIO != None:
+        checkTimes = True
+        startIO = datetime.strptime(startIO, opts["ioForm"])
+        endIO = datetime.strptime(endIO, opts["ioForm"])
+
+    currentDate = datetime.now()
+    lastTime = datetime.now()
+    lastState = "n"
+    totalTime = 0
+
+    for line in open(filename, "r"):
+        line = line.strip().split(" | ")
+        if not line:
+            continue  # if nothing on line, skip line
+
+        state = line[0]
+        linetime = line[1]
+        datatime = datetime.strptime(linetime, opts["ioForm"])
+
+        if state in "!@":
+            continue  # ensure this isnt a double
+
+        if checkTimes and datatime < startIO:
+            continue  # skip until in timeframe
+
+        if state == "i":
+            pass
+        elif state == "o":
+            if lastState == "i":
+                totalTime += (datatime - lastTime).total_seconds()
+
+        lastTime = datatime
+        lastState = state
+
+        if checkTimes and datatime > endIO:
+            break  # if left timeframe then finish
+
+    else:  # if finished with no breaks
+        # add current time if still signed in
+        if lastState == "i":
+            totalTime += (currentDate - lastTime).total_seconds()
+
+    return totalTime
+
+
+def calcUserData(name):
+    userdata = name + "'s TimeData\n"
+    userdata += "Total Time: " + str(calcUserTime(name)//3600)
+    for season in opts["seasons"]:
+        try:
+            if opts[season + "Start"] and opts[season + "Leave"]:
+                userdata += "\n" + season + " Time: " + str(calcSeasonTime(name, season, ignoreCheck=True)[1]//3600)
+        except KeyError:
+            print("Season \""+season+"\" does not exist in opts.txt! Please give it a "+season+"Start and "+season+"Leave time value!")
+
+    return userdata
+
+
+def mkfile(t): open(t, "a+").close()  # make files if they dont exist
 
 
 def loadUsers():
-	allusers = {}
-	for line in open(opts['usernameFile'], 'r+'):
-		l = line.split(' | ') # name | username | title | jobs
-		allusers[l[2]] = (allusers[l[2]] or []) + []
+    allusers = {}
+    for line in open(opts["usernameFile"], "r+"):
+        l = line.split(" | ")  # name | username | title | jobs
+        allusers[l[2]] = (allusers[l[2]] or []) + []
+
+
+def calcSlackTimeString():
+    names = []
+    seasontimes = {}
+
+    longestname = 0
+    currentSeason = "Off"
+
+    for line in open(opts["usernameFile"], "r+"):
+        name = line.strip().split(" | ")[0]
+        print(name)
+        names += [name]
+        longestname = max(len(name), longestname)
+
+        inSeason = False
+        timet = 0
+        days = 0
+        for season in opts["seasons"]:
+            inSeason, seasontimes[name], days = calcSeasonTime(name, season)
+            currentSeason = season
+            if inSeason:
+                break
+        else:
+            currentSeason = "Off"
+            seasontimes[name], days = calcWeekTime(name), 0
+
+        seasontimes[name] = int(seasontimes[name] // 3600)
+
+    topstr = "Name" + " " * (longestname - 4) + " - Season (" + currentSeason + ")\n\n"
+
+    for name in names:
+        totaltime = str(times[name])
+        seasontime = str(seasontimes[name])
+        topstr += name + " " * (longestname - len(name)) + " - " + " " * (5 - len(seasontime)) + str(seasontimes[name]) + "\n"
+
+    return "```" + topstr + "```"
