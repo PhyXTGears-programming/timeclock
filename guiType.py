@@ -273,6 +273,10 @@ def showTimeData():
 	msg, color = ioServ.calcUserData(nameL.get(nameL.curselection()[0])[:-18].strip()), "orange"
 	alertWindow(text=msg, fg=color)
 
+def refreshForever():
+	refreshListboxes()
+	root.after(1200000, refreshForever) # wait 20 minutes before refreshing again
+
 
 def alertWindow(text="", fg="orange", font="Courier 14 bold"):
 	wind = Toplevel(root)  # new window
@@ -378,7 +382,7 @@ def main():
 	Button(text="UPDATE", font=f, bg="#44515e", fg="orange",
 		   command=lambda: refreshListboxes(), height=1).pack(side=RIGHT)
 
-	refreshListboxes()
+	refreshForever()
 
 	root.mainloop()
 

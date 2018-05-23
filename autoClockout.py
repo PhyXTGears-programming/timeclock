@@ -28,9 +28,6 @@ def main():
     while True:
         currenttime = strftime("%H:%M:%S")
 
-        if currenttime == strftime("%H:00:00"):
-            refreshListboxes()
-
         if strftime("%w") == "0" and currenttime == "00:00:00" and slackapiExists:
             print("sending to slack!")
             timeString = calcSlackTimeString()
