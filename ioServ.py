@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 from math import floor
 from time import strftime
 
+import guiType
+import rapidjson
+
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts["name.txt"], "a").close() # create name file if it doesnt exist
 
@@ -10,42 +13,25 @@ from time import strftime
 def loadOpts():
     opts = {}
     os.chdir(os.path.dirname(__file__))
-    if not os.path.exists("opts.txt"):
+    if not os.path.exists("opts.json"):
         generateDefaultOpts()
-    for line in open("opts.txt"):  # load options
-        line = line.strip().strip(" ")
-        if line and line[0] != "#":
-            line = line.strip().split(" : ")
-            line[1] = line[1].split("#")[0]
-            opts[line[0]] = line[1].strip(" ")
-            if "," in line[1] or line[0]=="seasons":
-                opts[line[0]] = line[1].split(",")
+    with open("opts.json") as optsFile:  # load options
+        opts = rapidjson.load(optsFile)
     return opts
 
 
 def generateDefaultOpts():
     print("generated opts")
-    fileString = """
-        ioForm : %H:%M:%S %d.%m.%Y
-        pathTime : ./times/
-        autoClockOut : 00:00:00
-        autoClockLim : 04:30:00
-        usernameFile : usernameFile.txt
-        adminPass : 1234
-        seasons : Build,Competition
-        BuildStart : 00:00:00 06.01.2018
-        BuildLeave : 23:59:59 20.02.2018
-        BuildHrs/Wk : 8
-        BuildHrsRqd : 54
-        CompetitionStart : 00:00:00 21.02.2018
-        CompetitionLeave : 23:59:59 14.04.2018
-        CompetitionHrs/Wk : 6
-        posTitle : Student,Mentor,Adult
-        posJobs : Programmer,Mechanic,Media
-    """
+    fileData = {"ioForm": "%H:%M:%S %d.%m.%Y", "pathTime": "./times/", "autoClockOut": "00:00:00",
+                "autoClockLim": "04:30:00", "usernameFile": "usernameFile.txt", "adminPass": "",
+                "seasons": {"Build": {"start": "00:00:00 06.01.2018", "end": "23:59:59 20.02.2018", "hoursPerWeek": 0},
+                            "Competition": {"start": "00:00:00 21.03.2018", "end": "23:59:59 14.04.2018", "hoursPerWeek": 0}},
+                "positions": ["Student", "Mentor", "Adult", "Other"],
+                "teams": ["Programming", "Mechanical", "Media", "Woodworking", "Mentors", "Other"]}
+    # BuildHrsRqd : 54
     os.chdir(os.path.dirname(__file__))
-    with open("opts.txt", "w") as file:
-        file.write(fileString.strip().replace("        ", ""))
+    with open("opts.json", "w") as optsFile:
+        rapidjson.dump(fileData, optsFile, indent=2)
 
 
 opts = loadOpts()
@@ -198,24 +184,28 @@ def calcWeekTime(n):
 
 
 def calcSeasonTime(name, season, ignoreCheck=False):
-    if not ignoreCheck and not (datetime.strptime(opts[season + "Start"], opts["ioForm"]) <= datetime.now() <= datetime.strptime(opts[season + "Leave"], opts["ioForm"])):
+    if not ignoreCheck and not (datetime.strptime(opts["seasons"][season]["start"], opts["ioForm"]) <= datetime.now() <= datetime.strptime(opts["seasons"][season]["end"], opts["ioForm"])):
         return False, 0, 0
 
     currentDate = datetime.now()
-    buildStart = datetime.strptime(opts[season + "Start"], opts["ioForm"])
-    buildLeave = datetime.strptime(opts[season + "Leave"], opts["ioForm"])
+    buildStart = datetime.strptime(
+        opts["seasons"][season]["start"], opts["ioForm"])
+    buildLeave = datetime.strptime(
+        opts["seasons"][season]["end"], opts["ioForm"])
 
     buildDelta = currentDate - buildStart
 
     daysSinceStart = max(buildDelta.days, 0)
 
     totalTime = calcUserTime(
-        name, startIO=opts[season + "Start"], endIO=opts[season + "Leave"])
+        name, startIO=opts["seasons"][season]["start"], endIO=opts["seasons"][season]["end"])
 
     return True, totalTime, daysSinceStart
 
 
 def calcUserTime(name, startIO=None, endIO=None):
+    if len(name) > guiType.maxName:
+        name = name[:guiType.maxName]
     filename = opts["pathTime"] + name.strip().replace(" ", "") + \
         ".txt"  # generate filename
 
@@ -279,13 +269,16 @@ def calcUserTime(name, startIO=None, endIO=None):
 
 def calcUserData(name):
     userdata = name + "'s TimeData\n"
-    userdata += "Total Time: " + str(calcUserTime(name)//3600)
+    userdata += "Total Time: " + str(calcUserTime(name) // 3600)
     for season in opts["seasons"]:
         try:
-            if opts[season + "Start"] and opts[season + "Leave"]:
-                userdata += "\n" + season + " Time: " + str(calcSeasonTime(name, season, ignoreCheck=True)[1]//3600)
+            if opts["seasons"][season]["start"] and opts["seasons"][season]["end"]:
+                userdata += "\n" + season + " Time: " + \
+                    str(calcSeasonTime(name, season,
+                                       ignoreCheck=True)[1] // 3600)
         except KeyError:
-            print("Season \""+season+"\" does not exist in opts.txt! Please give it a "+season+"Start and "+season+"Leave time value!")
+            print("Season \"" + season + "\" does not exist in opts.txt! Please give it a " +
+                  season + "Start and " + season + "Leave time value!")
 
     return userdata
 
@@ -327,11 +320,13 @@ def calcSlackTimeString():
 
         seasontimes[name] = int(seasontimes[name] // 3600)
 
-    topstr = "Name" + " " * (longestname - 4) + " - Season (" + currentSeason + ")\n\n"
+    topstr = "Name" + " " * (longestname - 4) + \
+        " - Season (" + currentSeason + ")\n\n"
 
     for name in names:
         totaltime = str(times[name])
         seasontime = str(seasontimes[name])
-        topstr += name + " " * (longestname - len(name)) + " - " + " " * (5 - len(seasontime)) + str(seasontimes[name]) + "\n"
+        topstr += name + " " * (longestname - len(name)) + " - " + \
+            " " * (5 - len(seasontime)) + str(seasontimes[name]) + "\n"
 
     return "```" + topstr + "```"
