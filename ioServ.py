@@ -1,10 +1,24 @@
 import os
+import sys
 from datetime import datetime, timedelta
 from math import floor
 from time import strftime
 
 import guiType
-import rapidjson
+
+loadOptions = True
+defaultOptions = fileData = {"ioForm": "%H:%M:%S %d.%m.%Y", "pathTime": "./times/", "autoClockOut": "00:00:00",
+                             "autoClockLim": "04:30:00", "usernameFile": "usernameFile.txt", "adminPass": "",
+                             "seasons": {"Build": {"start": "00:00:00 06.01.2018", "end": "23:59:59 20.02.2018", "hoursPerWeek": 0},
+                                         "Competition": {"start": "00:00:00 21.03.2018", "end": "23:59:59 14.04.2018", "hoursPerWeek": 0}},
+                             "positions": ["Student", "Mentor", "Adult", "Other"],
+                             "teams": ["Programming", "Mechanical", "Media", "Woodworking", "Mentors", "Other"]}
+
+try:
+    import rapidjson
+except ImportError, e:
+    print("Please install the rapidjson library so the so the options file can be loaded.")
+    loadOptions = False
 
 # if not os.path.isdir(opts["path"]): os.mkdir(opts["path"])
 # open(opts["name.txt"], "a").close() # create name file if it doesnt exist
@@ -12,26 +26,24 @@ import rapidjson
 
 def loadOpts():
     opts = {}
-    os.chdir(os.path.dirname(__file__))
-    if not os.path.exists("opts.json"):
-        generateDefaultOpts()
-    with open("opts.json") as optsFile:  # load options
-        opts = rapidjson.load(optsFile)
-    return opts
+    if loadOptions:
+        os.chdir(os.path.dirname(__file__))
+        if not os.path.exists("opts.json"):
+            generateDefaultOpts()
+        with open("opts.json") as optsFile:  # load options
+            opts = rapidjson.load(optsFile)
+        return opts
+    else:
+        return defaultOptions
 
 
 def generateDefaultOpts():
     print("generated opts")
-    fileData = {"ioForm": "%H:%M:%S %d.%m.%Y", "pathTime": "./times/", "autoClockOut": "00:00:00",
-                "autoClockLim": "04:30:00", "usernameFile": "usernameFile.txt", "adminPass": "",
-                "seasons": {"Build": {"start": "00:00:00 06.01.2018", "end": "23:59:59 20.02.2018", "hoursPerWeek": 0},
-                            "Competition": {"start": "00:00:00 21.03.2018", "end": "23:59:59 14.04.2018", "hoursPerWeek": 0}},
-                "positions": ["Student", "Mentor", "Adult", "Other"],
-                "teams": ["Programming", "Mechanical", "Media", "Woodworking", "Mentors", "Other"]}
+
     # BuildHrsRqd : 54
     os.chdir(os.path.dirname(__file__))
     with open("opts.json", "w") as optsFile:
-        rapidjson.dump(fileData, optsFile, indent=2)
+        rapidjson.dump(defaultOptions, optsFile, indent=2)
 
 
 opts = loadOpts()
