@@ -1,9 +1,9 @@
 # auto clock out at midnight or whatever
-from os import listdir, environ
+from os import environ, listdir
 from time import sleep, strftime
 
 from guiType import refreshListboxes
-from ioServ import loadOpts, calcSlackTimeString
+from ioServ import calcSlackTimeString, loadOpts
 
 try:
     from slacker import Slacker
@@ -28,13 +28,11 @@ def main():
     while True:
         currenttime = strftime("%H:%M:%S")
 
-        if currenttime == strftime("%H:00:00"):
-            refreshListboxes()
-
         if strftime("%w") == "0" and currenttime == "00:00:00" and slackapiExists:
             print("sending to slack!")
             timeString = calcSlackTimeString()
-            slackapi.chat.post_message("#programming_timeclock", timeString, as_user=True)
+            slackapi.chat.post_message(
+                "#programming_timeclock", timeString, as_user=True)
 
         if currenttime == opts["autoClockOut"]:
             for item in listdir(path=opts["pathTime"]):
