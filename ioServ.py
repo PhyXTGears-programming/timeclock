@@ -16,7 +16,7 @@ defaultOptions = fileData = {"ioForm": "%H:%M:%S %d.%m.%Y", "pathTime": "./times
 
 try:
     import rapidjson
-except ImportError, e:
+except ImportError as e:
     print("Please install the rapidjson library so the so the options file can be loaded.")
     loadOptions = False
 
