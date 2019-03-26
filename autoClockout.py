@@ -32,7 +32,7 @@ def main():
             print("sending to slack!")
             timeString = calcSlackTimeString()
             slackapi.chat.post_message(
-                "#programming_timeclock", timeString, as_user=True)
+                "#prog_timeclock", timeString, as_user=True)
 
         if currenttime == opts["autoClockOut"]:
             for item in listdir(path=opts["pathTime"]):
