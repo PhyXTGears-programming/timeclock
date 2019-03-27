@@ -32,19 +32,27 @@ def main():
             print("sending to slack!")
             timeString = calcSlackTimeString()
             slackapi.chat.post_message(
-                "#programming_timeclock", timeString, as_user=True)
+                "#prog_timeclock", timeString, as_user=True)
 
         if currenttime == opts["autoClockOut"]:
             for item in listdir(path=opts["pathTime"]):
                 io = []
                 with open(opts["pathTime"] + item) as i:
+                    # Read lines from file.
                     io = i.readlines()
+
                 if io:
+                    # Split last line into fields.
                     io = io[-1].split(" | ")
                 else:
+                    # Go to next file.
                     continue
 
                 if io[0] in "i!":
+                    # Last line has an clock-in (i) or double clock-in (!) and
+                    # it's past time to clock out.
+
+                    # Append auto clock-out at same time as clock-in.
                     io[0] = "a"
                     with open(opts["pathTime"] + item, "a") as i:
                         i.write(" | ".join(io))
