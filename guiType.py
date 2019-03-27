@@ -1,8 +1,8 @@
 import os
+import platform
 import tkinter as tk
 from datetime import datetime
 from math import floor
-from platform import system as platformsystem
 from tkinter import (Button, Checkbutton, Entry, Frame, IntVar, Label, Listbox,
                      PhotoImage, Radiobutton, Scrollbar, Tk, Toplevel)
 
@@ -23,7 +23,7 @@ root.title("PhyxtGears1720io")
 root.geometry("1024x768")  # 1024x768 # set resolution
 glblBGC = "#343d46"
 root.config(bg=glblBGC)
-if platformsystem() != "Windows" and platformsystem() != "Darwin":
+if platform.system() != "Windows" and platform.system() != "Darwin":
     root.attributes("-fullscreen", True)
 
 opts = ioServ.loadOpts()  # load options from file
@@ -70,9 +70,9 @@ def makeNewUserWindow():  # new user window
     vkeyF = Frame(nuWin, pady=8)  # on screen keyboard frame
 
     Label(inputF, text="Fullname: ", font="Courier 14").grid(
-        sticky=E, padx=2, pady=2)
+        sticky=tk.E, padx=2, pady=2)
     Label(inputF, text="Initials: ", font="Courier 14").grid(
-        sticky=E, padx=2, pady=2)
+        sticky=tk.E, padx=2, pady=2)
 
     nuFullE = Entry(inputF, font="Courier 18", width=42)  # full name textbox
     nuUserE = Entry(inputF, font="Courier 18", width=42)  # username  textbox
@@ -300,7 +300,7 @@ def alertWindow(text="", fg="orange", font="Courier 14 bold"):
 
     # add text to window
     Label(wind, text=text, fg=fg, font=font, height=6, wraplength=300,
-          justify=CENTER).place(x=160, y=60, anchor=CENTER)
+          justify=tk.CENTER).place(x=160, y=60, anchor=tk.CENTER)
 
     wind.after(3000, wind.destroy)  # exit window after 3 seconds
 
