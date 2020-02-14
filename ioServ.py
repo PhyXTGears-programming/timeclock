@@ -1,10 +1,14 @@
 import os
+import re
 import sys
 from datetime import datetime, timedelta
 from math import floor
+from re import (compile as re_compile, fullmatch)
 from time import strftime
 
 import guiType
+
+ROMAN_NUMERAL_PATTERN = re_compile("(V|I)+", re.IGNORECASE)
 
 loadOptions = True
 defaultOptions = fileData = {"ioForm": "%H:%M:%S %d.%m.%Y", "pathTime": "./times/", "autoClockOut": "00:00:00",
@@ -148,8 +152,11 @@ def checkNameDB(n):  # check for if a name exists already
 
 def addNameDB(full, user, title="None", job="None"):  # add a new name to the list
     file = open(opts["usernameFile"], "a+")
-    file.write(" | ".join([full.title(), user.lower(), title, job]) + "\n")
+    file.write(" | ".join([titlize_name(full), user.lower(), title, job]) + "\n")
     file.close()
+
+def titlize_name(fullname):
+    return " ".join(map(lambda name: name if fullmatch(ROMAN_NUMERAL_PATTERN, name) else name.title(), fullname.split()))
 
 
 def sortUsernameList():  # alphebetize names
@@ -164,7 +171,7 @@ def sortUsernameList():  # alphebetize names
         names = []
         for l in u.readlines():
             l = l.strip().split(" | ")
-            l[0] = l[0].title()  # full name
+            l[0] = titlize_name(l[0])  # full name
             if len(l) >= 2:  # user key
                 l[1] = l[1].lower()
             else:
