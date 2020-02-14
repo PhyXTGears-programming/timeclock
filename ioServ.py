@@ -250,11 +250,18 @@ def calcUserTime(name, startIO=None, endIO=None):
     lastTime = datetime.now()
     lastState = "n"
     totalTime = 0
+    lineNum = 0
 
     for line in open(filename, "r"):
+        lineNum += 1
+
         line = line.strip().split(" | ")
         if not line:
             continue  # if nothing on line, skip line
+
+        if (2 > len(line)):
+            print("Error reading line %d in file %s.  Found '%s'" % (lineNum, filename, line))
+            continue
 
         state = line[0]
         linetime = line[1]
