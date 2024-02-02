@@ -123,12 +123,11 @@ def calcUserTime(opts, name, startIO=None, endIO=None):
 opts = loadOpts()
 users = loadUsers(opts)
 
-print("Name\tHours")
+print("%24s\t%16s\t%s" % ("Name", "Position", "Hours"))
 
 for user in users:
     name = user[0].strip()
     position = user[2]
 
-    if "Student" == position:
-        totalTime = calcUserTime(opts, name)
-        print("%24s\t%4.1f" % (name, totalTime / 3600))
+    totalTime = calcUserTime(opts, name)
+    print("%24s\t%16s\t%5.1f" % (name, position, totalTime / 3600))
