@@ -1,4 +1,5 @@
 times/
+archives/
 !times/.gitkeep
 usernameFile.txt
 opts.txt
