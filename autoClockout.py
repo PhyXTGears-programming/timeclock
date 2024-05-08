@@ -2,7 +2,6 @@
 from os import environ, listdir
 from time import sleep, strftime
 
-from guiType import refreshListboxes
 from ioServ import calcSlackTimeString, loadOpts
 
 try:
@@ -56,7 +55,6 @@ def main():
                     io[0] = "a"
                     with open(opts["pathTime"] + item, "a") as i:
                         i.write(" | ".join(io))
-            refreshListboxes()
 
             sleep(1)
         sleep(60 - int(strftime("%S")))
