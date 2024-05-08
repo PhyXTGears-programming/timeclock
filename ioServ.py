@@ -313,10 +313,11 @@ def mkfile(t): open(t, "a+").close()  # make files if they dont exist
 
 
 def loadUsers():
-    allusers = {}
+    users = {}
     for line in open(opts["usernameFile"], "r+"):
         l = line.split(" | ")  # name | username | title | jobs
-        allusers[l[2]] = (allusers[l[2]] or []) + []
+        users[l[2]] = (users[l[2]] or []) + []
+    return users
 
 
 def calcSlackTimeString():
