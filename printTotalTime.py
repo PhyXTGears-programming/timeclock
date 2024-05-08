@@ -113,11 +113,6 @@ def calcUserTime(opts, name, startIO=None, endIO=None):
         if checkTimes and datatime > endIO:
             break  # if left timeframe then finish
 
-    else:  # if finished with no breaks
-        # add current time if still signed in
-        if lastState == "i":
-            totalTime += (currentDate - lastTime).total_seconds()
-
     return totalTime
 
 if __name__ == '__main__':
