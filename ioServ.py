@@ -6,7 +6,7 @@ from math import floor
 from re import (compile as re_compile, fullmatch)
 from time import strftime
 
-import guiType
+maxName = 24
 
 ROMAN_NUMERAL_PATTERN = re_compile("(V|I)+", re.IGNORECASE)
 
@@ -223,8 +223,8 @@ def calcSeasonTime(name, season, ignoreCheck=False):
 
 
 def calcUserTime(name, startIO=None, endIO=None):
-    if len(name) > guiType.maxName:
-        name = name[:guiType.maxName]
+    if len(name) > maxName:
+        name = name[:maxName]
     filename = opts["pathTime"] + name.strip().replace(" ", "") + \
         ".txt"  # generate filename
 

@@ -9,8 +9,6 @@ from tkinter import (Button, Checkbutton, Entry, Frame, IntVar, Label, Listbox,
 import ioServ
 import osk
 
-maxName = 24
-
 root = Tk()  # main window
 nuWin = None  # new user window
 qtWin = None  # quit password window
@@ -157,7 +155,7 @@ def refreshListboxes(n=None):  # whenever someone signs in/out or theres a new u
     def __addtolistbox(nameIO, select):
         try:
             userFileName = (nameIO if len(nameIO) <
-                            maxName else nameIO[:maxName]).replace(" ", "")
+                            ioServ.maxName else nameIO[:ioServ.maxName]).replace(" ", "")
             with open(opts["pathTime"] + userFileName + ".txt", "r") as f:
                 inSeason = False
                 timet = 0
@@ -182,9 +180,9 @@ def refreshListboxes(n=None):  # whenever someone signs in/out or theres a new u
         weektime = floor(min(ioServ.calcWeekTime(nameIO) // 3600, 8))
         # print(nameIO, ioServ.calcWeekTime(nameIO)/3600)
         printName = nameIO
-        if len(printName) > maxName:
-            printName = printName[:maxName]
-        nameL.insert(select, printName + " " * (maxName + 1 - len(printName)) + ("." *
+        if len(printName) > ioServ.maxName:
+            printName = printName[:ioServ.maxName]
+        nameL.insert(select, printName + " " * (ioServ.maxName + 1 - len(printName)) + ("." *
                                                                                  weektime + " " * (8 - weektime)) + " " + timeIO + "  " + typeIO)
         nameL.itemconfig(select, {"fg": hoursToColor(nameIO)})
 
@@ -214,8 +212,8 @@ def refreshListboxes(n=None):  # whenever someone signs in/out or theres a new u
         select = 0
 
         for name in allusers["all"]:
-            if len(name) > maxName:
-                name = name[:maxName]
+            if len(name) > ioServ.maxName:
+                name = name[:ioServ.maxName]
             __addtolistbox(name, select)
             select += 1
 
@@ -271,7 +269,7 @@ def ioSign(c):
         return
 
     msg, color = ioServ.signIO(
-        nameL.get(nameL.curselection()[0])[:maxName].strip(), c)
+        nameL.get(nameL.curselection()[0])[:ioServ.maxName].strip(), c)
 
     refreshListboxes("single")
 
