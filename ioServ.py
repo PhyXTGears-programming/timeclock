@@ -11,10 +11,10 @@ maxName = 24
 ROMAN_NUMERAL_PATTERN = re_compile("(V|I)+", re.IGNORECASE)
 
 loadOptions = True
-defaultOptions = fileData = {"ioForm": "%H:%M:%S %d.%m.%Y", "pathTime": "./times/", "autoClockOut": "00:00:00",
+defaultOptions = fileData = {"ioForm": "%Y-%m-%d %H:%M:%S", "pathTime": "./times/", "autoClockOut": "00:00:00",
                              "autoClockLim": "04:30:00", "usernameFile": "usernameFile.txt", "adminPass": "",
-                             "seasons": {"Build": {"start": "00:00:00 06.01.2018", "end": "23:59:59 20.02.2018", "hoursPerWeek": 0},
-                                         "Competition": {"start": "00:00:00 21.03.2018", "end": "23:59:59 14.04.2018", "hoursPerWeek": 0}},
+                             "seasons": {"Build": {"start": "2018-01-06 00:00:00", "end": "2018-02-20 23:59:59", "hoursPerWeek": 0},
+                                         "Competition": {"start": "2018-03-21 00:00:00", "end": "2018-04-14 23:59:59", "hoursPerWeek": 0}},
                              "positions": ["Student", "Mentor", "Adult", "Other"],
                              "teams": ["Programming", "Mechanical", "Media", "Woodworking", "Mentors", "Other"]}
 
