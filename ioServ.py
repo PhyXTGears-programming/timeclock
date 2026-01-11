@@ -68,8 +68,11 @@ def signIO(n, c):
     if lines:
         lim = [int(x) for x in opts["autoClockLim"].split(":")]
 
+        lastEntry = lines[-1]
+        lastTimeEntry = lastEntry.split('|')[1].strip()
+
         theNow = datetime.now()
-        theIOA = datetime.strptime(lines[-1][5:], opts["ioForm"])
+        theIOA = datetime.strptime(lastTimeEntry, opts["ioForm"])
         theLIM = theIOA.replace(
             hour=lim[0], minute=lim[1], second=lim[2], microsecond=0) + timedelta(days=1)
 
