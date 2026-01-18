@@ -31,7 +31,7 @@ def loadOpts():
     opts = {}
     try:
         import rapidjson
-        print(__file__)
+        print(__file__, file=sys.stderr)
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         if not os.path.exists("opts.json"):
             generateDefaultOpts()
@@ -60,7 +60,7 @@ def calcUserTime(opts, name, startIO=None, endIO=None):
     try:
         open(filename, "r").close()
     except FileNotFoundError:
-        print(name + "'s file was not found!")
+        print(name + "'s file was not found!", file=sys.stderr)
         return 0
 
     # should the times be between specific dates?
@@ -88,7 +88,7 @@ def calcUserTime(opts, name, startIO=None, endIO=None):
             continue  # if nothing on line, skip line
 
         if (2 > len(line)):
-            print("Error reading line %d in file %s.  Found '%s'" % (lineNum, filename, line))
+            print("Error reading line %d in file %s.  Found '%s'" % (lineNum, filename, line), file=sys.stderr)
             continue
 
         state = line[0]
